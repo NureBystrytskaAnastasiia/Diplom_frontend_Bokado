@@ -1,0 +1,100 @@
+/* UsersCalendar.css */
+.calendar-widget {
+  background: var(--primary);
+  border-radius: 12px;
+  padding: 1.5rem;
+  border: 1px solid rgba(0, 212, 255, 0.1);
+}
+
+.calendar-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1.5rem;
+}
+
+.calendar-title {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  color: var(--text-light);
+  font-size: 1.3rem;
+  margin: 0;
+}
+
+.calendar-icon {
+  color: var(--accent-teal);
+  font-size: 1.5rem;
+}
+
+.calendar-controls {
+  display: flex;
+  gap: 0.75rem;
+}
+
+.calendar-table {
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 0;
+}
+
+.calendar-table thead th {
+  background: rgba(0, 212, 255, 0.05);
+  color: var(--accent-light);
+  font-weight: 500;
+  padding: 0.75rem 1rem;
+  text-align: left;
+  border-bottom: 1px solid rgba(0, 212, 255, 0.2);
+}
+
+.calendar-table tbody tr:last-child td {
+  border-bottom: none;
+}
+
+.calendar-table td {
+  padding: 1rem;
+  color: var(--text-light);
+  border-bottom: 1px solid rgba(0, 212, 255, 0.1);
+  transition: all var(--transition-speed);
+}
+
+.calendar-table tr:hover td {
+  background: rgba(0, 212, 255, 0.05);
+  color: var(--accent-light);
+}
+
+.month-cell {
+  font-weight: 500;
+}
+
+.users-cell {
+  text-align: right;
+  font-family: monospace;
+}
+
+.progress-bar {
+  height: 6px;
+  background: rgba(0, 212, 255, 0.1);
+  border-radius: 3px;
+  margin-top: 0.5rem;
+  overflow: hidden;
+}
+
+.progress-fill {
+  height: 100%;
+  background: linear-gradient(90deg, var(--accent-blue), var(--accent-teal));
+  border-radius: 3px;
+}
+
+.empty-state {
+  text-align: center;
+  padding: 2rem;
+  color: var(--text-muted);
+}
+
+.empty-icon {
+  font-size: 2.5rem;
+  color: var(--accent-blue);
+  margin-bottom: 1rem;
+  opacity: 0.5;
+}

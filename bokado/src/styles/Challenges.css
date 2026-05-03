@@ -1,0 +1,50 @@
+.challenges-page {
+  padding: 2rem;
+  background: var(--primary-dark);
+  color: var(--text-primary);
+}
+
+.challenges-title {
+  font-size: 2rem;
+  margin-bottom: 1.5rem;
+  background: var(--gradient-primary);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.challenges-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 1.5rem;
+}
+
+.challenge-card {
+  background: var(--bg-card);
+  padding: 1.5rem;
+  border-radius: var(--border-radius-lg);
+  box-shadow: var(--shadow-soft);
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  transition: background-color 0.3s ease;
+}
+
+.challenge-card.completed {
+  background-color: rgba(16, 185, 129, 0.1);
+}
+
+.challenge-status {
+  color: var(--success);
+  font-weight: bold;
+  display: inline-block;
+  margin-top: 0.5rem;
+}
+
+.challenges-message,
+.challenges-error {
+  text-align: center;
+  margin-top: 2rem;
+  font-size: 1.1rem;
+}
+
+.challenges-error {
+  color: var(--error);
+}

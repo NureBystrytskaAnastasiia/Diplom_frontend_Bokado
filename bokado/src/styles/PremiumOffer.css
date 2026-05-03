@@ -1,0 +1,85 @@
+.premium-container {
+  background: var(--primary-dark);
+  min-height: 100vh;
+  padding: 3rem 1rem;
+  color: var(--text-primary);
+  display: flex;
+  justify-content: center;
+}
+
+.premium-content {
+  max-width: 600px;
+  width: 100%;
+}
+
+.premium-section {
+  background: var(--bg-card);
+  border-radius: var(--border-radius-lg);
+  padding: 2rem;
+  margin-bottom: 2rem;
+  box-shadow: var(--shadow-soft);
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  transition: all 0.3s ease;
+}
+
+.premium-section:hover {
+  transform: translateY(-4px);
+  box-shadow: var(--shadow-elevated);
+}
+
+.premium-title {
+  font-size: 2rem;
+  font-weight: 700;
+  margin-bottom: 1rem;
+  background: var(--gradient-primary);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.premium-description {
+  font-size: 1.1rem;
+  margin-bottom: 1.5rem;
+}
+
+.premium-features {
+  list-style: disc inside;
+  font-size: 1rem;
+  margin-bottom: 1.5rem;
+  color: var(--text-primary);
+}
+
+.premium-price {
+  background: var(--gradient-secondary);
+  padding: 1rem 2rem;
+  border-radius: var(--border-radius);
+  font-weight: 700;
+  font-size: 1.5rem;
+  text-align: center;
+  color: white;
+  margin-bottom: 2rem;
+  box-shadow: var(--shadow-elevated);
+}
+
+.premium-button {
+  display: block;
+  text-align: center;
+}
+
+.premium-ad-text {
+  font-size: 1rem;
+  color: var(--text-secondary);
+  margin-bottom: 0.5rem;
+}
+
+.premium-ad-subtext {
+  font-size: 0.9rem;
+  color: var(--text-muted);
+}
+
+.premium-email {
+  color: var(--accent-teal);
+  font-weight: 600;
+  text-decoration: underline;
+  font-size: 1.1rem;
+}
