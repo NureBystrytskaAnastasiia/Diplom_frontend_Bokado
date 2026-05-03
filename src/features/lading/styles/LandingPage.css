@@ -1,0 +1,8 @@
+/* LandingPage — page-level wrapper.
+   Всі стилі секцій живуть у своїх компонентах.
+   Тут тільки те, що стосується самої сторінки. */
+
+.landing-page {
+  min-height: 100vh;
+  overflow-x: hidden;
+}
