@@ -6,12 +6,14 @@ import './Footer.css';
 const Footer: React.FC = () => (
   <footer className="footer">
     <div className="container footer__inner">
-      <div className="footer__brand">
-        <div className="footer__logo">B</div>
-        <div>
-          <h3 className="footer__name">Bokado</h3>
-          <p className="footer__tagline">Знайди своїх людей</p>
-        </div>
+     <div className="footer__brand">
+        <Link to="/" className="footer__brand-link">
+          <div className="footer__logo">B</div>
+           <div>
+            <h3 className="footer__name">Bokado</h3>
+              <p className="footer__tagline">Знайди своїх людей</p>
+          </div>
+        </Link>
       </div>
 
       <nav className="footer__nav" aria-label="Footer navigation">
@@ -28,10 +30,10 @@ const Footer: React.FC = () => (
         <div className="footer__col">
           <h4 className="footer__col-title">Підтримка</h4>
           <ul>
-            <li><a href="#">Допомога</a></li>
-            <li><a href="#">Правила</a></li>
-            <li><a href="#">Конфіденційність</a></li>
-            <li><a href="#">Cookies</a></li>
+            <li><Link to="/help">Допомога</Link></li>
+            <li><Link to="/rules">Правила</Link></li>
+            <li><Link to="/privacy">Конфіденційність</Link></li>
+            <li><Link to="/cookies">Cookies</Link></li>
           </ul>
         </div>
 
@@ -63,8 +65,8 @@ const Footer: React.FC = () => (
       <div className="container footer__bottom-inner">
         <p>&copy; {new Date().getFullYear()} Bokado. Всі права захищені.</p>
         <div className="footer__bottom-links">
-          <a href="#">Умови</a>
-          <a href="#">Конфіденційність</a>
+          <a href="/rules">Правила</a>
+          <a href="/privacy">Конфіденційність</a>
         </div>
       </div>
     </div>

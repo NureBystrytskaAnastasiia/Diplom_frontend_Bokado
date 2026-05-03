@@ -1,0 +1,138 @@
+.cookies-page {
+  min-height: 100vh;
+  overflow-x: hidden;
+}
+
+/* ── Hero ── */
+.cookies-hero {
+  position: relative;
+  background: linear-gradient(145deg, #1A0E3A 0%, #2D1B69 50%, #4A2080 100%);
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  min-height: 44vh;
+}
+
+.cookies-hero__orb {
+  position: absolute;
+  border-radius: 50%;
+  filter: blur(90px);
+  pointer-events: none;
+}
+.cookies-hero__orb--1 {
+  width: 380px; height: 380px;
+  background: rgba(124, 77, 255, 0.28);
+  top: -100px; right: -60px;
+}
+.cookies-hero__orb--2 {
+  width: 260px; height: 260px;
+  background: rgba(206, 147, 216, 0.2);
+  bottom: 20px; left: -40px;
+}
+
+.cookies-hero__inner {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  padding-top: clamp(4rem, 8vw, 6rem);
+  padding-bottom: clamp(3rem, 6vw, 5rem);
+  position: relative;
+  z-index: 1;
+  gap: 1rem;
+}
+
+.cookies-back {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  font-size: var(--text-sm);
+  color: rgba(255, 255, 255, 0.55);
+  text-decoration: none;
+  transition: color 0.2s;
+  margin-bottom: 0.5rem;
+}
+.cookies-back:hover { color: rgba(255, 255, 255, 0.9); }
+
+.cookies-label {
+  background: rgba(255, 255, 255, 0.1) !important;
+  color: rgba(255, 255, 255, 0.75) !important;
+  border: 1px solid rgba(255, 255, 255, 0.15) !important;
+}
+
+.cookies-hero__title {
+  font-family: var(--font-display);
+  font-size: clamp(2.2rem, 5vw, 3.8rem);
+  font-weight: 900;
+  color: #fff;
+  line-height: 1.1;
+  letter-spacing: -0.02em;
+}
+
+.cookies-hero__sub {
+  font-size: var(--text-sm);
+  color: rgba(255, 255, 255, 0.45);
+}
+
+.cookies-hero__wave {
+  height: 80px;
+  margin-top: auto;
+}
+.cookies-hero__wave svg { width: 100%; height: 100%; }
+
+/* ── Контент ── */
+.cookies-content { background: var(--clr-bg); }
+
+.cookies-content__inner {
+  max-width: 720px;
+  margin-inline: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.cookies-sections {
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+}
+
+.cookies-section {
+  background: var(--clr-surface);
+  border: 1px solid var(--clr-border);
+  border-radius: var(--radius-lg);
+  padding: 1.75rem 2rem;
+  transition: box-shadow 0.3s var(--ease-out);
+}
+.cookies-section:hover {
+  box-shadow: var(--shadow-sm);
+}
+
+.cookies-section__title {
+  font-size: var(--text-xl);
+  font-weight: 600;
+  color: var(--clr-text-primary);
+  margin-bottom: 0.6rem;
+}
+
+.cookies-section__text {
+  font-size: var(--text-base);
+  color: var(--clr-text-secondary);
+  line-height: 1.75;
+}
+
+.cookies-link {
+  color: var(--clr-accent);
+  text-decoration: none;
+  font-weight: 500;
+  transition: color 0.2s;
+}
+.cookies-link:hover { color: var(--clr-accent-hover); }
+
+/* Блок контакту */
+.cookies-contact {
+  background: var(--clr-accent-muted);
+  border: 1px solid var(--clr-border-strong);
+  border-radius: var(--radius-lg);
+  padding: 1.75rem 2rem;
+}

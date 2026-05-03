@@ -18,8 +18,10 @@ import ChatRoomPage from './features/chat/pages/ChatWithUserPage';
 import ChallengesPage from './features/challenges/pages/ChallengesPage';
 import PremiumOffer from './features/premium/pages/PremiumOffer';
 import LandingPage from './features/lading/pages/LandingPage';
-import AboutHero from './features/about/components/AboutHero/AboutHero';
-
+import AboutPage from './features/about/pages/AboutPage';
+import CookiesPage from './features/legal/pages/CookiesPage';
+import RulesPage from './features/legal/pages/RulesPage';
+import PrivacyPage from './features/legal/pages/PrivacyPage';
 
 // Імпортуємо захищені маршрути
 import ProtectedRoute from './routes/ProtectedRoute';
@@ -34,7 +36,10 @@ const App: React.FC = () => {
           <Route path="/login" element={<LoginPage />} />
           <Route path="/register" element={<RegisterPage />} />
           <Route path="/forgot-password" element={<ForgotPasswordPage />} />
-          <Route path="/about" element={<AboutHero />} />
+          <Route path="/about" element={<AboutPage />} />
+          <Route path="/cookies" element={<CookiesPage />} /> 
+          <Route path="/rules" element={<RulesPage />} />
+          <Route path="/privacy" element={<PrivacyPage />} />
           <Route path="/" element={<LandingPage />} />
           
           {/* Події можуть бути публічними або захищеними - залежно від вашої логіки */}
