@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { resetPassword } from '../../api/auth';
-import '../../styles/Register.css';
+
 
 const ForgotPasswordPage: React.FC = () => {
   const [email, setEmail] = useState('');

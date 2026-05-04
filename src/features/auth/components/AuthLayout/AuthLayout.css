@@ -1,0 +1,146 @@
+.auth-layout {
+  min-height: 100vh;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+}
+
+/* ── Ліва частина ── */
+.auth-layout__left {
+  position: relative;
+  background: linear-gradient(145deg, #1A0E3A 0%, #2D1B69 50%, #4A2080 100%);
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.auth-layout__orb {
+  position: absolute;
+  border-radius: 50%;
+  filter: blur(80px);
+  pointer-events: none;
+}
+.auth-layout__orb--1 {
+  width: 420px; height: 420px;
+  background: rgba(124, 77, 255, 0.35);
+  top: -80px; right: -80px;
+}
+.auth-layout__orb--2 {
+  width: 300px; height: 300px;
+  background: rgba(206, 147, 216, 0.25);
+  bottom: -60px; left: -60px;
+}
+
+.auth-layout__left-inner {
+  position: relative;
+  z-index: 1;
+  padding: 3rem;
+  display: flex;
+  flex-direction: column;
+  gap: 3rem;
+  width: 100%;
+  max-width: 400px;
+}
+
+/* Лого */
+.auth-layout__logo {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  text-decoration: none;
+}
+.auth-layout__logo-icon {
+  width: 40px; height: 40px;
+  background: #7C4DFF;
+  border-radius: 10px;
+  display: flex; align-items: center; justify-content: center;
+  font-weight: 700; font-size: 1.1rem; color: #fff;
+}
+.auth-layout__logo span {
+  font-family: var(--font-display);
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: #fff;
+}
+
+/* Цитата */
+.auth-layout__quote {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+.auth-layout__quote-text {
+  font-family: var(--font-display);
+  font-size: clamp(1.2rem, 2vw, 1.5rem);
+  font-weight: 700;
+  color: #fff;
+  line-height: 1.4;
+  font-style: italic;
+}
+.auth-layout__quote-author {
+  font-size: 0.85rem;
+  color: rgba(255,255,255,0.45);
+  letter-spacing: 0.05em;
+}
+
+/* Декоративні кільця */
+.auth-layout__rings {
+  position: absolute;
+  bottom: 2rem;
+  right: 2rem;
+}
+.auth-layout__ring {
+  position: absolute;
+  border-radius: 50%;
+  border: 1px solid rgba(179, 157, 219, 0.2);
+}
+.auth-layout__ring--1 { width: 120px; height: 120px; bottom: 0; right: 0; }
+.auth-layout__ring--2 { width: 200px; height: 200px; bottom: -40px; right: -40px; }
+.auth-layout__ring--3 { width: 300px; height: 300px; bottom: -90px; right: -90px; }
+
+/* ── Права частина ── */
+.auth-layout__right {
+  background: var(--clr-bg, #F7F4FD);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: clamp(2rem, 4vw, 4rem);
+  overflow: hidden;
+}
+
+/* Таби */
+.auth-layout__tabs {
+  display: flex;
+  background: var(--clr-surface, #fff);
+  border: 1px solid var(--clr-border, #E4DCF5);
+  border-radius: 999px;
+  padding: 4px;
+  margin-bottom: 2.5rem;
+  width: 100%;
+  max-width: 420px;
+}
+.auth-layout__tab {
+  flex: 1;
+  text-align: center;
+  padding: 0.6rem 1rem;
+  border-radius: 999px;
+  font-size: 0.9rem;
+  font-weight: 500;
+  color: var(--clr-text-secondary, #6B5B8E);
+  text-decoration: none;
+  transition: background 0.25s, color 0.25s;
+}
+.auth-layout__tab--active {
+  background: #7C4DFF;
+  color: #fff;
+}
+
+/* ── Адаптив ── */
+@media (max-width: 768px) {
+  .auth-layout {
+    grid-template-columns: 1fr;
+  }
+  .auth-layout__left { display: none; }
+  .auth-layout__right { min-height: 100vh; }
+}

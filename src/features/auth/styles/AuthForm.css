@@ -1,0 +1,143 @@
+.auth-form-wrap {
+  width: 100%;
+  max-width: 420px;
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+/* Заголовок */
+.auth-form__head {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+}
+.auth-form__title {
+  font-family: var(--font-display);
+  font-size: clamp(1.6rem, 3vw, 2rem);
+  font-weight: 700;
+  color: var(--clr-text-primary, #1A0E3A);
+  line-height: 1.2;
+  letter-spacing: -0.02em;
+}
+.auth-form__sub {
+  font-size: 0.9rem;
+  color: var(--clr-text-secondary, #6B5B8E);
+}
+
+/* Помилка */
+.auth-form__error {
+  background: #FEE2E2;
+  border: 1px solid #FECACA;
+  border-radius: var(--radius-md, 12px);
+  color: #991B1B;
+  font-size: 0.875rem;
+  padding: 0.75rem 1rem;
+}
+
+/* Форма */
+.auth-form {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+/* Поле */
+.auth-field {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+}
+
+.auth-field__label-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.auth-field__label {
+  font-size: 0.85rem;
+  font-weight: 500;
+  color: var(--clr-text-primary, #1A0E3A);
+}
+
+.auth-field__forgot {
+  font-size: 0.8rem;
+  color: var(--clr-accent, #7C4DFF);
+  text-decoration: none;
+  transition: opacity 0.2s;
+}
+.auth-field__forgot:hover { opacity: 0.75; }
+
+.auth-field__wrap {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.auth-field__icon {
+  position: absolute;
+  left: 0.875rem;
+  color: var(--clr-text-muted, #B0A4CC);
+  pointer-events: none;
+  flex-shrink: 0;
+}
+
+.auth-field__input {
+  width: 100%;
+  height: 48px;
+  padding: 0 1rem 0 2.75rem;
+  background: var(--clr-surface, #fff);
+  border: 1.5px solid var(--clr-border, #E4DCF5);
+  border-radius: var(--radius-md, 12px);
+  font-family: var(--font-body, system-ui);
+  font-size: 0.95rem;
+  color: var(--clr-text-primary, #1A0E3A);
+  transition: border-color 0.2s, box-shadow 0.2s;
+  outline: none;
+  -webkit-appearance: none;
+}
+
+.auth-field__input::placeholder {
+  color: var(--clr-text-muted, #B0A4CC);
+}
+
+.auth-field__input:focus {
+  border-color: var(--clr-accent, #7C4DFF);
+  box-shadow: 0 0 0 3px rgba(124, 77, 255, 0.12);
+}
+
+.auth-field__input--date {
+  color-scheme: light;
+}
+
+/* Кнопка сабміту */
+.auth-form__submit {
+  width: 100%;
+  height: 50px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  margin-top: 0.5rem;
+  font-size: 1rem;
+}
+.auth-form__submit:disabled {
+  opacity: 0.65;
+  cursor: not-allowed;
+  transform: none !important;
+}
+
+/* Перехід між формами */
+.auth-form__switch {
+  text-align: center;
+  font-size: 0.875rem;
+  color: var(--clr-text-secondary, #6B5B8E);
+}
+.auth-form__switch-link {
+  color: var(--clr-accent, #7C4DFF);
+  font-weight: 500;
+  text-decoration: none;
+  transition: opacity 0.2s;
+}
+.auth-form__switch-link:hover { opacity: 0.75; }

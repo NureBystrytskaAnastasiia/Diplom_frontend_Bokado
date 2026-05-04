@@ -1,7 +1,8 @@
 import React from 'react';
-import { BrowserRouter, Routes, Route } from 'react-router-dom';
+import { BrowserRouter, Routes, Route, useLocation } from 'react-router-dom';
 import { Provider } from 'react-redux';
 import { store } from './store';
+import { AnimatePresence } from 'framer-motion';
 
 // Сторінки
 import LoginPage          from './features/auth/pages/Login/LoginPage';
@@ -21,18 +22,19 @@ import ChatRoomPage       from './features/chat/pages/ChatWithUserPage';
 import ChallengesPage     from './features/challenges/pages/ChallengesPage';
 import PremiumOffer       from './features/premium/pages/PremiumOffer';
 import AdminPage          from './features/admin/pages/AdminPage';
-import NotFoundPage from './features/legal/pages/NotFoundPage';
+import NotFoundPage       from './features/legal/pages/NotFoundPage';
 
 // Утиліти
 import ProtectedRoute      from './routes/ProtectedRoute';
 import ProtectedAdminRoute from './routes/ProtectedAdminRoute';
 import ScrollToTop         from './shared/components/ScrollToTop';
 
-const App: React.FC = () => (
-  <Provider store={store}>
-    <BrowserRouter>
-      <ScrollToTop />
-      <Routes>
+const AnimatedRoutes = () => {
+  const location = useLocation();
+
+  return (
+    <AnimatePresence mode="wait">
+      <Routes location={location} key={location.pathname}>
         {/* Публічні */}
         <Route path="/"                element={<LandingPage />} />
         <Route path="/login"           element={<LoginPage />} />
@@ -45,20 +47,61 @@ const App: React.FC = () => (
         <Route path="/events"          element={<EventsPage />} />
 
         {/* Захищені */}
-        <Route path="/events/create" element={<ProtectedRoute><CreateEventPage /></ProtectedRoute>} />
-        <Route path="/dashboard"     element={<ProtectedRoute><DashboardPage /></ProtectedRoute>} />
-        <Route path="/profile/:userId" element={<ProtectedRoute><ProfilePage /></ProtectedRoute>} />
-        <Route path="/chats"         element={<ProtectedRoute><ChatsPage /></ProtectedRoute>} />
-        <Route path="/chat/:chatId"  element={<ProtectedRoute><ChatRoomPage /></ProtectedRoute>} />
-        <Route path="/challenges"    element={<ProtectedRoute><ChallengesPage /></ProtectedRoute>} />
-        <Route path="/premium"       element={<ProtectedRoute><PremiumOffer /></ProtectedRoute>} />
+        <Route path="/events/create" element={
+          <ProtectedRoute>
+            <CreateEventPage />
+          </ProtectedRoute>
+        } />
+        <Route path="/dashboard" element={
+          <ProtectedRoute>
+            <DashboardPage />
+          </ProtectedRoute>
+        } />
+        <Route path="/profile/:userId" element={
+          <ProtectedRoute>
+            <ProfilePage />
+          </ProtectedRoute>
+        } />
+        <Route path="/chats" element={
+          <ProtectedRoute>
+            <ChatsPage />
+          </ProtectedRoute>
+        } />
+        <Route path="/chat/:chatId" element={
+          <ProtectedRoute>
+            <ChatRoomPage />
+          </ProtectedRoute>
+        } />
+        <Route path="/challenges" element={
+          <ProtectedRoute>
+            <ChallengesPage />
+          </ProtectedRoute>
+        } />
+        <Route path="/premium" element={
+          <ProtectedRoute>
+            <PremiumOffer />
+          </ProtectedRoute>
+        } />
 
         {/* Адмін */}
-        <Route path="/admin" element={<ProtectedAdminRoute><AdminPage /></ProtectedAdminRoute>} />
+        <Route path="/admin" element={
+          <ProtectedAdminRoute>
+            <AdminPage />
+          </ProtectedAdminRoute>
+        } />
 
         {/* Fallback */}
         <Route path="*" element={<NotFoundPage />} />
       </Routes>
+    </AnimatePresence>
+  );
+};
+
+const App: React.FC = () => (
+  <Provider store={store}>
+    <BrowserRouter>
+      <ScrollToTop />
+      <AnimatedRoutes />
     </BrowserRouter>
   </Provider>
 );
