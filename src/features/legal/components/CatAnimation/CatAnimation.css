@@ -1,0 +1,69 @@
+.cat-wrap {
+  width: min(320px, 80vw);
+  margin-inline: auto;
+}
+
+.cat-tail {
+  transform-origin: 280px 310px;
+  animation: catTailWag 2.5s ease-in-out infinite;
+}
+
+.cat-body {
+  animation: catBreathe 3s ease-in-out infinite;
+  transform-origin: 315px 300px;
+}
+
+.cat-paw-left {
+  transform-origin: 275px 348px;
+  animation: catPawLeft 2.5s ease-in-out infinite;
+}
+
+.cat-paw-right {
+  transform-origin: 355px 348px;
+  animation: catPawRight 2.5s ease-in-out infinite;
+}
+
+.cat-blink-left {
+  transform-origin: 295px 228px;
+  animation: catBlink 4s ease-in-out infinite;
+}
+
+.cat-blink-right {
+  transform-origin: 335px 228px;
+  animation: catBlink 4s ease-in-out infinite;
+}
+
+.cat-question {
+  animation: catFloat 3s ease-in-out infinite;
+}
+
+@keyframes catTailWag {
+  0%, 100% { transform: rotate(0deg); }
+  25%       { transform: rotate(20deg); }
+  75%       { transform: rotate(-20deg); }
+}
+
+@keyframes catBreathe {
+  0%, 100% { transform: scaleY(1); }
+  50%       { transform: scaleY(1.03); }
+}
+
+@keyframes catPawLeft {
+  0%, 100% { transform: rotate(0deg); }
+  50%       { transform: rotate(-6deg); }
+}
+
+@keyframes catPawRight {
+  0%, 100% { transform: rotate(0deg); }
+  50%       { transform: rotate(6deg); }
+}
+
+@keyframes catBlink {
+  0%, 88%, 100% { transform: scaleY(1); }
+  92%, 96%      { transform: scaleY(0.07); }
+}
+
+@keyframes catFloat {
+  0%, 100% { transform: translateY(0px);   opacity: 0.7; }
+  50%       { transform: translateY(-12px); opacity: 1; }
+}
