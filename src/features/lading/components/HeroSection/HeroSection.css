@@ -262,3 +262,95 @@
   .hero__subtitle br { display: none; }
   .hero__visual { display: none; }
 }
+
+/* ── Скелетон ── */
+.mock-skeleton {
+  height: 54px;
+  border-radius: 14px;
+  background: linear-gradient(
+    90deg,
+    rgba(255,255,255,0.05) 25%,
+    rgba(255,255,255,0.1) 50%,
+    rgba(255,255,255,0.05) 75%
+  );
+  background-size: 200% 100%;
+  animation: shimmer 1.4s infinite;
+}
+@keyframes shimmer {
+  0% { background-position: 200% 0; }
+  100% { background-position: -200% 0; }
+}
+
+/* ── Картка події ── */
+.mock-event {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  background: rgba(255,255,255,0.07);
+  border-radius: 14px;
+  padding: 0.75rem;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+.mock-event:hover { background: rgba(255,255,255,0.12); }
+
+.mock-event__date {
+  display: flex;
+  align-items: center;
+  gap: 3px;
+  font-size: 0.68rem;
+  font-weight: 600;
+  color: #B39DDB;
+  white-space: nowrap;
+  flex-shrink: 0;
+  width: 52px;
+}
+
+.mock-event__info { flex: 1; min-width: 0; }
+.mock-event__name {
+  font-size: 0.82rem;
+  font-weight: 600;
+  color: #fff;
+  margin-bottom: 3px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.mock-event__meta { display: flex; gap: 0.5rem; }
+.mock-event__meta span {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  font-size: 0.68rem;
+  color: rgba(255,255,255,0.45);
+}
+
+.mock-event__btn {
+  font-size: 0.68rem;
+  font-weight: 600;
+  background: var(--clr-accent);
+  color: #fff;
+  padding: 0.28rem 0.65rem;
+  border-radius: 999px;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+/* ── Кнопка "Всі події" ── */
+.mock-see-all {
+  width: 100%;
+  background: transparent;
+  border: 1px solid rgba(255,255,255,0.15);
+  border-radius: 10px;
+  color: rgba(255,255,255,0.6);
+  font-size: 0.78rem;
+  font-weight: 500;
+  padding: 0.55rem;
+  cursor: pointer;
+  transition: background 0.2s, color 0.2s;
+  margin-top: 0.25rem;
+}
+.mock-see-all:hover {
+  background: rgba(255,255,255,0.08);
+  color: rgba(255,255,255,0.9);
+}

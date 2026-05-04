@@ -3,7 +3,7 @@ import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { Provider } from 'react-redux';
 import { store } from './store';
 
-// Імпортуємо сторінки
+// ІМПОРТ СТОРІНКИ
 import LoginPage from './features/auth/pages/Login/LoginPage';
 import RegisterPage from './features/auth/pages/Registration/RegisterPage';
 import DashboardPage from './features/dashboard/pages/DashboardPage';
@@ -22,8 +22,9 @@ import AboutPage from './features/about/pages/AboutPage';
 import CookiesPage from './features/legal/pages/CookiesPage';
 import RulesPage from './features/legal/pages/RulesPage';
 import PrivacyPage from './features/legal/pages/PrivacyPage';
+import ScrollToTop from './shared/components/ScrollToTop';
 
-// Імпортуємо захищені маршрути
+//  ЗАХИЩЕННІ МАРШРУТИ
 import ProtectedRoute from './routes/ProtectedRoute';
 import ProtectedAdminRoute from './routes/ProtectedAdminRoute';
 
@@ -31,8 +32,9 @@ const App: React.FC = () => {
   return (
     <Provider store={store}>
       <BrowserRouter>
+        <ScrollToTop />
         <Routes>
-          {/* 🔓 Публічні маршрути */}
+          {/* ПУБЛІЧНІ МАРШРУТИ */}
           <Route path="/login" element={<LoginPage />} />
           <Route path="/register" element={<RegisterPage />} />
           <Route path="/forgot-password" element={<ForgotPasswordPage />} />
@@ -42,11 +44,11 @@ const App: React.FC = () => {
           <Route path="/privacy" element={<PrivacyPage />} />
           <Route path="/" element={<LandingPage />} />
           
-          {/* Події можуть бути публічними або захищеними - залежно від вашої логіки */}
+          {/* ПОДІЇ ВОНИ ЗАХИЩЕННІ ТА ПУБЛІЧНІ ДЛЯ РЕКЛАМИ */}
           <Route path="/events" element={<EventsPage />} />
           <Route path="/events/create" element={<ProtectedRoute><CreateEventPage /></ProtectedRoute>} />
 
-          {/* 🔒 Приватні маршрути */}
+          {/* ЗАХИЩЕННІ МАРШРУТИ */}
           <Route path="/dashboard" element={<ProtectedRoute><DashboardPage /></ProtectedRoute>} />
           <Route path="/profile/:userId" element={<ProtectedRoute><ProfilePage /></ProtectedRoute>} />
           <Route path="/friends-dashboard" element={<ProtectedRoute><FriendsDashboardPage /></ProtectedRoute>} />
@@ -56,13 +58,13 @@ const App: React.FC = () => {
           <Route path="/premium" element={<ProtectedRoute><PremiumOffer /></ProtectedRoute>} />
 
 
-          {/* 🔒 Адмін-маршрути */}
+          {/* АДМІН-МАРШРУТИ */}
           <Route path="/admin" element={<ProtectedAdminRoute><AdminPage /></ProtectedAdminRoute>} />
 
-          {/* 🔀 Редиректи */}
+          {/* РЕДИРЕКТИ */}
           <Route path="/" element={<Navigate to="/dashboard" replace />} />
           
-          {/* Обробка неіснуючих маршрутів */}
+          {/* ОБРОБКА НЕІСНУЮЧИХ МАРШРУТІВ */}
           <Route path="*" element={<Navigate to="/dashboard" replace />} />
         </Routes>
       </BrowserRouter>

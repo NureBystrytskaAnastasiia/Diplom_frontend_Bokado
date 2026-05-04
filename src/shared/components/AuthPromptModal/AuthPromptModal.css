@@ -1,0 +1,100 @@
+.auth-modal__overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(26, 14, 58, 0.6);
+  backdrop-filter: blur(6px);
+  z-index: 100;
+}
+
+.auth-modal {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 101;
+  background: #ffffff;
+  border-radius: var(--radius-xl);
+  padding: 2.5rem 2rem;
+  width: min(420px, calc(100vw - 2rem));
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  gap: 1rem;
+  box-shadow: 0 32px 80px rgba(26, 14, 58, 0.25);
+}
+
+.auth-modal__close {
+  position: absolute;
+  top: 1rem;
+  right: 1rem;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background: var(--clr-accent-dim);
+  border: none;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--clr-text-secondary);
+  transition: background 0.2s, color 0.2s;
+}
+.auth-modal__close:hover {
+  background: var(--clr-accent-muted);
+  color: var(--clr-accent);
+}
+
+.auth-modal__icon {
+  font-size: 2.5rem;
+  line-height: 1;
+  margin-bottom: 0.25rem;
+}
+
+.auth-modal__title {
+  font-family: var(--font-display);
+  font-size: 1.6rem;
+  font-weight: 700;
+  color: var(--clr-text-primary);
+  line-height: 1.2;
+}
+
+.auth-modal__sub {
+  font-size: var(--text-sm);
+  color: var(--clr-text-secondary);
+  line-height: 1.65;
+  max-width: 300px;
+}
+
+.auth-modal__actions {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  width: 100%;
+  margin-top: 0.5rem;
+}
+
+.auth-modal__btn {
+  width: 100%;
+  justify-content: center;
+}
+
+.auth-modal__btn--ghost {
+  width: 100%;
+  justify-content: center;
+  background: transparent;
+  color: var(--clr-text-secondary);
+  border: 1.5px solid var(--clr-border);
+  border-radius: var(--radius-full);
+  padding: 0.8rem 1.8rem;
+  font-family: var(--font-body);
+  font-size: var(--text-base);
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.2s, border-color 0.2s, color 0.2s;
+}
+.auth-modal__btn--ghost:hover {
+  background: var(--clr-accent-dim);
+  border-color: var(--clr-accent-soft);
+  color: var(--clr-accent);
+}

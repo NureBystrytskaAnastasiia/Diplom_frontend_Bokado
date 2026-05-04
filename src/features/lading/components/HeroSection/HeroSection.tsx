@@ -1,16 +1,31 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { FiArrowRight } from 'react-icons/fi';
+import { FiArrowRight, FiCalendar, FiMapPin, FiUsers } from 'react-icons/fi';
 import { STATS } from '../../constants/landingData';
+import { fetchEvents } from '../../../events/api/events';
+import type { Event } from '../../../events/types/event';
+import AuthPromptModal from '../../../../shared/components/AuthPromptModal/AuthPromptModal';
 import './HeroSection.css';
 
 const HeroSection: React.FC = () => {
   const navigate = useNavigate();
+  const [events, setEvents] = useState<Event[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [modalOpen, setModalOpen] = useState(false);
+
+  useEffect(() => {
+    fetchEvents()
+      .then((data) => setEvents(data.slice(0, 3)))
+      .catch(() => setEvents([]))
+      .finally(() => setLoading(false));
+  }, []);
+
+  const formatDate = (dateStr: string) =>
+    new Date(dateStr).toLocaleDateString('uk-UA', { day: 'numeric', month: 'short' });
 
   return (
     <section className="hero">
-      {/* Декоративні фонові кулі */}
       <div className="hero__orb hero__orb--1" aria-hidden="true" />
       <div className="hero__orb hero__orb--2" aria-hidden="true" />
       <div className="hero__orb hero__orb--3" aria-hidden="true" />
@@ -62,7 +77,6 @@ const HeroSection: React.FC = () => {
             </button>
           </motion.div>
 
-          {/* Статистика */}
           <motion.div
             className="hero__stats"
             initial={{ opacity: 0 }}
@@ -78,7 +92,7 @@ const HeroSection: React.FC = () => {
           </motion.div>
         </div>
 
-        {/* Правий блок — mock UI */}
+        {/* Правий блок — реальні події */}
         <motion.div
           className="hero__visual"
           initial={{ opacity: 0, x: 60, scale: 0.95 }}
@@ -87,62 +101,76 @@ const HeroSection: React.FC = () => {
           aria-hidden="true"
         >
           <div className="hero__phone">
-            {/* Топ-бар */}
             <div className="mock-topbar">
               <div className="mock-logo">B</div>
-              <div className="mock-topbar__title">Відкрити</div>
+              <div className="mock-topbar__title">Найближчі події</div>
               <div className="mock-notif" />
             </div>
 
-            {/* Картка групи */}
-            <div className="mock-card">
-              <div className="mock-card__icon" style={{ background: '#EDE7F6', fontSize: '1.5rem' }}>🎵</div>
-              <div className="mock-card__info">
-                <div className="mock-card__name">Indie Sound</div>
-                <div className="mock-card__sub">Музика • 7 / 10</div>
-              </div>
-              <div className="mock-card__btn">Вступити</div>
-            </div>
-
-            <div className="mock-card">
-              <div className="mock-card__icon" style={{ background: '#FCE4EC', fontSize: '1.5rem' }}>🏃</div>
-              <div className="mock-card__info">
-                <div className="mock-card__name">Run Kyiv</div>
-                <div className="mock-card__sub">Спорт • 5 / 10</div>
-              </div>
-              <div className="mock-card__btn">Вступити</div>
-            </div>
-
-            {/* Челендж */}
-            <div className="mock-challenge">
-              <span className="mock-challenge__emoji">💧</span>
-              <div className="mock-challenge__info">
-                <div className="mock-challenge__name">Випий 2л води</div>
-                <div className="mock-challenge__bar">
-                  <div className="mock-challenge__fill" style={{ width: '60%' }} />
+            {loading ? (
+              <>
+                <div className="mock-skeleton" />
+                <div className="mock-skeleton" />
+                <div className="mock-skeleton" />
+              </>
+            ) : events.length > 0 ? (
+              events.map((event) => (
+                <div
+                  key={event.eventId}
+                  className="mock-event"
+                  onClick={() => setModalOpen(true)}
+                >
+                  <div className="mock-event__date">
+                    <FiCalendar size={11} />
+                    {formatDate(event.date)}
+                  </div>
+                  <div className="mock-event__info">
+                    <div className="mock-event__name">{event.title}</div>
+                    <div className="mock-event__meta">
+                      {event.city && <span><FiMapPin size={10} />{event.city}</span>}
+                      {event.participants && (
+                        <span><FiUsers size={10} />{event.participants.length} / {event.maximum}</span>
+                      )}
+                    </div>
+                  </div>
+                  <div className="mock-event__btn">Детальніше</div>
                 </div>
-              </div>
-              <span className="mock-challenge__pts">+15</span>
-            </div>
+              ))
+            ) : (
+              <>
+                <div className="mock-event" onClick={() => setModalOpen(true)}>
+                  <div className="mock-event__date"><FiCalendar size={11} />Незабаром</div>
+                  <div className="mock-event__info">
+                    <div className="mock-event__name">Open Mic Night</div>
+                    <div className="mock-event__meta"><span><FiMapPin size={10} />Київ</span></div>
+                  </div>
+                  <div className="mock-event__btn">Детальніше</div>
+                </div>
+                <div className="mock-event" onClick={() => setModalOpen(true)}>
+                  <div className="mock-event__date"><FiCalendar size={11} />Незабаром</div>
+                  <div className="mock-event__info">
+                    <div className="mock-event__name">Ранковий забіг</div>
+                    <div className="mock-event__meta"><span><FiMapPin size={10} />Гідропарк</span></div>
+                  </div>
+                  <div className="mock-event__btn">Детальніше</div>
+                </div>
+              </>
+            )}
 
-            {/* Онлайн-друзі */}
-            <div className="mock-friends">
-              <div className="mock-friend" style={{ background: '#EDE7F6', color: '#7C4DFF' }}>МК</div>
-              <div className="mock-friend" style={{ background: '#FCE4EC', color: '#CE93D8' }}>ДС</div>
-              <div className="mock-friend" style={{ background: '#F3E5F5', color: '#9575CD' }}>ОТ</div>
-              <div className="mock-friend mock-friend--more">+5</div>
-              <span className="mock-friends__label">онлайн зараз</span>
-            </div>
+            <button className="mock-see-all" onClick={() => setModalOpen(true)}>
+              Всі події →
+            </button>
           </div>
         </motion.div>
       </div>
 
-      {/* Хвиля внизу */}
       <div className="hero__wave" aria-hidden="true">
         <svg viewBox="0 0 1440 80" preserveAspectRatio="none">
           <path d="M0,40 C360,80 1080,0 1440,40 L1440,80 L0,80 Z" fill="#F7F4FD" />
         </svg>
       </div>
+
+      <AuthPromptModal isOpen={modalOpen} onClose={() => setModalOpen(false)} />
     </section>
   );
 };

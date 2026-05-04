@@ -1,4 +1,5 @@
 import React from 'react';
+import { Navigate } from 'react-router-dom';
 
 import HeroSection     from '../components/HeroSection/HeroSection';
 import FeaturesSection from '../components/FeaturesSection/FeaturesSection';
@@ -15,32 +16,41 @@ import {
 } from '../constants/landingData';
 
 import '../styles/LandingPage.css';
+import { useAppSelector } from '../../../shared/hooks/useAuth';
 
-const LandingPage: React.FC = () => (
-  <main className="landing-page">
-    <HeroSection />
+const LandingPage: React.FC = () => {
+  const { user } = useAppSelector((state) => state.auth);
 
-    <FeaturesSection
-      label="Можливості"
-      title="Чому обирають Bokado?"
-      subtitle="Все що потрібно для якісного спілкування — в одному місці."
-      features={FEATURES}
-    />
+  if (user) {
+    return <Navigate to="/dashboard" replace />;
+  }
 
-    <HowItWorks steps={STEPS} />
+  return (
+    <main className="landing-page">
+      <HeroSection />
 
-    <Testimonials testimonials={TESTIMONIALS} />
+      <FeaturesSection
+        label="Можливості"
+        title="Чому обирають Bokado?"
+        subtitle="Все що потрібно для якісного спілкування — в одному місці."
+        features={FEATURES}
+      />
 
-    <FeaturesSection
-      label="Ще більше"
-      title="Деталі, які важливі"
-      features={EXTRA_FEATURES}
-    />
+      <HowItWorks steps={STEPS} />
 
-    <CtaSection />
+      <Testimonials testimonials={TESTIMONIALS} />
 
-    <Footer />
-  </main>
-);
+      <FeaturesSection
+        label="Ще більше"
+        title="Деталі, які важливі"
+        features={EXTRA_FEATURES}
+      />
+
+      <CtaSection />
+
+      <Footer />
+    </main>
+  );
+};
 
 export default LandingPage;
