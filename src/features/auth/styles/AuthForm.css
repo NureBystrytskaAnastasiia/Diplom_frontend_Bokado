@@ -141,3 +141,39 @@
   transition: opacity 0.2s;
 }
 .auth-form__switch-link:hover { opacity: 0.75; }
+
+/* ── ForgotPassword ── */
+.forgot-success {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  gap: 1rem;
+}
+
+.forgot-success__icon {
+  width: 80px;
+  height: 80px;
+  border-radius: 50%;
+  background: var(--clr-accent-muted, #EDE7F6);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--clr-accent, #7C4DFF);
+  margin-bottom: 0.5rem;
+}
+
+.forgot-success .auth-form__title { text-align: center; }
+.forgot-success .auth-form__sub   { text-align: center; max-width: 340px; }
+
+.forgot-back {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  font-size: 0.875rem;
+  color: var(--clr-text-secondary, #6B5B8E);
+  text-decoration: none;
+  justify-content: center;
+  transition: color 0.2s;
+}
+.forgot-back:hover { color: var(--clr-accent, #7C4DFF); }

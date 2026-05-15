@@ -1,0 +1,68 @@
+.discover {
+  padding: 2rem;
+  max-width: 800px;
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+/* Header */
+.discover__header {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+}
+
+.discover__title {
+  font-family: var(--font-display);
+  font-size: clamp(1.4rem, 3vw, 1.8rem);
+  font-weight: 700;
+  color: var(--clr-text-primary, #1A0E3A);
+  letter-spacing: -0.02em;
+}
+
+.discover__subtitle {
+  font-size: 0.9rem;
+  color: var(--clr-text-secondary, #6B5B8E);
+}
+
+/* Tabs */
+.discover__tabs {
+  display: flex;
+  background: var(--clr-surface, #fff);
+  border: 1px solid var(--clr-border, #E4DCF5);
+  border-radius: 999px;
+  padding: 4px;
+  width: fit-content;
+}
+
+.discover__tab {
+  padding: 0.5rem 1.25rem;
+  border-radius: 999px;
+  font-size: 0.9rem;
+  font-weight: 500;
+  color: var(--clr-text-secondary, #6B5B8E);
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  transition: background 0.2s, color 0.2s;
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+}
+
+.discover__tab--active {
+  background: #7C4DFF;
+  color: #fff;
+}
+
+/* Content */
+.discover__content {
+  /* tab content goes here */
+}
+
+@media (max-width: 600px) {
+  .discover {
+    padding: 1rem;
+  }
+}

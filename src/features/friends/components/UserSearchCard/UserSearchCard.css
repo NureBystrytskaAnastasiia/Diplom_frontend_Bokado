@@ -1,0 +1,121 @@
+.user-search-card {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding: 1rem;
+  background: var(--clr-surface, #fff);
+  border: 1.5px solid var(--clr-border, #E4DCF5);
+  border-radius: 16px;
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+.user-search-card:hover {
+  border-color: rgba(124, 77, 255, 0.35);
+  box-shadow: 0 2px 12px rgba(124, 77, 255, 0.08);
+}
+
+/* Avatar */
+.user-search-card__avatar {
+  width: 52px;
+  height: 52px;
+  border-radius: 50%;
+  object-fit: cover;
+  flex-shrink: 0;
+  background: var(--clr-bg, #F7F4FD);
+}
+
+.user-search-card__avatar-fallback {
+  width: 52px;
+  height: 52px;
+  border-radius: 50%;
+  background: rgba(124, 77, 255, 0.12);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  color: #7C4DFF;
+  font-size: 1.2rem;
+}
+
+/* Info */
+.user-search-card__info {
+  flex: 1;
+  min-width: 0;
+}
+
+.user-search-card__name {
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: var(--clr-text-primary, #1A0E3A);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.user-search-card__city {
+  font-size: 0.8rem;
+  color: var(--clr-text-secondary, #6B5B8E);
+  margin-top: 2px;
+}
+
+/* Status badge */
+.user-search-card__status {
+  font-size: 0.75rem;
+  font-weight: 500;
+  padding: 3px 10px;
+  border-radius: 999px;
+  margin-top: 4px;
+  display: inline-block;
+}
+
+.user-search-card__status--friends {
+  background: rgba(16, 185, 129, 0.12);
+  color: #065F46;
+}
+
+.user-search-card__status--pending {
+  background: rgba(245, 158, 11, 0.12);
+  color: #78350F;
+}
+
+/* Actions */
+.user-search-card__actions {
+  display: flex;
+  gap: 0.5rem;
+  flex-shrink: 0;
+}
+
+.user-search-card__btn {
+  height: 36px;
+  padding: 0 1rem;
+  border-radius: 10px;
+  border: none;
+  font-size: 0.85rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: opacity 0.15s, transform 0.15s;
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+}
+
+.user-search-card__btn:hover:not(:disabled) {
+  opacity: 0.85;
+  transform: translateY(-1px);
+}
+
+.user-search-card__btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.user-search-card__btn--primary {
+  background: #7C4DFF;
+  color: #fff;
+}
+
+.user-search-card__btn--ghost {
+  background: var(--clr-bg, #F7F4FD);
+  color: var(--clr-text-primary, #1A0E3A);
+  border: 1.5px solid var(--clr-border, #E4DCF5);
+}

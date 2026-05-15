@@ -1,0 +1,258 @@
+.app-layout {
+  min-height: 100vh;
+  display: flex;
+  background: var(--clr-bg, #F7F4FD);
+}
+
+/* ── Sidebar ── */
+.app-sidebar {
+  width: 240px;
+  min-height: 100vh;
+  background: var(--clr-surface, #fff);
+  border-right: 1px solid var(--clr-border, #E4DCF5);
+  display: flex;
+  flex-direction: column;
+  flex-shrink: 0;
+  transition: width 0.25s ease;
+  overflow: hidden;
+}
+
+.app-sidebar--collapsed {
+  width: 68px;
+}
+
+/* Logo */
+.app-sidebar__logo {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 1.25rem 1rem;
+  text-decoration: none;
+  border-bottom: 1px solid var(--clr-border, #E4DCF5);
+  overflow: hidden;
+  white-space: nowrap;
+}
+
+.app-sidebar__logo-mark {
+  width: 36px;
+  height: 36px;
+  background: #7C4DFF;
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  font-size: 1rem;
+  color: #fff;
+  flex-shrink: 0;
+}
+
+.app-sidebar__logo-text {
+  font-family: var(--font-display);
+  font-size: 1.2rem;
+  font-weight: 700;
+  color: var(--clr-text-primary, #1A0E3A);
+  opacity: 1;
+  transition: opacity 0.2s;
+}
+
+.app-sidebar--collapsed .app-sidebar__logo-text {
+  opacity: 0;
+  pointer-events: none;
+}
+
+/* Nav */
+.app-sidebar__nav {
+  flex: 1;
+  padding: 0.75rem 0;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.app-sidebar__link {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.7rem 1rem;
+  margin: 0 0.5rem;
+  border-radius: 10px;
+  text-decoration: none;
+  font-size: 0.9rem;
+  font-weight: 500;
+  color: var(--clr-text-secondary, #6B5B8E);
+  transition: background 0.15s, color 0.15s;
+  white-space: nowrap;
+  overflow: hidden;
+}
+
+.app-sidebar__link:hover {
+  background: var(--clr-bg, #F7F4FD);
+  color: var(--clr-text-primary, #1A0E3A);
+}
+
+.app-sidebar__link--active {
+  background: rgba(124, 77, 255, 0.1);
+  color: #7C4DFF;
+}
+
+.app-sidebar__link svg {
+  flex-shrink: 0;
+  width: 20px;
+  height: 20px;
+}
+
+.app-sidebar__link-label {
+  opacity: 1;
+  transition: opacity 0.2s;
+}
+
+.app-sidebar--collapsed .app-sidebar__link-label {
+  opacity: 0;
+  width: 0;
+}
+
+/* Badge (лічильник непрочитаних) */
+.app-sidebar__badge {
+  margin-left: auto;
+  background: #7C4DFF;
+  color: #fff;
+  font-size: 0.7rem;
+  font-weight: 600;
+  min-width: 18px;
+  height: 18px;
+  border-radius: 999px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0 5px;
+  transition: opacity 0.2s;
+}
+
+.app-sidebar--collapsed .app-sidebar__badge {
+  opacity: 0;
+}
+
+/* Footer */
+.app-sidebar__footer {
+  padding: 0.75rem 0.5rem;
+  border-top: 1px solid var(--clr-border, #E4DCF5);
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.app-sidebar__collapse-btn,
+.app-sidebar__logout-btn {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.65rem 0.75rem;
+  border-radius: 10px;
+  border: none;
+  background: transparent;
+  cursor: pointer;
+  font-size: 0.85rem;
+  font-weight: 500;
+  color: var(--clr-text-secondary, #6B5B8E);
+  transition: background 0.15s, color 0.15s;
+  white-space: nowrap;
+  overflow: hidden;
+  width: 100%;
+  text-align: left;
+}
+
+.app-sidebar__collapse-btn:hover {
+  background: var(--clr-bg, #F7F4FD);
+  color: var(--clr-text-primary, #1A0E3A);
+}
+
+.app-sidebar__logout-btn:hover {
+  background: #FEE2E2;
+  color: #991B1B;
+}
+
+.app-sidebar__collapse-btn svg,
+.app-sidebar__logout-btn svg {
+  flex-shrink: 0;
+  width: 18px;
+  height: 18px;
+}
+
+.app-sidebar__collapse-btn span,
+.app-sidebar__logout-btn span {
+  opacity: 1;
+  transition: opacity 0.2s;
+}
+
+.app-sidebar--collapsed .app-sidebar__collapse-btn span,
+.app-sidebar--collapsed .app-sidebar__logout-btn span {
+  opacity: 0;
+  width: 0;
+}
+
+/* ── Main content ── */
+.app-layout__main {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+/* ── Mobile ── */
+@media (max-width: 768px) {
+  .app-sidebar {
+    position: fixed;
+    z-index: 100;
+    left: -240px;
+    transition: left 0.25s ease, width 0.25s ease;
+  }
+
+  .app-sidebar--mobile-open {
+    left: 0;
+  }
+
+  .app-layout__overlay {
+    display: block;
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.3);
+    z-index: 99;
+  }
+}
+
+@media (min-width: 769px) {
+  .app-layout__overlay {
+    display: none;
+  }
+}
+/* Mobile header — тільки на малих екранах */
+.app-mobile-header {
+  display: none;
+}
+
+@media (max-width: 768px) {
+  .app-mobile-header {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 1rem;
+    background: var(--clr-surface, #fff);
+    border-bottom: 1px solid var(--clr-border, #E4DCF5);
+  }
+
+  .app-mobile-header__menu {
+    background: none;
+    border: none;
+    cursor: pointer;
+    color: var(--clr-text-primary, #1A0E3A);
+    display: flex;
+    align-items: center;
+  }
+
+  .app-mobile-header__title {
+    font-weight: 700;
+    font-size: 1.1rem;
+    color: var(--clr-text-primary, #1A0E3A);
+  }
+}

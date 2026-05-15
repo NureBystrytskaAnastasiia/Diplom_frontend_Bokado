@@ -23,7 +23,9 @@ import ChallengesPage     from './features/challenges/pages/ChallengesPage';
 import PremiumOffer       from './features/premium/pages/PremiumOffer';
 import AdminPage          from './features/admin/pages/AdminPage';
 import NotFoundPage       from './features/legal/pages/NotFoundPage';
-
+import DiscoverPage        from './features/friends/pages/DiscoverPage';
+import RequestsPage        from './features/requests/pages/RequestsPage';
+import GroupPage           from './features/groups/pages/GroupPage';
 // Утиліти
 import ProtectedRoute      from './routes/ProtectedRoute';
 import ProtectedAdminRoute from './routes/ProtectedAdminRoute';
@@ -45,6 +47,7 @@ const AnimatedRoutes = () => {
         <Route path="/rules"           element={<RulesPage />} />
         <Route path="/privacy"         element={<PrivacyPage />} />
         <Route path="/events"          element={<EventsPage />} />
+        <Route path="/discover"        element={<DiscoverPage />} />
 
         {/* Захищені */}
         <Route path="/events/create" element={
@@ -75,6 +78,21 @@ const AnimatedRoutes = () => {
         <Route path="/challenges" element={
           <ProtectedRoute>
             <ChallengesPage />
+          </ProtectedRoute>
+        } />
+        <Route path="/discover" element={
+          <ProtectedRoute>
+            <DiscoverPage />
+          </ProtectedRoute>
+        } />
+        <Route path="/requests" element={
+          <ProtectedRoute>
+            <RequestsPage />
+          </ProtectedRoute>
+        } />
+          <Route path="/groups/:groupId" element={
+          <ProtectedRoute>
+            <GroupPage />
           </ProtectedRoute>
         } />
         <Route path="/premium" element={

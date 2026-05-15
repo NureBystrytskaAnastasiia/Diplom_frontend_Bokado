@@ -1,117 +1,134 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
-import type { FriendDto, TopUser, UserSwipeDto } from '../types/friends';
+import type { FriendDto, FriendRequestDto, FriendStatus } from '../types/friends';
 import {
-  fetchUsersForSwipe,
-  swipeUser,
-  getWhoLikedMe,
-  getTopUsers,
+  searchByUsername,
+  getFriendStatus,
+  sendFriendRequest,
+  acceptFriendRequest,
+  declineFriendRequest,
+  getIncomingRequests,
   getMyFriends,
   removeFriend,
-  acceptSwipe,
-  getILikedUsers,
-  removeLike,
+  getTopUsers,
 } from '../api/friends';
 
 interface FriendsState {
-  swipeUsers: FriendDto[];
-  topUsers: TopUser[]; 
-  whoLikedMe: UserSwipeDto[];
-  iLikedUsers: UserSwipeDto[];
+  // Пошук
+  searchResults: FriendDto[];
+  searchLoading: boolean;
+
+  // Статуси (userId -> status)
+  statuses: Record<number, FriendStatus>;
+
+  // Запити (сторінка /requests)
+  incomingRequests: FriendRequestDto[];
+  requestsLoading: boolean;
+
+  // Мої друзі
   myFriends: FriendDto[];
+
+  // Топ юзери
+  topUsers: FriendDto[];
+
+  // Загальне
   loading: boolean;
   error: string | null;
 }
 
 const initialState: FriendsState = {
-  swipeUsers: [],
-  topUsers: [],
-  whoLikedMe: [],
-  iLikedUsers: [],
+  searchResults: [],
+  searchLoading: false,
+  statuses: {},
+  incomingRequests: [],
+  requestsLoading: false,
   myFriends: [],
+  topUsers: [],
   loading: false,
   error: null,
 };
 
-export const loadSwipeUsers = createAsyncThunk('friends/loadSwipeUsers', async (_, thunkAPI) => {
-  try {
-    const data = await fetchUsersForSwipe();
-    console.log('Redux loaded swipeUsers:', data);
-    return data;
-  } catch (error: any) {
-    console.error('Failed to load swipe users:', error);
-    return thunkAPI.rejectWithValue(error.response?.data?.message || 'Failed to fetch swipe users');
-  }
-});
+// ─── Thunks ───────────────────────────────────────────────
 
-export const likeOrPassUser = createAsyncThunk(
-  'friends/likeOrPassUser',
-  async ({ targetUserId, action }: { targetUserId: number; action: 'like' | 'pass' }, thunkAPI) => {
+export const searchUsers = createAsyncThunk(
+  'friends/searchUsers',
+  async (query: string, thunkAPI) => {
     try {
-      await swipeUser(targetUserId, action);
+      return await searchByUsername(query);
+    } catch (e: any) {
+      return thunkAPI.rejectWithValue(e.response?.data?.message || 'Помилка пошуку');
+    }
+  }
+);
+
+export const loadFriendStatus = createAsyncThunk(
+  'friends/loadFriendStatus',
+  async (targetUserId: number, thunkAPI) => {
+    try {
+      const data = await getFriendStatus(targetUserId);
+      return { userId: targetUserId, status: data.status };
+    } catch (e: any) {
+      return thunkAPI.rejectWithValue(e.response?.data?.message || 'Помилка статусу');
+    }
+  }
+);
+
+export const sendRequest = createAsyncThunk(
+  'friends/sendRequest',
+  async (targetUserId: number, thunkAPI) => {
+    try {
+      await sendFriendRequest(targetUserId);
       return targetUserId;
-    } catch (error: any) {
-      console.error('Swipe failed:', error);
-      return thunkAPI.rejectWithValue(error.response?.data?.message || 'Swipe failed');
+    } catch (e: any) {
+      return thunkAPI.rejectWithValue(e.response?.data?.message || 'Помилка надсилання запиту');
     }
   }
 );
 
-export const loadWhoLikedMe = createAsyncThunk('friends/loadWhoLikedMe', async (_, thunkAPI) => {
-  try {
-    const data = await getWhoLikedMe();
-    console.log('Who liked me loaded:', data);
-    return data;
-  } catch (error: any) {
-    console.error('Failed to load who liked me:', error);
-    return thunkAPI.rejectWithValue(error.response?.data?.message || 'Failed to fetch who liked me');
-  }
-});
-
-export const loadILikedUsers = createAsyncThunk('friends/loadILikedUsers', async (_, thunkAPI) => {
-  try {
-    const data = await getILikedUsers();
-    console.log('I liked users loaded:', data);
-    return data;
-  } catch (error: any) {
-    console.error('Failed to load I liked users:', error);
-    return thunkAPI.rejectWithValue(error.response?.data?.message || 'Failed to fetch I liked users');
-  }
-});
-
-export const removeLikeById = createAsyncThunk(
-  'friends/removeLikeById',
-  async (swipeId: number, thunkAPI) => {
+export const acceptRequest = createAsyncThunk(
+  'friends/acceptRequest',
+  async (requesterId: number, thunkAPI) => {
     try {
-      await removeLike(swipeId);
-      return swipeId;
-    } catch (error: any) {
-      console.error('Failed to remove like:', error);
-      return thunkAPI.rejectWithValue(error.response?.data?.message || 'Failed to remove like');
+      await acceptFriendRequest(requesterId);
+      return requesterId;
+    } catch (e: any) {
+      return thunkAPI.rejectWithValue(e.response?.data?.message || 'Помилка прийняття запиту');
     }
   }
 );
 
-export const loadTopUsers = createAsyncThunk('friends/loadTopUsers', async (_, thunkAPI) => {
-  try {
-    const data = await getTopUsers();
-    console.log('Top users loaded:', data);
-    return data;
-  } catch (error: any) {
-    console.error('Failed to load top users:', error);
-    return thunkAPI.rejectWithValue(error.response?.data?.message || 'Failed to fetch top users');
+export const declineRequest = createAsyncThunk(
+  'friends/declineRequest',
+  async (requesterId: number, thunkAPI) => {
+    try {
+      await declineFriendRequest(requesterId);
+      return requesterId;
+    } catch (e: any) {
+      return thunkAPI.rejectWithValue(e.response?.data?.message || 'Помилка відхилення запиту');
+    }
   }
-});
+);
 
-export const loadMyFriends = createAsyncThunk('friends/loadMyFriends', async (_, thunkAPI) => {
-  try {
-    const data = await getMyFriends();
-    console.log('My friends loaded:', data);
-    return data;
-  } catch (error: any) {
-    console.error('Failed to load friends:', error);
-    return thunkAPI.rejectWithValue(error.response?.data?.message || 'Failed to fetch friends');
+export const loadIncomingRequests = createAsyncThunk(
+  'friends/loadIncomingRequests',
+  async (_, thunkAPI) => {
+    try {
+      return await getIncomingRequests();
+    } catch (e: any) {
+      return thunkAPI.rejectWithValue(e.response?.data?.message || 'Помилка завантаження запитів');
+    }
   }
-});
+);
+
+export const loadMyFriends = createAsyncThunk(
+  'friends/loadMyFriends',
+  async (_, thunkAPI) => {
+    try {
+      return await getMyFriends();
+    } catch (e: any) {
+      return thunkAPI.rejectWithValue(e.response?.data?.message || 'Помилка завантаження друзів');
+    }
+  }
+);
 
 export const removeFriendById = createAsyncThunk(
   'friends/removeFriendById',
@@ -119,115 +136,116 @@ export const removeFriendById = createAsyncThunk(
     try {
       await removeFriend(friendId);
       return friendId;
-    } catch (error: any) {
-      console.error('Failed to remove friend:', error);
-      return thunkAPI.rejectWithValue(error.response?.data?.message || 'Failed to remove friend');
+    } catch (e: any) {
+      return thunkAPI.rejectWithValue(e.response?.data?.message || 'Помилка видалення друга');
     }
   }
 );
 
-export const acceptFriendRequest = createAsyncThunk(
-  'friends/acceptFriendRequest',
-  async (swipeId: number, thunkAPI) => {
+export const loadTopUsers = createAsyncThunk(
+  'friends/loadTopUsers',
+  async (_, thunkAPI) => {
     try {
-      await acceptSwipe(swipeId);
-      return swipeId;
-    } catch (error: any) {
-      console.error('Failed to accept friend request:', error);
-      return thunkAPI.rejectWithValue(error.response?.data?.message || 'Failed to accept friend request');
+      return await getTopUsers();
+    } catch (e: any) {
+      return thunkAPI.rejectWithValue(e.response?.data?.message || 'Помилка топ юзерів');
     }
   }
 );
+
+// ─── Slice ────────────────────────────────────────────────
 
 const friendsSlice = createSlice({
   name: 'friends',
   initialState,
   reducers: {
-    clearError: (state) => {
-      state.error = null;
-    },
-    resetSwipeUsers: (state) => {
-      state.swipeUsers = [];
-    },
+    clearError: (state) => { state.error = null; },
+    clearSearch: (state) => { state.searchResults = []; },
   },
   extraReducers: (builder) => {
     builder
-      .addCase(loadSwipeUsers.pending, (state) => {
-        state.loading = true;
-        state.error = null;
+      // Search
+      .addCase(searchUsers.pending, (state) => { state.searchLoading = true; state.error = null; })
+      .addCase(searchUsers.fulfilled, (state, action) => {
+        state.searchLoading = false;
+        state.searchResults = action.payload;
       })
-      .addCase(loadSwipeUsers.fulfilled, (state, action) => {
-        state.loading = false;
-        state.swipeUsers = action.payload;
-      })
-      .addCase(loadSwipeUsers.rejected, (state, action) => {
-        state.loading = false;
+      .addCase(searchUsers.rejected, (state, action) => {
+        state.searchLoading = false;
         state.error = action.payload as string;
       })
-      .addCase(likeOrPassUser.pending, (state) => {
-        state.loading = true;
+
+      // Status
+      .addCase(loadFriendStatus.fulfilled, (state, action) => {
+        state.statuses[action.payload.userId] = action.payload.status;
       })
-      .addCase(likeOrPassUser.fulfilled, (state, action) => {
-        state.loading = false;
-        state.swipeUsers = state.swipeUsers.filter(user => user.userId !== action.payload);
+
+      // Send request → оновлюємо статус локально
+      .addCase(sendRequest.fulfilled, (state, action) => {
+        state.statuses[action.payload] = 'pending_sent';
       })
-      .addCase(likeOrPassUser.rejected, (state, action) => {
-        state.loading = false;
+      .addCase(sendRequest.rejected, (state, action) => {
         state.error = action.payload as string;
       })
-      .addCase(loadWhoLikedMe.fulfilled, (state, action) => {
-        state.whoLikedMe = action.payload;
+
+      // Accept request
+      .addCase(acceptRequest.fulfilled, (state, action) => {
+        state.incomingRequests = state.incomingRequests.filter(
+          r => r.userId !== action.payload
+        );
+        state.statuses[action.payload] = 'friends';
       })
-      .addCase(loadWhoLikedMe.rejected, (state, action) => {
+      .addCase(acceptRequest.rejected, (state, action) => {
         state.error = action.payload as string;
       })
-      .addCase(loadILikedUsers.fulfilled, (state, action) => {
-        state.loading = false;
-        state.iLikedUsers = action.payload.map(user => ({
-          userId: user.userId,
-          username: user.username || 'Анонімний користувач',
-          avatarUrl: user.avatarUrl || null,
-          bio: user.bio || '',
-          swipeId: user.swipeId,
-          swipedAt: user.swipedAt || user.swipedAt || new Date().toISOString()  // виправлено!
-        }));
+
+      // Decline request
+      .addCase(declineRequest.fulfilled, (state, action) => {
+        state.incomingRequests = state.incomingRequests.filter(
+          r => r.userId !== action.payload
+        );
       })
-      .addCase(loadILikedUsers.rejected, (state, action) => {
-        state.loading = false;
+      .addCase(declineRequest.rejected, (state, action) => {
         state.error = action.payload as string;
       })
-      .addCase(removeLikeById.fulfilled, (state, action) => {
-        state.iLikedUsers = state.iLikedUsers.filter(user => user.swipeId !== action.payload);
+
+      // Incoming requests
+      .addCase(loadIncomingRequests.pending, (state) => { state.requestsLoading = true; })
+      .addCase(loadIncomingRequests.fulfilled, (state, action) => {
+        state.requestsLoading = false;
+        state.incomingRequests = action.payload;
       })
-      .addCase(removeLikeById.rejected, (state, action) => {
+      .addCase(loadIncomingRequests.rejected, (state, action) => {
+        state.requestsLoading = false;
         state.error = action.payload as string;
       })
-      .addCase(loadTopUsers.fulfilled, (state, action) => {
-        state.topUsers = action.payload;
-      })
-      .addCase(loadTopUsers.rejected, (state, action) => {
-        state.error = action.payload as string;
-      })
+
+      // My friends
       .addCase(loadMyFriends.fulfilled, (state, action) => {
         state.myFriends = action.payload;
       })
       .addCase(loadMyFriends.rejected, (state, action) => {
         state.error = action.payload as string;
       })
+
+      // Remove friend
       .addCase(removeFriendById.fulfilled, (state, action) => {
-        state.myFriends = state.myFriends.filter(friend => friend.userId !== action.payload);
+        state.myFriends = state.myFriends.filter(f => f.userId !== action.payload);
+        state.statuses[action.payload] = 'none';
       })
       .addCase(removeFriendById.rejected, (state, action) => {
         state.error = action.payload as string;
       })
-      .addCase(acceptFriendRequest.fulfilled, (state, action) => {
-        state.whoLikedMe = state.whoLikedMe.filter(user => user.swipeId !== action.payload);
+
+      // Top users
+      .addCase(loadTopUsers.fulfilled, (state, action) => {
+        state.topUsers = action.payload;
       })
-      .addCase(acceptFriendRequest.rejected, (state, action) => {
+      .addCase(loadTopUsers.rejected, (state, action) => {
         state.error = action.payload as string;
       });
   },
 });
 
-export const { clearError, resetSwipeUsers } = friendsSlice.actions;
+export const { clearError, clearSearch } = friendsSlice.actions;
 export default friendsSlice.reducer;

@@ -1,0 +1,32 @@
+.adm-tabs {
+  display: flex;
+  gap: 0.25rem;
+  padding: 0.875rem clamp(1.5rem, 3vw, 2.5rem) 0;
+  background: #fff;
+  border-bottom: 1px solid #E4DCF5;
+}
+
+.adm-tab {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.55rem 1.25rem 0.65rem;
+  border-radius: 8px 8px 0 0;
+  background: transparent;
+  border: none;
+  border-bottom: 2px solid transparent;
+  font-family: var(--font-body, system-ui);
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: #B0A4CC;
+  cursor: pointer;
+  transition: color 0.2s, background 0.2s, border-color 0.2s;
+  margin-bottom: -1px;
+}
+.adm-tab:hover { color: #7C4DFF; background: #F3F0FA; }
+.adm-tab--active {
+  color: #7C4DFF;
+  border-bottom-color: #7C4DFF;
+  background: #F7F4FD;
+  font-weight: 600;
+}

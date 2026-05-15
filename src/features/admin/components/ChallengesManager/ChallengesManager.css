@@ -1,0 +1,121 @@
+.chmgr { display: flex; flex-direction: column; gap: 1.25rem; }
+
+.chmgr__state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 2.5rem;
+  color: #B0A4CC;
+  font-size: 0.875rem;
+}
+.chmgr__state--error { color: #DC2626; }
+
+.chmgr__spinner {
+  width: 32px; height: 32px;
+  border: 2.5px solid #EDE7F6;
+  border-top-color: #7C4DFF;
+  border-radius: 50%;
+  animation: adm-spin 0.9s linear infinite;
+}
+
+.chmgr__toolbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+}
+.chmgr__hint {
+  font-size: 0.8rem;
+  color: #B0A4CC;
+}
+.chmgr__hint strong { color: #7C4DFF; }
+
+.chmgr__save {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  padding: 0.5rem 1.1rem;
+  border-radius: 8px;
+  border: none;
+  background: #7C4DFF;
+  color: #fff;
+  font-size: 0.83rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.2s, transform 0.15s;
+}
+.chmgr__save:hover { background: #651FFF; transform: translateY(-1px); }
+
+.chmgr__grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  gap: 1rem;
+}
+
+.chmgr__card {
+  background: #fff;
+  border: 1.5px solid #E4DCF5;
+  border-radius: 14px;
+  padding: 1.25rem;
+  cursor: pointer;
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  transition: border-color 0.2s, box-shadow 0.2s, background 0.2s;
+  position: relative;
+}
+.chmgr__card:hover {
+  border-color: #B39DDB;
+  box-shadow: 0 4px 16px rgba(124,77,255,.08);
+}
+.chmgr__card--selected {
+  border-color: #7C4DFF;
+  background: #FAF8FF;
+  box-shadow: 0 4px 16px rgba(124,77,255,.12);
+}
+
+.chmgr__card-check {
+  position: absolute;
+  top: 1rem; right: 1rem;
+}
+.chmgr__check-icon--on  { color: #7C4DFF; }
+.chmgr__check-icon--off { color: #D1C4E9; }
+
+.chmgr__card-icon {
+  width: 40px; height: 40px;
+  border-radius: 10px;
+  background: #EDE7F6;
+  color: #7C4DFF;
+  display: flex; align-items: center; justify-content: center;
+}
+.chmgr__card--selected .chmgr__card-icon {
+  background: #7C4DFF;
+  color: #fff;
+}
+
+.chmgr__card-title {
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: #1A0E3A;
+  padding-right: 1.5rem;
+}
+.chmgr__card-desc {
+  font-size: 0.78rem;
+  color: #B0A4CC;
+  line-height: 1.5;
+  margin-top: -0.25rem;
+}
+
+.chmgr__card-footer {
+  display: flex;
+  gap: 0.4rem;
+  flex-wrap: wrap;
+  margin-top: auto;
+}
+
+/* Додатковий бейдж для менеджера */
+.adm-badge--purple {
+  background: #EDE7F6;
+  color: #7C4DFF;
+}

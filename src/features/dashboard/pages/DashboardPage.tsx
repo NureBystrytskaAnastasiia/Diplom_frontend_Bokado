@@ -45,7 +45,7 @@ const DashboardPage: React.FC = () => {
         <nav className="sidebar-nav">
           <ul>
             <li><Link to="/dashboard" className="nav-link active"><FiHome /><span>Головна</span></Link></li>
-            <li><Link to="/friends-dashboard" className="nav-link"><FiUsers /><span>Друзі</span></Link></li>
+            <li><Link to="/discover" className="nav-link"><FiUsers /><span>Друзі</span></Link></li>
             <li><Link to="/events" className="nav-link"><FiCalendar /><span>Події</span></Link></li>
             <li><Link to={`/profile/${user?.userId}`} className="nav-link"><FiUser /><span>Профіль</span></Link></li>
             <li><Link to="/chats" className="nav-link"><FiMessageSquare /><span>Чати</span></Link></li>

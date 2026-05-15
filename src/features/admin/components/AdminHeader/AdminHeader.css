@@ -1,0 +1,120 @@
+.adm-header {
+  background: #fff;
+  border-bottom: 1px solid #E4DCF5;
+  padding: 1.25rem clamp(1.5rem, 3vw, 2.5rem);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1.5rem;
+  flex-wrap: wrap;
+  position: sticky;
+  top: 0;
+  z-index: 10;
+}
+
+.adm-header__brand {
+  display: flex;
+  align-items: center;
+  gap: 0.875rem;
+}
+
+.adm-header__logo {
+  width: 40px; height: 40px;
+  background: #7C4DFF;
+  border-radius: 10px;
+  display: flex; align-items: center; justify-content: center;
+  font-weight: 700; font-size: 1.1rem; color: #fff;
+  flex-shrink: 0;
+  text-decoration: none;
+  transition: background 0.2s;
+}
+.adm-header__logo:hover { background: #651FFF; }
+
+.adm-header__title {
+  font-family: var(--font-display, Georgia, serif);
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: #1A0E3A;
+  line-height: 1;
+}
+.adm-header__sub {
+  font-size: 0.75rem;
+  color: #B0A4CC;
+  margin-top: 0.2rem;
+}
+
+.adm-header__stats {
+  display: flex;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+  flex: 1;
+}
+
+.adm-stat {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  background: #F7F4FD;
+  border: 1px solid #E4DCF5;
+  border-radius: 12px;
+  padding: 0.55rem 1rem;
+  min-width: 108px;
+  transition: box-shadow 0.2s;
+}
+.adm-stat:hover { box-shadow: 0 2px 8px rgba(124,77,255,.08); }
+
+.adm-stat__icon {
+  width: 30px; height: 30px;
+  border-radius: 8px;
+  display: flex; align-items: center; justify-content: center;
+  flex-shrink: 0;
+}
+.adm-stat__icon--purple { background: #EDE7F6; color: #7C4DFF; }
+.adm-stat__icon--gold   { background: #FEF3C7; color: #D97706; }
+.adm-stat__icon--red    { background: #FEE2E2; color: #DC2626; }
+.adm-stat__icon--teal   { background: #CCFBF1; color: #0D9488; }
+
+.adm-stat strong {
+  display: block;
+  font-size: 1.05rem;
+  font-weight: 700;
+  color: #1A0E3A;
+  line-height: 1;
+}
+.adm-stat span {
+  font-size: 0.7rem;
+  color: #B0A4CC;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+/* ── Кнопка виходу ── */
+.adm-logout {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.5rem 1rem;
+  border-radius: 999px;
+  border: 1.5px solid #E4DCF5;
+  background: transparent;
+  font-family: var(--font-body, system-ui);
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: #7B6B9E;
+  cursor: pointer;
+  transition: all 0.2s;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+.adm-logout:hover {
+  background: #FEE2E2;
+  border-color: #FECACA;
+  color: #DC2626;
+}
+
+@media (max-width: 700px) {
+  .adm-header { flex-direction: column; align-items: flex-start; }
+  .adm-header__stats { width: 100%; }
+  .adm-stat { flex: 1; min-width: 0; }
+  .adm-logout { width: 100%; justify-content: center; }
+}

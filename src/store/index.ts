@@ -7,7 +7,8 @@ import chatReducer from '../features/chat/store/chatSlice';
 import eventsReducer from '../features/events/store/eventSlice';
 import challengesReducer from '../features/challenges/store/challengeSlice';
 import userChallengesReducer from '../features/challenges/store/usechallengesSlice';
-import interestsReducer from '../features/profile/store/interestsSlice'; // Додайте імпорт для інтересів
+import interestsReducer from '../features/profile/store/interestsSlice'; 
+import groupsReducer from '../features/groups/store/groupsSlice';
 
 
 export const store = configureStore({
@@ -20,7 +21,8 @@ export const store = configureStore({
       events: eventsReducer,
       challenges: challengesReducer,
       userChallenges: userChallengesReducer,
-      interests: interestsReducer, 
+      interests: interestsReducer,
+      groups: groupsReducer,
   },
 });
 

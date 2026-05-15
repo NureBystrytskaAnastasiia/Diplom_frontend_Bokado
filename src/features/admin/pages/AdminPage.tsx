@@ -1,28 +1,29 @@
-import { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
+import { motion, AnimatePresence } from 'framer-motion';
+import { FiAlertTriangle, FiRefreshCw } from 'react-icons/fi';
+
 import type { RootState, AppDispatch } from '../../../store';
-import {
-  getAllUsers,
-  getUserStats,
-  getChallengeStats,
-  banUserById,
-  unbanUserById,
-  subscribeUser,
-  unsubscribeUser,
-} from '../store/adminSlice';
-import UsersCalendar from '../components/UsersCalendar';
-import AdminChallengesPage from '../components/AdminChallengesPage';
+import { getAllUsers, getUserStats, getChallengeStats } from '../store/adminSlice';
+
+import AdminHeader    from '../components/AdminHeader/AdminHeader';
+import AdminTabs, { type AdminTab } from '../components/AdminTabs/AdminTabs';
+import UsersTable     from '../components/UsersTable/UsersTable';
+import UsersCalendar  from '../components/UsersCalendar/UsersCalendar';
+import ChallengesManager from '../components/ChallengesManager/ChallengesManager';
+
 import '../styles/Admin.css';
 
-const AdminPage = () => {
-  const dispatch: AppDispatch = useDispatch();
-const {
-  users,
-  challengeStats,
-  loading,
-  error,
-} = useSelector((state: RootState) => state.admin);
+const tabVariants = {
+  initial: { opacity: 0, y: 10 },
+  animate: { opacity: 1, y: 0, transition: { duration: 0.3, ease: [0.16, 1, 0.3, 1] } },
+  exit:    { opacity: 0, y: -6, transition: { duration: 0.2 } },
+};
 
+const AdminPage: React.FC = () => {
+  const dispatch = useDispatch<AppDispatch>();
+  const { users, challengeStats, loading, error } = useSelector((s: RootState) => s.admin);
+  const [tab, setTab] = useState<AdminTab>('users');
 
   useEffect(() => {
     dispatch(getAllUsers());
@@ -30,140 +31,85 @@ const {
     dispatch(getChallengeStats());
   }, [dispatch]);
 
-  const handleBan = (userId: number) => {
-    dispatch(banUserById(userId));
-  };
-
-  const handleUnban = (userId: number) => {
-    dispatch(unbanUserById(userId));
-  };
-
-  const handleSubscribe = (userId: number) => {
-    dispatch(subscribeUser(userId));
-  };
-
-  const handleUnsubscribe = (userId: number) => {
-    dispatch(unsubscribeUser(userId));
-  };
-
   if (loading) return (
-    <div className="admin-loading">
-      <div className="loading-spinner"></div>
+    <div className="adm-loading-page">
+      <div className="adm-spinner-lg" />
       <p>Завантажуємо панель...</p>
     </div>
   );
 
   if (error) return (
-    <div className="admin-error">
-      <div className="error-icon">⚠️</div>
+    <div className="adm-error-page">
+      <FiAlertTriangle size={40} color="#EF4444" />
       <p>{error}</p>
-      <button onClick={() => window.location.reload()}>Повторіть спробу</button>
+      <button className="adm-retry-btn" onClick={() => window.location.reload()}>
+        <FiRefreshCw size={14} /> Повторити
+      </button>
     </div>
   );
 
+  const challengeCount = challengeStats ? Object.keys(challengeStats).length : 0;
+
   return (
-    <div className="admin-dashboard">
-      <header className="admin-header">
-        <h1>Панель адміністратора</h1>
-        <div className="admin-stats">
-          <div className="stat-card">
-            <span>Всі користувачі</span>
-            <strong>{users.length}</strong>
-          </div>
-          <div className="stat-card">
-            <span>Активні челенджі</span>
-            <strong>{challengeStats ? Object.keys(challengeStats).length : 0}</strong>
-          </div>
-        </div>
-      </header>
+    <div className="adm-page">
+      <AdminHeader users={users} challengeCount={challengeCount} />
+      <AdminTabs active={tab} onChange={setTab} />
 
-      <div className="admin-grid">
-        <section className="admin-section users-section">
-          <div className="section-header">
-            <h2>Управління користувачами</h2>
-            <div className="search-box">
-              <input type="text" placeholder="Пошук користувачів..." />
-            </div>
-          </div>
-          <div className="table-container">
-            <table className="users-table">
-              <thead>
-                <tr>
-                  <th>Користувач</th>
-                  <th>Статус</th>
-                  <th>Дія</th>
-                </tr>
-              </thead>
-              <tbody>
-                {users.map(user => (
-                  <tr key={user.userId}>
-                    <td>
-                      <div className="user-info">
-                        <div className="user-avatar">{user.username.charAt(0).toUpperCase()}</div>
-                        <div>
-                          <div className="user-name">{user.username}</div>
-                          <div className="user-email">{user.email}</div>
-                        </div>
-                      </div>
-                    </td>
-                    <td>
-                      <div className="status-badges">
-                        <span className={`badge ${user.isBanned ? 'badge-danger' : 'badge-success'}`}>
-                          {user.isBanned ? 'Banned' : 'Active'}
-                        </span>
-                        <span className={`badge ${user.isPremium ? 'badge-premium' : 'badge-basic'}`}>
-                          {user.isPremium ? 'Premium' : 'Basic'}
-                        </span>
-                      </div>
-                    </td>
-                    <td>
-                      <div className="action-buttons">
-                        {user.isBanned ? (
-                          <button className="btn-success" onClick={() => handleUnban(user.userId)}>Розблокувати</button>
-                        ) : (
-                          <button className="btn-danger" onClick={() => handleBan(user.userId)}>Заблокувати</button>
-                        )}
-                        {user.isPremium ? (
-                          <button className="btn-warning" onClick={() => handleUnsubscribe(user.userId)}>Видалити Premium</button>
-                        ) : (
-                          <button className="btn-primary" onClick={() => handleSubscribe(user.userId)}>Зробити Premium</button>
-                        )}
-                      </div>
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-        </section>
-        <section className="admin-section stats-section">
-          <h2>Огляд статистики</h2>
-          <div className="stats-grid">
-            <div className="stats-card wide-card">
-              <UsersCalendar />
-            </div>
-            <div className="stats-card">
-              <h3>Топ челенджів</h3>
-              <ul className="challenge-stats">
-            {challengeStats
-              ? Object.entries(challengeStats)
-                  .sort(([, a], [, b]) => b - a)
-                  .slice(0, 5)
-                  .map(([challengeId, count]) => (
-                    <li key={challengeId}>
-                      <span className="challenge-id">#{challengeId}</span>
-                      <span className="challenge-count">{count}Виконані</span>
-                    </li>
-                  ))
-              : <li>Немає даних про челенджі</li>}
+      <div style={{ padding: 'clamp(1.5rem, 3vw, 2rem) clamp(1.5rem, 3vw, 2.5rem)', flex: 1 }}>
+        <AnimatePresence mode="wait">
 
-              </ul>
-            </div>
-          </div>
-        </section>
-        <section className="admin-section challenges-section">
-          <AdminChallengesPage />
-        </section>
+          {tab === 'users' && (
+            <motion.div key="users" variants={tabVariants} initial="initial" animate="animate" exit="exit">
+              <div className="adm-section">
+                <h2 className="adm-section__title">Управління користувачами</h2>
+                <UsersTable users={users} />
+              </div>
+            </motion.div>
+          )}
+
+          {tab === 'stats' && (
+            <motion.div key="stats" variants={tabVariants} initial="initial" animate="animate" exit="exit">
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1.25rem' }}>
+                <div className="adm-section">
+                  <h2 className="adm-section__title">Реєстрації по місяцях</h2>
+                  <UsersCalendar />
+                </div>
+                <div className="adm-section">
+                  <h2 className="adm-section__title">Топ челенджів</h2>
+                  {challengeStats ? (
+                    <ul style={{ listStyle: 'none', display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
+                      {(Object.entries(challengeStats) as [string, number][])
+                        .sort(([, a], [, b]) => b - a)
+                        .slice(0, 6)
+                        .map(([id, count]) => {
+                          const max = Math.max(...(Object.values(challengeStats) as number[]));
+                          return (
+                            <li key={id} style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
+                              <span style={{ fontSize: '0.75rem', fontWeight: 600, color: '#7C4DFF', width: 36, flexShrink: 0 }}>#{id}</span>
+                              <div style={{ flex: 1, height: 6, background: '#EDE7F6', borderRadius: 3, overflow: 'hidden' }}>
+                                <div style={{ height: '100%', width: `${(count / max) * 100}%`, background: '#7C4DFF', borderRadius: 3 }} />
+                              </div>
+                              <span style={{ fontSize: '0.75rem', color: '#B0A4CC', width: 28, textAlign: 'right', flexShrink: 0 }}>{count}</span>
+                            </li>
+                          );
+                        })}
+                    </ul>
+                  ) : <p style={{ color: '#B0A4CC', fontSize: '0.875rem' }}>Немає даних</p>}
+                </div>
+              </div>
+            </motion.div>
+          )}
+
+          {tab === 'challenges' && (
+            <motion.div key="challenges" variants={tabVariants} initial="initial" animate="animate" exit="exit">
+              <div className="adm-section">
+                <h2 className="adm-section__title">Управління челенджами</h2>
+                <ChallengesManager />
+              </div>
+            </motion.div>
+          )}
+
+        </AnimatePresence>
       </div>
     </div>
   );

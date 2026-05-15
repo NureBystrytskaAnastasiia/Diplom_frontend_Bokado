@@ -1,0 +1,124 @@
+.friend-request-card {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding: 1rem 1.25rem;
+  background: var(--clr-surface, #fff);
+  border: 1.5px solid var(--clr-border, #E4DCF5);
+  border-radius: 16px;
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+.friend-request-card:hover {
+  border-color: rgba(124, 77, 255, 0.3);
+  box-shadow: 0 2px 12px rgba(124, 77, 255, 0.07);
+}
+
+/* Avatar */
+.friend-request-card__avatar {
+  width: 52px;
+  height: 52px;
+  border-radius: 50%;
+  object-fit: cover;
+  flex-shrink: 0;
+}
+
+.friend-request-card__avatar-fallback {
+  width: 52px;
+  height: 52px;
+  border-radius: 50%;
+  background: rgba(124, 77, 255, 0.1);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  color: #7C4DFF;
+  font-size: 1.2rem;
+}
+
+/* Info */
+.friend-request-card__info {
+  flex: 1;
+  min-width: 0;
+}
+
+.friend-request-card__name {
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: var(--clr-text-primary, #1A0E3A);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.friend-request-card__city {
+  font-size: 0.8rem;
+  color: var(--clr-text-secondary, #6B5B8E);
+  margin-top: 2px;
+}
+
+.friend-request-card__date {
+  font-size: 0.78rem;
+  color: var(--clr-text-muted, #B0A4CC);
+  margin-top: 3px;
+}
+
+/* Actions */
+.friend-request-card__actions {
+  display: flex;
+  gap: 0.5rem;
+  flex-shrink: 0;
+}
+
+.friend-request-card__btn {
+  height: 36px;
+  padding: 0 1.1rem;
+  border-radius: 10px;
+  border: none;
+  font-size: 0.85rem;
+  font-weight: 500;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+  transition: opacity 0.15s, transform 0.15s;
+}
+
+.friend-request-card__btn:hover:not(:disabled) {
+  opacity: 0.85;
+  transform: translateY(-1px);
+}
+
+.friend-request-card__btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  transform: none;
+}
+
+.friend-request-card__btn--accept {
+  background: #7C4DFF;
+  color: #fff;
+}
+
+.friend-request-card__btn--decline {
+  background: var(--clr-bg, #F7F4FD);
+  color: var(--clr-text-secondary, #6B5B8E);
+  border: 1.5px solid var(--clr-border, #E4DCF5);
+}
+
+.friend-request-card__btn--decline:hover:not(:disabled) {
+  background: #FEE2E2;
+  color: #991B1B;
+  border-color: #FECACA;
+}
+
+@media (max-width: 480px) {
+  .friend-request-card {
+    flex-wrap: wrap;
+  }
+
+  .friend-request-card__actions {
+    width: 100%;
+    justify-content: flex-end;
+  }
+}
