@@ -15,8 +15,8 @@ const ChatPage: React.FC = () => {
   const { chats, loading } = useAppSelector((s) => s.chat);
   const { myFriends }      = useAppSelector((s) => s.friends);
 
-  const [search, setSearch]           = useState('');
-  const [showModal, setShowModal]     = useState(false);
+  const [search, setSearch]       = useState('');
+  const [showModal, setShowModal] = useState(false);
 
   useEffect(() => {
     dispatch(fetchChats());
@@ -57,38 +57,43 @@ const ChatPage: React.FC = () => {
   return (
     <AppLayout>
       <div className="chat-page">
-        {/* Header */}
-        <div className="chat-page__header">
-          <h1 className="chat-page__title">Чати</h1>
-          <button
-            className="chat-page__new-btn"
-            onClick={() => setShowModal(true)}
-            title="Новий чат"
-          >
-            <FiPlus size={20} />
-          </button>
+
+        {/* Header + Search — фіксована верхня частина */}
+        <div className="chat-page__top">
+          <div className="chat-page__header">
+            <h1 className="chat-page__title">Чати</h1>
+            <button
+              className="chat-page__new-btn"
+              onClick={() => setShowModal(true)}
+              title="Новий чат"
+            >
+              <FiPlus size={18} />
+            </button>
+          </div>
+
+          <div className="chat-page__search-wrap">
+            <FiSearch className="chat-page__search-icon" size={15} />
+            <input
+              className="chat-page__search"
+              placeholder="Пошук чатів..."
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
+            />
+          </div>
         </div>
 
-        {/* Search */}
-        <div className="chat-page__search-wrap">
-          <FiSearch className="chat-page__search-icon" size={16} />
-          <input
-            className="chat-page__search"
-            placeholder="Пошук чатів..."
-            value={search}
-            onChange={(e) => setSearch(e.target.value)}
-          />
-        </div>
-
-        {/* List */}
+        {/* Список — scrollable */}
         <div className="chat-page__list">
           {loading && (
-            <div className="chat-page__loading">Завантаження...</div>
+            <div className="chat-page__loading">
+              <div className="chat-page__loading-spinner" />
+              Завантаження...
+            </div>
           )}
 
           {!loading && filtered.length === 0 && (
             <div className="chat-page__empty">
-              <FiMessageSquare size={40} className="chat-page__empty-icon" />
+              <FiMessageSquare size={36} className="chat-page__empty-icon" />
               <p>Немає чатів</p>
               <span>Створіть свій перший чат з друзями!</span>
               <button

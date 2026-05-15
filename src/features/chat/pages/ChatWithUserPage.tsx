@@ -1,7 +1,7 @@
 import React, { useEffect, useState, useRef } from 'react';
 import { useParams } from 'react-router-dom';
 import { useAppSelector } from '../../../shared/hooks/useAuth';
-import { getChatMessages, sendMessage, deleteMessage, sendVoiceMessage } from '../api/chat';
+import { getChatMessages, sendMessage, deleteMessage, sendVoiceMessage, markChatAsRead as markChatAsReadApi } from '../api/chat';
 import type { Message } from '../types/chat';
 import ChatHeader from '../components/ChatHeader/ChatHeader';
 import MessagesList from '../components/MessagesList';
@@ -127,6 +127,10 @@ const ChatRoomPage: React.FC = () => {
 
   useEffect(() => {
     fetchMessages();
+    // Позначаємо чат як прочитаний на беку при відкритті
+    if (chatId) {
+      markChatAsReadApi(Number(chatId));
+    }
     const interval = setInterval(fetchMessages, 5000);
     return () => clearInterval(interval);
   }, [chatId]);

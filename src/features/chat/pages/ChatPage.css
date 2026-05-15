@@ -1,13 +1,20 @@
+/* ================================================================
+   ChatPage — список чатів (всередині AppLayout)
+   ================================================================ */
+
 .chat-page {
   display: flex;
   flex-direction: column;
-  height: 100vh;
+  /* НЕ height:100vh — AppLayout вже дає flex:1 */
+  height: 100%;
   overflow: hidden;
-  padding: 1.5rem 1.5rem 0;
-  max-width: 680px;
 }
 
-/* Header */
+.chat-page__top {
+  padding: 1.75rem 1.75rem 0;
+  flex-shrink: 0;
+}
+
 .chat-page__header {
   display: flex;
   align-items: center;
@@ -24,20 +31,24 @@
 }
 
 .chat-page__new-btn {
-  width: 42px;
-  height: 42px;
+  width: 40px;
+  height: 40px;
   border-radius: 12px;
   border: none;
-  background: #7C4DFF;
+  background: var(--clr-accent, #7C4DFF);
   color: #fff;
   display: flex;
   align-items: center;
   justify-content: center;
   cursor: pointer;
-  transition: opacity 0.15s, transform 0.15s;
+  box-shadow: 0 2px 8px rgba(124,77,255,0.35);
+  transition: background 0.15s, transform 0.15s, box-shadow 0.15s;
 }
-
-.chat-page__new-btn:hover { opacity: 0.85; transform: translateY(-1px); }
+.chat-page__new-btn:hover {
+  background: var(--clr-accent-hover, #651FFF);
+  transform: translateY(-1px);
+  box-shadow: 0 4px 14px rgba(124,77,255,0.45);
+}
 
 /* Search */
 .chat-page__search-wrap {
@@ -61,33 +72,50 @@
   background: var(--clr-surface, #fff);
   border: 1.5px solid var(--clr-border, #E4DCF5);
   border-radius: 12px;
+  font-family: var(--font-body, system-ui);
   font-size: 0.9rem;
   color: var(--clr-text-primary, #1A0E3A);
   outline: none;
   transition: border-color 0.2s, box-shadow 0.2s;
 }
-
 .chat-page__search::placeholder { color: var(--clr-text-muted, #B0A4CC); }
-
 .chat-page__search:focus {
-  border-color: #7C4DFF;
-  box-shadow: 0 0 0 3px rgba(124, 77, 255, 0.1);
+  border-color: var(--clr-accent, #7C4DFF);
+  box-shadow: 0 0 0 3px rgba(124,77,255,0.1);
 }
 
 /* List */
 .chat-page__list {
   flex: 1;
   overflow-y: auto;
-  padding-bottom: 1rem;
+  padding: 0 0.75rem 1rem;
+}
+.chat-page__list::-webkit-scrollbar { width: 4px; }
+.chat-page__list::-webkit-scrollbar-track { background: transparent; }
+.chat-page__list::-webkit-scrollbar-thumb {
+  background: var(--clr-border, #E4DCF5);
+  border-radius: 99px;
 }
 
 /* Loading */
 .chat-page__loading {
-  text-align: center;
-  padding: 2rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.6rem;
+  padding: 3rem 1rem;
   color: var(--clr-text-secondary, #6B5B8E);
-  font-size: 0.9rem;
+  font-size: 0.88rem;
 }
+.chat-page__loading-spinner {
+  width: 16px;
+  height: 16px;
+  border: 2px solid var(--clr-border, #E4DCF5);
+  border-top-color: var(--clr-accent, #7C4DFF);
+  border-radius: 50%;
+  animation: cpSpin 0.7s linear infinite;
+}
+@keyframes cpSpin { to { transform: rotate(360deg); } }
 
 /* Empty */
 .chat-page__empty {
@@ -95,39 +123,24 @@
   flex-direction: column;
   align-items: center;
   gap: 0.5rem;
-  padding: 4rem 1rem;
+  padding: 3.5rem 1.5rem;
   text-align: center;
+  background: var(--clr-surface, #fff);
+  border: 1.5px dashed var(--clr-border, #E4DCF5);
+  border-radius: 18px;
+  margin-top: 0.5rem;
 }
-
-.chat-page__empty-icon {
-  color: var(--clr-text-muted, #B0A4CC);
-  margin-bottom: 0.5rem;
-}
-
-.chat-page__empty p {
-  font-size: 1rem;
-  font-weight: 600;
-  color: var(--clr-text-primary, #1A0E3A);
-  margin: 0;
-}
-
-.chat-page__empty span {
-  font-size: 0.85rem;
-  color: var(--clr-text-secondary, #6B5B8E);
-}
-
+.chat-page__empty-icon { color: var(--clr-text-muted, #B0A4CC); opacity: 0.5; }
+.chat-page__empty p { font-size: 1rem; font-weight: 600; color: var(--clr-text-primary, #1A0E3A); margin: 0; }
+.chat-page__empty span { font-size: 0.83rem; color: var(--clr-text-secondary, #6B5B8E); }
 .chat-page__empty-btn {
-  margin-top: 1rem;
-  height: 40px;
-  padding: 0 1.5rem;
-  background: #7C4DFF;
-  color: #fff;
-  border: none;
-  border-radius: 12px;
-  font-size: 0.88rem;
-  font-weight: 500;
-  cursor: pointer;
-  transition: opacity 0.15s;
+  margin-top: 0.5rem; height: 38px; padding: 0 1.4rem;
+  background: var(--clr-accent, #7C4DFF); color: #fff; border: none;
+  border-radius: 10px; font-size: 0.88rem; font-weight: 500; cursor: pointer;
+  transition: background 0.15s;
 }
+.chat-page__empty-btn:hover { background: var(--clr-accent-hover, #651FFF); }
 
-.chat-page__empty-btn:hover { opacity: 0.85; }
+@media (max-width: 600px) {
+  .chat-page__top { padding: 1.1rem 1rem 0; }
+}

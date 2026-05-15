@@ -96,8 +96,11 @@ export const getChats = async (): Promise<Chat[]> => {
     response.data.map(async (chat: Chat) => {
       try {
         const messages = await getChatMessages(chat.chatId);
-        const unreadMessages = messages.filter(msg => !msg.isRead && msg.senderId !== getCurrentUserId());
-        const lastMessage = messages[messages.length - 1];
+        const sorted = [...messages].sort(
+          (a, b) => new Date(a.sentAt).getTime() - new Date(b.sentAt).getTime()
+        );
+        const unreadMessages = sorted.filter(msg => !msg.isRead && msg.senderId !== getCurrentUserId());
+        const lastMessage = sorted[sorted.length - 1];
         
         return {
           ...chat,
