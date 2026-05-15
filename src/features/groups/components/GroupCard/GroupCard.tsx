@@ -117,11 +117,10 @@ const GroupCard: React.FC<GroupCardProps> = ({
 
           {isOwner && (
             <button
-              className="group-card__btn group-card__btn--ghost"
-              onClick={() => navigate(`/groups/${group.groupId}`)}
-              disabled
+              className="group-card__btn group-card__btn--primary"
+              onClick={() => navigate(`/chat/${group.chatId}`)}
             >
-              Моя група
+              Відкрити чат
             </button>
           )}
         </div>

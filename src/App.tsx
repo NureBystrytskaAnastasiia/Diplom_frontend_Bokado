@@ -47,7 +47,6 @@ const AnimatedRoutes = () => {
         <Route path="/rules"           element={<RulesPage />} />
         <Route path="/privacy"         element={<PrivacyPage />} />
         <Route path="/events"          element={<EventsPage />} />
-        <Route path="/discover"        element={<DiscoverPage />} />
 
         {/* Захищені */}
         <Route path="/events/create" element={

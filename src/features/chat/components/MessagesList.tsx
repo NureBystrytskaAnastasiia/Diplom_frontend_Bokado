@@ -89,14 +89,14 @@ const sortedMessages = [...messages].sort(
                   <div className="message-bubble">
                     {msg.text && <div className="message-text">{msg.text}</div>}
                     
-                    {msg.attachedFileUrl && (
+                    {msg.attachment && (
                       <div className="message-attachment">
-                        {isImageFile(msg.attachedFileUrl) ? (
+                        {isImageFile(msg.attachment) ? (
                           <img
-                            src={msg.attachedFileUrl}
+                            src={msg.attachment}
                             alt="attachment"
                             className="attachment-image"
-                            onClick={() => window.open(msg.attachedFileUrl, '_blank')}
+                            onClick={() => window.open(msg.attachment, '_blank')}
                             style={{
                               maxWidth: '300px',
                               maxHeight: '300px',
@@ -104,18 +104,18 @@ const sortedMessages = [...messages].sort(
                               cursor: 'pointer'
                             }}
                           />
-                        ) : isAudioFile(msg.attachedFileUrl) ? (
+                        ) : isAudioFile(msg.attachment) ? (
                           <audio 
                             controls 
                             className="attachment-audio"
                             style={{ width: '250px' }}
                           >
-                            <source src={msg.attachedFileUrl} type="audio/mpeg" />
+                            <source src={msg.attachment} type="audio/mpeg" />
                             Ваш браузер не підтримує аудіо елементи.
                           </audio>
                         ) : (
                           <a
-                            href={msg.attachedFileUrl}
+                            href={msg.attachment}
                             target="_blank"
                             rel="noopener noreferrer"
                             className="attachment-file"

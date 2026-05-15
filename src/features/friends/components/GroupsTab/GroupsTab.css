@@ -34,6 +34,20 @@
   border: 1.5px solid var(--clr-border, #E4DCF5);
 }
 
+.groups-tab__section {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.groups-tab__section-title {
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--clr-text-secondary, #6B5B8E);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
 .groups-tab__list {
   display: flex;
   flex-direction: column;

@@ -1,30 +1,32 @@
 import React, { useEffect, useState, useRef } from 'react';
 import { useParams } from 'react-router-dom';
-import { useSelector } from 'react-redux';
-import type { RootState } from '../../../store';
+import { useAppSelector } from '../../../shared/hooks/useAuth';
 import { getChatMessages, sendMessage, deleteMessage, sendVoiceMessage } from '../api/chat';
 import type { Message } from '../types/chat';
-import ChatHeader from '../../chat/components/ChatHeader';
-import MessagesList from '../../chat/components/MessagesList';
-import MessageInput from '../../chat/components/MessageInput';
-import '../styles/Chat.css';
+import ChatHeader from '../components/ChatHeader/ChatHeader';
+import MessagesList from '../components/MessagesList';
+import MessageInput from '../components/MessageInput';
+import './ChatWithUserPage.css';
 
 const ChatRoomPage: React.FC = () => {
   const { chatId } = useParams<{ chatId: string }>();
-  const { user } = useSelector((state: RootState) => state.auth);
+  const { user }   = useAppSelector((s) => s.auth);
+  const { chats }  = useAppSelector((s) => s.chat);
 
-  const [messages, setMessages] = useState<Message[]>([]);
-  const [newMessage, setNewMessage] = useState('');
-  const [file, setFile] = useState<File | null>(null);
-  const [filePreview, setFilePreview] = useState<string | null>(null);
-  const [loading, setLoading] = useState(false);
-  const [isRecording, setIsRecording] = useState(false);
-  const [mediaRecorder, setMediaRecorder] = useState<MediaRecorder | null>(null);
-  const [recordingTime, setRecordingTime] = useState(0);
+  // Знаходимо поточний чат зі store щоб показати правильну назву
+  const currentChat = chats.find(c => c.chatId === Number(chatId)) ?? null;
+
+  const [messages, setMessages]                     = useState<Message[]>([]);
+  const [newMessage, setNewMessage]                 = useState('');
+  const [file, setFile]                             = useState<File | null>(null);
+  const [filePreview, setFilePreview]               = useState<string | null>(null);
+  const [loading, setLoading]                       = useState(false);
+  const [isRecording, setIsRecording]               = useState(false);
+  const [mediaRecorder, setMediaRecorder]           = useState<MediaRecorder | null>(null);
+  const [recordingTime, setRecordingTime]           = useState(0);
   const [showRecordingControls, setShowRecordingControls] = useState(false);
 
-  const messagesEndRef = useRef<HTMLDivElement>(document.createElement('div'));
-
+  const messagesEndRef      = useRef<HTMLDivElement>(document.createElement('div'));
   const recordingIntervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
 
   const fetchMessages = async () => {
@@ -39,7 +41,6 @@ const ChatRoomPage: React.FC = () => {
 
   const handleSendMessage = async () => {
     if (!newMessage.trim() && !file) return;
-
     setLoading(true);
     try {
       await sendMessage(Number(chatId), newMessage.trim(), file ?? undefined);
@@ -70,18 +71,11 @@ const ChatRoomPage: React.FC = () => {
       const recorder = new MediaRecorder(stream);
       const chunks: Blob[] = [];
 
-      recorder.ondataavailable = (event) => {
-        if (event.data.size > 0) {
-          chunks.push(event.data);
-        }
-      };
-
+      recorder.ondataavailable = (e) => { if (e.data.size > 0) chunks.push(e.data); };
       recorder.onstop = () => {
         const voiceBlob = new Blob(chunks, { type: 'audio/mp3' });
-        if (chunks.length > 0) {
-          handleSendVoiceMessage(voiceBlob);
-        }
-        stream.getTracks().forEach(track => track.stop());
+        if (chunks.length > 0) handleSendVoiceMessage(voiceBlob);
+        stream.getTracks().forEach(t => t.stop());
         setRecordingTime(0);
       };
 
@@ -89,30 +83,24 @@ const ChatRoomPage: React.FC = () => {
       setMediaRecorder(recorder);
       setIsRecording(true);
       setShowRecordingControls(true);
-
-      recordingIntervalRef.current = setInterval(() => {
-        setRecordingTime(prev => prev + 1);
-      }, 1000);
-    } catch (error) {
-      console.error('Failed to start recording', error);
+      recordingIntervalRef.current = setInterval(() => setRecordingTime(p => p + 1), 1000);
+    } catch {
       alert('Не вдалося отримати доступ до мікрофона');
     }
   };
 
-  const stopRecording = (send: boolean = true) => {
+  const stopRecording = (send = true) => {
     if (mediaRecorder && mediaRecorder.state === 'recording') {
       if (recordingIntervalRef.current) {
         clearInterval(recordingIntervalRef.current);
         recordingIntervalRef.current = null;
       }
-
       if (!send) {
         mediaRecorder.ondataavailable = null;
-        mediaRecorder.stream.getTracks().forEach(track => track.stop());
+        mediaRecorder.stream.getTracks().forEach(t => t.stop());
       } else {
         mediaRecorder.stop();
       }
-
       setIsRecording(false);
       setShowRecordingControls(false);
       setMediaRecorder(null);
@@ -120,7 +108,7 @@ const ChatRoomPage: React.FC = () => {
   };
 
   const handleDeleteMessage = async (messageId: number) => {
-    if (window.confirm('Ви впевнені, що хочете видалити це повідомлення?')) {
+    if (window.confirm('Видалити повідомлення?')) {
       try {
         await deleteMessage(messageId);
         fetchMessages();
@@ -149,18 +137,14 @@ const ChatRoomPage: React.FC = () => {
 
   useEffect(() => {
     return () => {
-      if (mediaRecorder && mediaRecorder.state === 'recording') {
-        stopRecording(false);
-      }
-      if (recordingIntervalRef.current) {
-        clearInterval(recordingIntervalRef.current);
-      }
+      if (mediaRecorder?.state === 'recording') stopRecording(false);
+      if (recordingIntervalRef.current) clearInterval(recordingIntervalRef.current);
     };
   }, [mediaRecorder]);
 
   return (
-    <div className="chat-room-container">
-      <ChatHeader chatInfo={null} isTyping={false} />
+    <div className="chat-room">
+      <ChatHeader chat={currentChat} />
       <MessagesList
         messages={messages}
         userId={user?.userId}
