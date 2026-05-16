@@ -9,7 +9,7 @@ import challengesReducer from '../features/challenges/store/challengeSlice';
 import userChallengesReducer from '../features/challenges/store/usechallengesSlice';
 import interestsReducer from '../features/profile/store/interestsSlice'; 
 import groupsReducer from '../features/groups/store/groupsSlice';
-
+import postsReducer  from '../features/posts/store/postsSlice';
 
 export const store = configureStore({
   reducer: {
@@ -23,6 +23,7 @@ export const store = configureStore({
       userChallenges: userChallengesReducer,
       interests: interestsReducer,
       groups: groupsReducer,
+      posts: postsReducer,
   },
 });
 

@@ -1,262 +1,217 @@
+// src/features/chat/components/MessageInput.tsx
 import React, { useRef, useState } from 'react';
 import EmojiPicker, { type EmojiClickData } from 'emoji-picker-react';
 import GifPicker, { type TenorImage } from 'gif-picker-react';
+import {
+  FiSmile, FiImage, FiX, FiSend, FiMic, FiSquare,
+} from 'react-icons/fi';
 
 interface MessageInputProps {
-  newMessage: string;
-  setNewMessage: (value: string | ((prev: string) => string)) => void;
-  file: File | null;
-  setFile: (file: File | null) => void;
-  filePreview: string | null;
-  setFilePreview: (preview: string | null) => void;
-  loading: boolean;
-  isRecording: boolean;
+  newMessage:            string;
+  setNewMessage:         (v: string | ((p: string) => string)) => void;
+  file:                  File | null;
+  setFile:               (f: File | null) => void;
+  filePreview:           string | null;
+  setFilePreview:        (p: string | null) => void;
+  loading:               boolean;
+  isRecording:           boolean;
   showRecordingControls: boolean;
-  recordingTime: number;
-  onSendMessage: () => void;
-  onStartRecording: () => void;
-  onStopRecording: (send: boolean) => void;
-  onKeyPress: (e: React.KeyboardEvent) => void;
+  recordingTime:         number;
+  onSendMessage:         () => void;
+  onStartRecording:      () => void;
+  onStopRecording:       (send: boolean) => void;
+  onKeyPress:            (e: React.KeyboardEvent) => void;
 }
 
+const TENOR_KEY = 'AIzaSyDTCr5BkrQRF7jJCgahsaEqaqy7mEeRg7I';
+
+const fmtTime = (s: number) =>
+  `${Math.floor(s / 60)}:${String(s % 60).padStart(2, '0')}`;
+
 const MessageInput: React.FC<MessageInputProps> = ({
-  newMessage,
-  setNewMessage,
-  file,
-  setFile,
-  filePreview,
-  setFilePreview,
-  loading,
-  isRecording,
-  showRecordingControls,
-  recordingTime,
-  onSendMessage,
-  onStartRecording,
-  onStopRecording,
-  onKeyPress
+  newMessage, setNewMessage,
+  file, setFile,
+  filePreview, setFilePreview,
+  loading, isRecording, showRecordingControls, recordingTime,
+  onSendMessage, onStartRecording, onStopRecording, onKeyPress,
 }) => {
   const textareaRef = useRef<HTMLTextAreaElement>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
-  const [showEmojiPicker, setShowEmojiPicker] = useState(false);
-  const [showGifPicker, setShowGifPicker] = useState(false);
 
-  const adjustTextareaHeight = () => {
-    if (textareaRef.current) {
-      textareaRef.current.style.height = 'auto';
-      textareaRef.current.style.height = `${Math.min(textareaRef.current.scrollHeight, 120)}px`;
-    }
+  const [showEmoji, setShowEmoji] = useState(false);
+  const [showGif,   setShowGif]   = useState(false);
+
+  const adjustHeight = () => {
+    const el = textareaRef.current;
+    if (!el) return;
+    el.style.height = 'auto';
+    el.style.height = `${Math.min(el.scrollHeight, 120)}px`;
   };
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const selectedFile = e.target.files?.[0] ?? null;
-    setFile(selectedFile);
-    if (selectedFile && selectedFile.type.startsWith('image/')) {
-      setFilePreview(URL.createObjectURL(selectedFile));
-    } else {
-      setFilePreview(null);
-    }
+    const f = e.target.files?.[0] ?? null;
+    setFile(f);
+    setFilePreview(f && f.type.startsWith('image/') ? URL.createObjectURL(f) : null);
   };
 
-  const onEmojiClick = (emojiData: EmojiClickData) => {
-    setNewMessage((prev: string) => prev + emojiData.emoji);
-    setShowEmojiPicker(false);
+  const clearFile = () => {
+    setFile(null);
+    setFilePreview(null);
+    if (fileInputRef.current) fileInputRef.current.value = '';
+  };
+
+  const onEmojiClick = (data: EmojiClickData) => {
+    setNewMessage((p: string) => p + data.emoji);
+    setShowEmoji(false);
     textareaRef.current?.focus();
   };
 
   const onGifClick = (gif: TenorImage) => {
     fetch(gif.url)
-      .then(res => res.blob())
+      .then(r => r.blob())
       .then(blob => {
-        const file = new File([blob], 'gif.gif', { type: 'image/gif' });
-        setFile(file);
+        const gifFile = new File([blob], 'gif.gif', { type: 'image/gif' });
+        setFile(gifFile);
         setFilePreview(gif.url);
-        setShowGifPicker(false);
+        setShowGif(false);
       });
   };
 
-  const formatRecordingTime = (seconds: number) => {
-    const mins = Math.floor(seconds / 60);
-    const secs = seconds % 60;
-    return `${mins}:${secs < 10 ? '0' : ''}${secs}`;
-  };
+  const canSend = (newMessage.trim().length > 0 || file !== null) && !isRecording;
 
   return (
     <>
+      {/* Прев'ю файлу */}
       {filePreview && (
         <div className="file-preview-container">
           <div className="file-preview">
             <img src={filePreview} alt="preview" className="preview-image" />
-            <button
-              className="remove-preview"
-              onClick={() => {
-                setFile(null);
-                setFilePreview(null);
-                if (fileInputRef.current) {
-                  fileInputRef.current.value = '';
-                }
-              }}
-            >
-              <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
-                <line x1="18" y1="6" x2="6" y2="18" stroke="currentColor" strokeWidth="2" />
-                <line x1="6" y1="6" x2="18" y2="18" stroke="currentColor" strokeWidth="2" />
-              </svg>
+            <button className="remove-preview" onClick={clearFile} title="Прибрати">
+              <FiX size={12} />
             </button>
           </div>
         </div>
       )}
 
-      {showEmojiPicker && (
+      {/* Emoji picker */}
+      {showEmoji && (
         <div className="emoji-picker-container">
           <EmojiPicker
             onEmojiClick={onEmojiClick}
             width="100%"
-            height={350}
+            height={340}
             previewConfig={{ showPreview: false }}
-            searchDisabled={false}
             skinTonesDisabled
           />
         </div>
       )}
 
-      {showGifPicker && (
+      {/* GIF picker */}
+      {showGif && (
         <div className="gif-picker-container">
           <GifPicker
-            tenorApiKey="AIzaSyDTCr5BkrQRF7jJCgahsaEqaqy7mEeRg7I"
+            tenorApiKey={TENOR_KEY}
             onGifClick={onGifClick}
             width={350}
             height={300}
           />
-          <button
-            className="close-gif-picker"
-            onClick={() => setShowGifPicker(false)}
-          >
+          <button className="close-gif-picker" onClick={() => setShowGif(false)}>
             Закрити
           </button>
         </div>
       )}
 
+      {/* Запис голосу */}
       {showRecordingControls && (
         <div className="recording-controls">
           <div className="recording-timer">
-            <div className="recording-indicator"></div>
-            <span>{formatRecordingTime(recordingTime)}</span>
+            <span className="recording-indicator" />
+            <span>{fmtTime(recordingTime)}</span>
           </div>
           <div className="recording-actions">
-            <button
-              className="recording-cancel"
-              onClick={() => onStopRecording(false)}
-            >
-              <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
-                <path d="M6 18L18 6M6 6L18 18" stroke="currentColor" strokeWidth="2" />
-              </svg>
+            <button className="recording-cancel" onClick={() => onStopRecording(false)} title="Скасувати">
+              <FiX size={18} />
             </button>
-            <button
-              className="recording-send"
-              onClick={() => onStopRecording(true)}
-            >
-              <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
-                <path d="M5 12L19 12M12 5L19 12L12 19" stroke="currentColor" strokeWidth="2" />
-              </svg>
+            <button className="recording-send" onClick={() => onStopRecording(true)} title="Надіслати">
+              <FiSend size={16} />
             </button>
           </div>
         </div>
       )}
 
+      {/* Панель вводу */}
       <div className="chat-room-input">
         <div className="input-container">
+
+          {/* Фото */}
           <button
             className="input-action-button"
             onClick={() => fileInputRef.current?.click()}
             disabled={isRecording}
+            title="Прикріпити фото"
           >
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
-              <path d="M21.44 11.05L12.25 20.54C11.84 20.95 11.84 21.75 12.25 22.16C12.66 22.57 13.46 22.57 13.87 22.16L23.06 13.67" stroke="currentColor" strokeWidth="2" />
-            </svg>
+            <FiImage size={19} />
           </button>
 
+          {/* Emoji */}
           <button
             className="input-action-button"
-            onClick={() => {
-              setShowEmojiPicker(!showEmojiPicker);
-              setShowGifPicker(false);
-            }}
+            onClick={() => { setShowEmoji(p => !p); setShowGif(false); }}
             disabled={isRecording}
+            title="Emoji"
           >
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
-              <circle cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="2" />
-              <path d="M8 14S9.5 16 12 16S16 14 16 14" stroke="currentColor" strokeWidth="2" />
-              <line x1="9" y1="9" x2="9.01" y2="9" stroke="currentColor" strokeWidth="2" />
-              <line x1="15" y1="9" x2="15.01" y2="9" stroke="currentColor" strokeWidth="2" />
-            </svg>
+            <FiSmile size={19} />
           </button>
 
+          {/* GIF */}
           <button
-            className="input-action-button"
-            onClick={() => {
-              setShowGifPicker(!showGifPicker);
-              setShowEmojiPicker(false);
-            }}
+            className="input-action-button gif-btn"
+            onClick={() => { setShowGif(p => !p); setShowEmoji(false); }}
             disabled={isRecording}
+            title="GIF"
           >
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
-              <path d="M12 3H5a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7" />
-              <path d="M18.375 2.625a2.121 2.121 0 1 1 3 3L12 15l-4 1 1-4 9.375-9.375z" />
-            </svg>
+            <span className="gif-label">GIF</span>
           </button>
 
-          <button
-            className={`input-action-button ${isRecording ? 'recording-active' : ''}`}
-            onClick={isRecording ? () => onStopRecording(true) : onStartRecording}
-            title={isRecording ? 'Завершити запис' : 'Записати голосове повідомлення'}
-          >
-            {isRecording ? (
-              <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
-                <rect x="6" y="4" width="12" height="16" rx="1" stroke="currentColor" strokeWidth="2" />
-              </svg>
-            ) : (
-              <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
-                <path d="M12 2C10.34 2 9 3.34 9 5V12C9 13.66 10.34 15 12 15C13.66 15 15 13.66 15 12V5C15 3.34 13.66 2 12 2Z" stroke="currentColor" strokeWidth="2" />
-                <path d="M19 10V12C19 16.42 15.42 20 11 20H13C17.42 20 21 16.42 21 12V10" stroke="currentColor" strokeWidth="2" />
-                <line x1="12" y1="20" x2="12" y2="24" stroke="currentColor" strokeWidth="2" />
-                <line x1="8" y1="24" x2="16" y2="24" stroke="currentColor" strokeWidth="2" />
-              </svg>
-            )}
-          </button>
-
+          {/* Textarea */}
           <textarea
             ref={textareaRef}
             className="message-input"
-            placeholder={isRecording ? 'Запис голосового повідомлення...' : 'Введіть повідомлення...'}
+            placeholder={isRecording ? 'Йде запис...' : 'Повідомлення...'}
             value={newMessage}
-            onChange={(e) => {
-              setNewMessage(e.target.value);
-              adjustTextareaHeight();
-            }}
+            onChange={(e) => { setNewMessage(e.target.value); adjustHeight(); }}
             onKeyPress={onKeyPress}
             rows={1}
             disabled={isRecording}
           />
 
+          {/* Мікрофон */}
           <button
-            className={`send-button ${(newMessage.trim() || file) ? 'active' : ''}`}
-            onClick={onSendMessage}
-            disabled={loading || (!newMessage.trim() && !file) || isRecording}
+            className={`input-action-button${isRecording ? ' recording-active' : ''}`}
+            onClick={isRecording ? () => onStopRecording(true) : onStartRecording}
+            title={isRecording ? 'Зупинити запис' : 'Записати голосове'}
           >
-            {loading ? (
-              <div className="send-loading"></div>
-            ) : (
-              <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
-                <line x1="22" y1="2" x2="11" y2="13" stroke="currentColor" strokeWidth="2" />
-                <polygon points="22,2 15,22 11,13 2,9 22,2" fill="currentColor" />
-              </svg>
-            )}
+            {isRecording ? <FiSquare size={18} /> : <FiMic size={18} />}
+          </button>
+
+          {/* Відправити */}
+          <button
+            className={`send-button${canSend ? ' active' : ''}`}
+            onClick={onSendMessage}
+            disabled={loading || !canSend}
+            title="Надіслати"
+          >
+            {loading
+              ? <div className="send-loading" />
+              : <FiSend size={17} />
+            }
           </button>
         </div>
 
         <input
           ref={fileInputRef}
           type="file"
-          accept="image/*,.mp3,.gif,.png,.jpg"
+          accept="image/png,image/jpeg,image/gif,image/webp,audio/mp3"
           onChange={handleFileChange}
           style={{ display: 'none' }}
         />

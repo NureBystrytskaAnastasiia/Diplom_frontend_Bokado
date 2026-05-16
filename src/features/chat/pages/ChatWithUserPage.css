@@ -311,3 +311,27 @@
   .chat-room-input    { padding: 0.6rem 0.75rem; }
   .message-content    { max-width: 82%; }
 }
+
+/* ── GIF button ── */
+.gif-btn {
+  font-size: 0;
+}
+.gif-label {
+  font-family: var(--font-body, system-ui);
+  font-size: 0.72rem;
+  font-weight: 800;
+  letter-spacing: 0.03em;
+  color: var(--clr-text-muted, #B0A4CC);
+  transition: color 0.15s;
+}
+.gif-btn:hover .gif-label { color: var(--clr-accent, #7C4DFF); }
+
+/* ── Аватар в повідомленні з фото ── */
+.avatar-small--img {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  object-fit: cover;
+  display: block;
+  flex-shrink: 0;
+}

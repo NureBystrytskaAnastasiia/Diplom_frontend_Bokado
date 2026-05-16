@@ -5,7 +5,6 @@
 .chat-page {
   display: flex;
   flex-direction: column;
-  /* НЕ height:100vh — AppLayout вже дає flex:1 */
   height: 100%;
   overflow: hidden;
 }
@@ -48,6 +47,65 @@
   background: var(--clr-accent-hover, #651FFF);
   transform: translateY(-1px);
   box-shadow: 0 4px 14px rgba(124,77,255,0.45);
+}
+
+/* ── Вкладки ── */
+.chat-page__tabs {
+  display: flex;
+  gap: 0.3rem;
+  background: var(--clr-surface, #fff);
+  border: 1.5px solid var(--clr-border, #E4DCF5);
+  border-radius: 13px;
+  padding: 0.3rem;
+  margin-bottom: 0.85rem;
+}
+
+.chat-page__tab {
+  flex: 1;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.4rem;
+  height: 36px;
+  border: none;
+  background: transparent;
+  color: var(--clr-text-secondary, #6B5B8E);
+  font-family: var(--font-body, system-ui);
+  font-size: 0.85rem;
+  font-weight: 500;
+  border-radius: 10px;
+  cursor: pointer;
+  transition: background 0.15s, color 0.15s;
+  position: relative;
+}
+.chat-page__tab:hover {
+  background: var(--clr-bg, #F7F4FD);
+  color: var(--clr-text-primary, #1A0E3A);
+}
+.chat-page__tab--active {
+  background: var(--clr-accent, #7C4DFF);
+  color: #fff;
+  font-weight: 600;
+  box-shadow: 0 2px 8px rgba(124,77,255,0.28);
+}
+.chat-page__tab--active:hover {
+  background: var(--clr-accent-hover, #651FFF);
+  color: #fff;
+}
+
+/* Червона точка непрочитаних */
+.chat-page__tab-dot {
+  position: absolute;
+  top: 6px;
+  right: 8px;
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: #EF4444;
+  border: 2px solid var(--clr-surface, #fff);
+}
+.chat-page__tab--active .chat-page__tab-dot {
+  border-color: var(--clr-accent, #7C4DFF);
 }
 
 /* Search */
@@ -131,7 +189,7 @@
   margin-top: 0.5rem;
 }
 .chat-page__empty-icon { color: var(--clr-text-muted, #B0A4CC); opacity: 0.5; }
-.chat-page__empty p { font-size: 1rem; font-weight: 600; color: var(--clr-text-primary, #1A0E3A); margin: 0; }
+.chat-page__empty p    { font-size: 1rem; font-weight: 600; color: var(--clr-text-primary, #1A0E3A); margin: 0; }
 .chat-page__empty span { font-size: 0.83rem; color: var(--clr-text-secondary, #6B5B8E); }
 .chat-page__empty-btn {
   margin-top: 0.5rem; height: 38px; padding: 0 1.4rem;

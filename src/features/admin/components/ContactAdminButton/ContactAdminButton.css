@@ -1,0 +1,78 @@
+/* src/features/admin/components/ContactAdminButton/ContactAdminButton.css */
+
+.cab-wrap {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+}
+
+.cab-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  border: none;
+  border-radius: 12px;
+  font-family: var(--font-body, system-ui);
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.15s, transform 0.15s, box-shadow 0.15s, opacity 0.15s;
+  white-space: nowrap;
+}
+.cab-btn:disabled { opacity: 0.6; cursor: not-allowed; transform: none !important; }
+
+/* Size */
+.cab-btn--md { height: 44px; padding: 0 1.4rem; font-size: 0.9rem; }
+.cab-btn--sm { height: 36px; padding: 0 1rem;   font-size: 0.82rem; }
+
+/* Variant primary */
+.cab-btn--primary {
+  background: var(--clr-accent, #7C4DFF);
+  color: #fff;
+  box-shadow: 0 3px 12px rgba(124,77,255,0.32);
+}
+.cab-btn--primary:hover:not(:disabled) {
+  background: var(--clr-accent-hover, #651FFF);
+  transform: translateY(-1px);
+  box-shadow: 0 5px 18px rgba(124,77,255,0.42);
+}
+
+/* Variant outline */
+.cab-btn--outline {
+  background: transparent;
+  color: var(--clr-accent, #7C4DFF);
+  border: 1.5px solid var(--clr-accent, #7C4DFF);
+}
+.cab-btn--outline:hover:not(:disabled) {
+  background: var(--clr-accent-dim, #F3F0FA);
+  transform: translateY(-1px);
+}
+
+/* Done state */
+.cab-btn--done {
+  background: #16A34A !important;
+  border-color: #16A34A !important;
+  color: #fff !important;
+  box-shadow: 0 3px 12px rgba(22,163,74,0.3) !important;
+}
+
+.cab-error {
+  font-size: 0.78rem;
+  color: #DC2626;
+  margin: 0;
+}
+
+.cab-spinner {
+  width: 15px; height: 15px;
+  border: 2px solid rgba(255,255,255,0.3);
+  border-top-color: #fff;
+  border-radius: 50%;
+  animation: cabSpin 0.7s linear infinite;
+  display: inline-block;
+  flex-shrink: 0;
+}
+.cab-btn--outline .cab-spinner {
+  border-color: rgba(124,77,255,0.2);
+  border-top-color: var(--clr-accent, #7C4DFF);
+}
+@keyframes cabSpin { to { transform: rotate(360deg); } }

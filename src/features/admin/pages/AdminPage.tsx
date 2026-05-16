@@ -1,3 +1,4 @@
+// src/features/admin/pages/AdminPage.tsx
 import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -6,11 +7,12 @@ import { FiAlertTriangle, FiRefreshCw } from 'react-icons/fi';
 import type { RootState, AppDispatch } from '../../../store';
 import { getAllUsers, getUserStats, getChallengeStats } from '../store/adminSlice';
 
-import AdminHeader    from '../components/AdminHeader/AdminHeader';
+import AdminHeader       from '../components/AdminHeader/AdminHeader';
 import AdminTabs, { type AdminTab } from '../components/AdminTabs/AdminTabs';
-import UsersTable     from '../components/UsersTable/UsersTable';
-import UsersCalendar  from '../components/UsersCalendar/UsersCalendar';
+import UsersTable        from '../components/UsersTable/UsersTable';
+import UsersCalendar     from '../components/UsersCalendar/UsersCalendar';
 import ChallengesManager from '../components/ChallengesManager/ChallengesManager';
+import SupportPanel      from '../components/SupportPanel/SupportPanel';
 
 import '../styles/Admin.css';
 
@@ -105,6 +107,19 @@ const AdminPage: React.FC = () => {
               <div className="adm-section">
                 <h2 className="adm-section__title">Управління челенджами</h2>
                 <ChallengesManager />
+              </div>
+            </motion.div>
+          )}
+
+          {tab === 'support' && (
+            <motion.div key="support" variants={tabVariants} initial="initial" animate="animate" exit="exit">
+              <div className="adm-section">
+                <h2 className="adm-section__title">Підтримка користувачів</h2>
+                <p style={{ fontSize: '0.85rem', color: '#6B5B8E', marginBottom: '1.25rem', marginTop: '-0.5rem' }}>
+                  Натисніть «Написати» — відкриється особистий чат з користувачем.
+                  Після активації Premium або вирішення питання чат залишається в розділі Чати.
+                </p>
+                <SupportPanel users={users} />
               </div>
             </motion.div>
           )}

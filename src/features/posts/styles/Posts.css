@@ -1,0 +1,449 @@
+/* ================================================================
+   POSTS — Bokado Lavender
+   src/features/posts/styles/Posts.css
+   ================================================================ */
+
+/* ============================================================
+   SECTION WRAPPER
+   ============================================================ */
+.posts-section {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+/* Стани секції */
+.posts-section__loading,
+.posts-section__error,
+.posts-section__empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0.75rem;
+  padding: 3rem 1.5rem;
+  background: var(--clr-surface);
+  border: 1.5px solid var(--clr-border);
+  border-radius: 20px;
+  color: var(--clr-text-muted);
+  font-size: 0.9rem;
+  text-align: center;
+}
+.posts-section__empty p {
+  margin: 0;
+  max-width: 260px;
+  line-height: 1.55;
+}
+.posts-section__error {
+  flex-direction: row;
+  gap: 0.5rem;
+  color: #DC2626;
+  background: #FEF2F2;
+  border-color: #FECACA;
+  padding: 1rem 1.25rem;
+}
+
+/* Спінер */
+.posts-spinner {
+  display: inline-block;
+  width: 20px;
+  height: 20px;
+  border: 2.5px solid var(--clr-border);
+  border-top-color: var(--clr-accent);
+  border-radius: 50%;
+  animation: postsSpin 0.7s linear infinite;
+  flex-shrink: 0;
+}
+@keyframes postsSpin { to { transform: rotate(360deg); } }
+
+/* ============================================================
+   CREATE POST
+   ============================================================ */
+.post-create {
+  background: var(--clr-surface);
+  border: 1.5px solid var(--clr-border);
+  border-radius: 20px;
+  padding: 1.15rem 1.25rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.8rem;
+  transition: box-shadow var(--dur-base) var(--ease-out),
+              border-color var(--dur-base);
+}
+.post-create:focus-within {
+  border-color: var(--clr-accent-soft);
+  box-shadow: 0 0 0 3px rgba(124, 77, 255, 0.07);
+}
+
+.post-create__top {
+  display: flex;
+  flex-direction: column;
+  gap: 0.65rem;
+}
+
+.post-create__textarea {
+  width: 100%;
+  padding: 0.75rem 0.95rem;
+  background: var(--clr-bg);
+  border: 1.5px solid var(--clr-border);
+  border-radius: 13px;
+  font-family: var(--font-body);
+  font-size: 0.9rem;
+  color: var(--clr-text-primary);
+  outline: none;
+  resize: none;
+  min-height: 88px;
+  line-height: 1.6;
+  transition: border-color var(--dur-fast), background var(--dur-fast);
+  box-sizing: border-box;
+}
+.post-create__textarea:focus {
+  border-color: var(--clr-accent);
+  background: var(--clr-surface);
+}
+.post-create__textarea::placeholder {
+  color: var(--clr-text-muted);
+}
+
+/* Image preview */
+.post-create__preview {
+  position: relative;
+  display: inline-block;
+  max-width: 200px;
+  border-radius: 13px;
+  overflow: hidden;
+  align-self: flex-start;
+}
+.post-create__preview img {
+  width: 100%;
+  display: block;
+  border-radius: 13px;
+  border: 1.5px solid var(--clr-border);
+}
+.post-create__remove-img {
+  position: absolute;
+  top: 5px;
+  right: 5px;
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  border: none;
+  background: rgba(26, 14, 58, 0.65);
+  color: #fff;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background var(--dur-fast);
+}
+.post-create__remove-img:hover {
+  background: rgba(26, 14, 58, 0.9);
+}
+
+/* Error */
+.post-create__error {
+  font-size: 0.82rem;
+  color: #DC2626;
+  background: #FEF2F2;
+  border: 1px solid #FECACA;
+  border-radius: 9px;
+  padding: 0.4rem 0.75rem;
+  margin: 0;
+}
+
+/* Actions row */
+.post-create__actions {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
+  padding-top: 0.1rem;
+}
+
+.post-create__img-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  height: 36px;
+  padding: 0 0.95rem;
+  border: 1.5px solid var(--clr-border);
+  background: var(--clr-bg);
+  color: var(--clr-text-secondary);
+  border-radius: 10px;
+  font-family: var(--font-body);
+  font-size: 0.82rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: border-color var(--dur-fast),
+              color var(--dur-fast),
+              background var(--dur-fast);
+}
+.post-create__img-btn:hover {
+  border-color: var(--clr-accent-soft);
+  color: var(--clr-accent);
+  background: var(--clr-accent-dim);
+}
+
+.post-create__submit {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  height: 38px;
+  padding: 0 1.3rem;
+  background: var(--clr-accent);
+  color: #fff;
+  border: none;
+  border-radius: 11px;
+  font-family: var(--font-body);
+  font-size: 0.85rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background var(--dur-fast),
+              transform var(--dur-base) var(--ease-spring),
+              box-shadow var(--dur-base) var(--ease-out);
+  box-shadow: 0 2px 10px rgba(124, 77, 255, 0.3);
+}
+.post-create__submit:hover:not(:disabled) {
+  background: var(--clr-accent-hover);
+  transform: translateY(-1px);
+  box-shadow: 0 6px 20px rgba(124, 77, 255, 0.4);
+}
+.post-create__submit:disabled {
+  opacity: 0.48;
+  cursor: not-allowed;
+  transform: none;
+  box-shadow: none;
+}
+
+/* Inline spinner всередині кнопки */
+.post-create__spinner {
+  display: inline-block;
+  width: 14px;
+  height: 14px;
+  border: 2px solid rgba(255, 255, 255, 0.3);
+  border-top-color: #fff;
+  border-radius: 50%;
+  animation: postsSpin 0.7s linear infinite;
+}
+
+/* ============================================================
+   POSTS LIST
+   ============================================================ */
+.posts-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.9rem;
+}
+
+/* ============================================================
+   POST CARD
+   ============================================================ */
+.post-card {
+  background: var(--clr-surface);
+  border: 1.5px solid var(--clr-border);
+  border-radius: 20px;
+  padding: 1.1rem 1.25rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.85rem;
+  transition: box-shadow var(--dur-slow) var(--ease-out),
+              border-color var(--dur-base);
+}
+.post-card:hover {
+  border-color: var(--clr-accent-soft);
+  box-shadow: 0 4px 22px rgba(124, 77, 255, 0.08);
+}
+
+/* Header */
+.post-card__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
+}
+
+.post-card__author {
+  display: flex;
+  align-items: center;
+  gap: 0.7rem;
+  min-width: 0;
+}
+
+.post-card__avatar {
+  width: 42px;
+  height: 42px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 2px solid var(--clr-border);
+  flex-shrink: 0;
+  display: block;
+}
+
+.post-card__avatar--fallback {
+  width: 42px;
+  height: 42px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, var(--clr-accent), var(--clr-pink));
+  color: #fff;
+  font-family: var(--font-display);
+  font-size: 1.15rem;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.post-card__author-info {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+
+.post-card__username {
+  font-size: 0.88rem;
+  font-weight: 700;
+  color: var(--clr-text-primary);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.post-card__date {
+  font-size: 0.72rem;
+  color: var(--clr-text-muted);
+}
+
+/* Delete button */
+.post-card__delete {
+  width: 32px;
+  height: 32px;
+  border-radius: 9px;
+  border: 1.5px solid var(--clr-border);
+  background: transparent;
+  color: var(--clr-text-muted);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  transition: background var(--dur-fast),
+              color var(--dur-fast),
+              border-color var(--dur-fast);
+}
+.post-card__delete:hover {
+  background: #FEF2F2;
+  color: #DC2626;
+  border-color: #FECACA;
+}
+
+/* Text (підтримує rich-text HTML з Quill) */
+.post-card__text {
+  font-size: 0.9rem;
+  color: var(--clr-text-primary);
+  line-height: 1.68;
+  word-break: break-word;
+}
+.post-card__text p        { margin: 0 0 0.4rem; }
+.post-card__text p:last-child { margin-bottom: 0; }
+.post-card__text strong   { font-weight: 700; }
+.post-card__text em       { font-style: italic; }
+.post-card__text u        { text-decoration: underline; }
+.post-card__text s        { text-decoration: line-through; }
+.post-card__text a {
+  color: var(--clr-accent);
+  text-decoration: none;
+}
+.post-card__text a:hover  { text-decoration: underline; }
+.post-card__text ul,
+.post-card__text ol {
+  padding-left: 1.4rem;
+  margin: 0.3rem 0;
+}
+.post-card__text blockquote {
+  border-left: 3px solid var(--clr-accent-soft);
+  margin: 0.4rem 0;
+  padding: 0.25rem 0.75rem;
+  color: var(--clr-text-secondary);
+  font-style: italic;
+}
+
+/* Image */
+.post-card__image-wrap {
+  border-radius: 14px;
+  overflow: hidden;
+  border: 1.5px solid var(--clr-border);
+}
+.post-card__image {
+  width: 100%;
+  display: block;
+  object-fit: cover;
+  max-height: 500px;
+}
+
+/* Footer */
+.post-card__footer {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding-top: 0.55rem;
+  border-top: 1px dashed var(--clr-border);
+}
+
+/* Like button */
+.post-card__like-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  height: 32px;
+  padding: 0 0.85rem;
+  border-radius: var(--radius-full);
+  border: 1.5px solid var(--clr-border);
+  background: transparent;
+  color: var(--clr-text-muted);
+  font-family: var(--font-body);
+  font-size: 0.82rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background var(--dur-fast),
+              color var(--dur-fast),
+              border-color var(--dur-fast),
+              transform var(--dur-base) var(--ease-spring);
+}
+.post-card__like-btn:hover {
+  border-color: #FCA5A5;
+  color: #EF4444;
+  background: #FEF2F2;
+  transform: scale(1.04);
+}
+.post-card__like-btn--active {
+  background: #FEF2F2;
+  border-color: #FCA5A5;
+  color: #EF4444;
+}
+.post-card__like-btn--active svg {
+  fill: #EF4444;
+}
+.post-card__like-btn:active {
+  transform: scale(0.96);
+}
+
+/* ============================================================
+   RESPONSIVE
+   ============================================================ */
+@media (max-width: 600px) {
+  .post-create,
+  .post-card {
+    padding: 0.95rem 1rem;
+    border-radius: 16px;
+  }
+
+  .post-card__image {
+    max-height: 320px;
+  }
+
+  .post-create__preview {
+    max-width: 160px;
+  }
+}

@@ -1,6 +1,4 @@
-/* ================================================================
-   ChatHeader
-   ================================================================ */
+/* src/features/chat/components/ChatHeader/ChatHeader.css */
 
 .chat-header {
   display: flex;
@@ -13,10 +11,13 @@
   min-height: 62px;
 }
 
+/* Кнопка назад */
 .chat-header__back {
-  width: 36px; height: 36px; border-radius: 10px;
+  width: 36px; height: 36px;
+  border-radius: 10px;
   border: 1.5px solid var(--clr-border, #E4DCF5);
-  background: transparent; color: var(--clr-text-secondary, #6B5B8E);
+  background: transparent;
+  color: var(--clr-text-secondary, #6B5B8E);
   display: flex; align-items: center; justify-content: center;
   cursor: pointer; flex-shrink: 0;
   transition: background 0.15s, color 0.15s, border-color 0.15s;
@@ -27,33 +28,79 @@
   border-color: rgba(124,77,255,0.25);
 }
 
-.chat-header__avatar { flex-shrink: 0; }
+/* Аватар — кнопка */
+.chat-header__avatar-btn {
+  border: none;
+  background: transparent;
+  padding: 0;
+  cursor: default;
+  flex-shrink: 0;
+  border-radius: 50%;
+  transition: transform 0.15s, box-shadow 0.15s;
+}
+.chat-header__avatar-btn--clickable {
+  cursor: pointer;
+}
+.chat-header__avatar-btn--clickable:hover {
+  transform: scale(1.06);
+  box-shadow: 0 0 0 3px rgba(124,77,255,0.2);
+}
 
 .chat-header__avatar-img {
-  width: 40px; height: 40px; border-radius: 50%; object-fit: cover; display: block;
+  width: 40px; height: 40px;
+  border-radius: 50%;
+  object-fit: cover;
+  display: block;
+  border: 2px solid var(--clr-border, #E4DCF5);
 }
 
 .chat-header__avatar-fallback {
-  width: 40px; height: 40px; border-radius: 50%;
-  background: rgba(124,77,255,0.1); color: var(--clr-accent, #7C4DFF);
+  width: 40px; height: 40px;
+  border-radius: 50%;
+  background: rgba(124,77,255,0.1);
+  color: var(--clr-accent, #7C4DFF);
   display: flex; align-items: center; justify-content: center;
   font-size: 0.95rem; font-weight: 700;
 }
 .chat-header__avatar-fallback--group {
-  background: rgba(16,185,129,0.1); color: #059669;
+  background: rgba(16,185,129,0.1);
+  color: #059669;
 }
 
-.chat-header__info {
-  display: flex; flex-direction: column; gap: 1px;
-  flex: 1; min-width: 0;
+/* Info — кнопка */
+.chat-header__info-btn {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+  flex: 1;
+  min-width: 0;
+  border: none;
+  background: transparent;
+  padding: 0.25rem 0.4rem;
+  border-radius: 8px;
+  text-align: left;
+  cursor: default;
+  transition: background 0.15s;
+}
+.chat-header__info-btn--clickable {
+  cursor: pointer;
+}
+.chat-header__info-btn--clickable:hover {
+  background: var(--clr-accent-dim, #F3F0FA);
 }
 
 .chat-header__name {
-  font-size: 0.95rem; font-weight: 600;
+  font-size: 0.95rem;
+  font-weight: 600;
   color: var(--clr-text-primary, #1A0E3A);
-  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  display: block;
 }
 
 .chat-header__subtitle {
-  font-size: 0.72rem; color: var(--clr-text-muted, #B0A4CC);
+  font-size: 0.72rem;
+  color: var(--clr-text-muted, #B0A4CC);
+  display: block;
 }
