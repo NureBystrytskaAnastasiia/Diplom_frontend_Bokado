@@ -2,6 +2,29 @@ import type { ChallengeDto, CheckChallengeResponse } from '../types/challenge';
 
 const API_BASE_URL = 'https://localhost:7192/api/Challenge';
 
+/**
+ * Дістає повідомлення про помилку з відповіді беку.
+ * Формати:
+ *  - { errors: [{ description: "..." }] }
+ *  - [{ description: "..." }]
+ *  - { message: "..." }
+ *  - текст
+ */
+const extractErrorMessage = async (response: Response): Promise<string> => {
+  try {
+    const data = await response.json();
+    if (Array.isArray(data) && data[0]?.description) return data[0].description;
+    if (data?.errors && Array.isArray(data.errors) && data.errors[0]?.description) {
+      return data.errors[0].description;
+    }
+    if (typeof data?.message === 'string') return data.message;
+    if (typeof data === 'string') return data;
+  } catch {
+    try { return await response.text(); } catch { /* ignore */ }
+  }
+  return `HTTP ${response.status}`;
+};
+
 export const challengeApi = {
   async getChallenges(token: string): Promise<ChallengeDto[]> {
     const response = await fetch(`${API_BASE_URL}/challenges`, {
@@ -13,10 +36,9 @@ export const challengeApi = {
     });
 
     if (!response.ok) {
-      const errorText = await response.text();
-      throw new Error(`Failed to fetch challenges: ${response.status} ${errorText}`);
+      const msg = await extractErrorMessage(response);
+      throw new Error(msg);
     }
-    
     return response.json();
   },
 
@@ -30,10 +52,9 @@ export const challengeApi = {
     });
 
     if (!response.ok) {
-      const errorData = await response.json().catch(() => ({ message: 'Unknown error' }));
-      throw new Error(errorData.message || `Failed to check challenge: ${response.status}`);
+      const msg = await extractErrorMessage(response);
+      throw new Error(msg);
     }
-    
     return response.json();
-  }
+  },
 };

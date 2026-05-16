@@ -1,6 +1,6 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
-import { fetchEvents, createEvent, joinEvent, quitEvent } from '../api/events';
-import type { Event, EventDto } from '../types/event';
+import { fetchEvents, createEvent, joinEvent, quitEvent, updateEvent } from '../api/events';
+import type { Event, EventDto, UpdateEventDto } from '../types/event';
 
 interface EventState {
   events: Event[];
@@ -13,18 +13,26 @@ const initialState: EventState = {
   events: [],
   loading: false,
   error: null,
-  userParticipation: {}
+  userParticipation: {},
 };
 
-// Thunks
+// ── Thunks ──
 export const loadEvents = createAsyncThunk('events/load', async () => {
   return await fetchEvents();
 });
 
 export const createNewEvent = createAsyncThunk(
   'events/create',
-  async ({ eventDto }: { eventDto: EventDto }) => {
-    return await createEvent(eventDto);
+  async ({ eventDto }: { eventDto: EventDto }, { rejectWithValue }) => {
+    try {
+      return await createEvent(eventDto);
+    } catch (e: any) {
+      const errorData = e.response?.data;
+      const msg = typeof errorData === 'string'
+        ? errorData
+        : errorData?.title || e.message || 'Помилка створення події';
+      return rejectWithValue(msg);
+    }
   }
 );
 
@@ -36,16 +44,13 @@ export const joinExistingEvent = createAsyncThunk(
       return { eventId, message: response.message };
     } catch (error: any) {
       const errorData = error.response?.data;
-
       if (Array.isArray(errorData) && errorData[0]?.description) {
         return rejectWithValue(errorData[0].description);
       }
-
       return rejectWithValue(error.message || 'Помилка приєднання до події');
     }
   }
 );
-
 
 export const quitExistingEvent = createAsyncThunk(
   'events/quit',
@@ -59,6 +64,22 @@ export const quitExistingEvent = createAsyncThunk(
   }
 );
 
+export const updateExistingEvent = createAsyncThunk(
+  'events/update',
+  async ({ eventId, data }: { eventId: number; data: UpdateEventDto }, { rejectWithValue }) => {
+    try {
+      await updateEvent(eventId, data);
+      return { eventId, data };
+    } catch (error: any) {
+      const errorData = error.response?.data;
+      if (Array.isArray(errorData) && errorData[0]?.description) {
+        return rejectWithValue(errorData[0].description);
+      }
+      return rejectWithValue(error.message || 'Помилка оновлення події');
+    }
+  }
+);
+
 const eventSlice = createSlice({
   name: 'events',
   initialState,
@@ -66,78 +87,53 @@ const eventSlice = createSlice({
     initializeUserParticipation: (state, action) => {
       const { events, currentUserId } = action.payload;
       const participation: { [eventId: number]: boolean } = {};
-
       events.forEach((event: Event) => {
         const isParticipant = event.participants?.some(p => p.userId === currentUserId);
         participation[event.eventId] = isParticipant || event.creatorId === currentUserId;
       });
-
       state.userParticipation = participation;
-    }
+    },
+    clearEventError: (state) => {
+      state.error = null;
+    },
   },
   extraReducers: (builder) => {
     builder
-      // Load Events
-      .addCase(loadEvents.pending, (state) => {
-        state.loading = true;
-        state.error = null;
-      })
-      .addCase(loadEvents.fulfilled, (state, action) => {
-        state.loading = false;
-        state.events = action.payload;
-      })
-      .addCase(loadEvents.rejected, (state, action) => {
-        state.loading = false;
-        state.error = action.error.message || 'Failed to load events';
-      })
+      // load
+      .addCase(loadEvents.pending, (state) => { state.loading = true; state.error = null; })
+      .addCase(loadEvents.fulfilled, (state, action) => { state.loading = false; state.events = action.payload; })
+      .addCase(loadEvents.rejected, (state, action) => { state.loading = false; state.error = action.error.message || 'Помилка'; })
 
-      // Create Event
-      .addCase(createNewEvent.pending, (state) => {
-        state.loading = true;
-        state.error = null;
-      })
+      // create
       .addCase(createNewEvent.fulfilled, (state, action) => {
-        state.loading = false;
-        state.events.push(action.payload);
+        state.events.unshift(action.payload);
+        state.error = null;
       })
       .addCase(createNewEvent.rejected, (state, action) => {
-        state.loading = false;
-        state.error = action.error.message || 'Failed to create event';
+        state.error = action.payload as string;
       })
 
-      // Join Event
-      .addCase(joinExistingEvent.pending, (state) => {
-        state.error = null;
-      })
+      // join
       .addCase(joinExistingEvent.fulfilled, (state, action) => {
         const { eventId } = action.payload;
         state.userParticipation[eventId] = true;
-
         const event = state.events.find(e => e.eventId === eventId);
         if (event) {
           const currentUserId = Number(localStorage.getItem('userId'));
           if (event.participants && !event.participants.some(p => p.userId === currentUserId)) {
-            // Створюємо мінімальний об'єкт учасника з необхідними полями
-            const newParticipant = {
-              eventParticipantId: Date.now(),  // тимчасовий ID або 0, якщо буде замінений сервером
-              eventId: eventId,
+            event.participants.push({
+              eventParticipantId: Date.now(),
+              eventId,
               userId: currentUserId,
-              joinedAt: new Date().toISOString(), // дата приєднання у форматі ISO
-            };
-            event.participants.push(newParticipant);
+              joinedAt: new Date().toISOString(),
+            });
           }
         }
-
         state.error = null;
       })
       .addCase(joinExistingEvent.rejected, (state, action) => {
         const errMsg = action.payload as string;
-
-        // Логуємо помилку для відладки
-        console.error('Join event error:', errMsg);
-
-        if (errMsg.includes('Ви вже приєднані до цієї події')) {
-          // Користувач вже приєднаний - оновлюємо стан і прибираємо помилку
+        if (errMsg && errMsg.includes('вже')) {
           const eventId = action.meta.arg as number;
           state.userParticipation[eventId] = true;
           state.error = null;
@@ -146,27 +142,38 @@ const eventSlice = createSlice({
         }
       })
 
-      // Quit Event
-      .addCase(quitExistingEvent.pending, (state) => {
-        state.error = null;
-      })
+      // quit
       .addCase(quitExistingEvent.fulfilled, (state, action) => {
         const { eventId } = action.payload;
         state.userParticipation[eventId] = false;
-
         const event = state.events.find(e => e.eventId === eventId);
         if (event && event.participants) {
           const currentUserId = Number(localStorage.getItem('userId'));
           event.participants = event.participants.filter(p => p.userId !== currentUserId);
         }
-
         state.error = null;
       })
       .addCase(quitExistingEvent.rejected, (state, action) => {
         state.error = action.payload as string;
+      })
+
+      // update
+      .addCase(updateExistingEvent.fulfilled, (state, action) => {
+        const { eventId, data } = action.payload;
+        const event = state.events.find(e => e.eventId === eventId);
+        if (event) {
+          if (data.title       !== undefined) event.title       = data.title!;
+          if (data.description !== undefined) event.description = data.description;
+          if (data.date        !== undefined) event.date        = data.date!;
+          if (data.city        !== undefined) event.city        = data.city;
+        }
+        state.error = null;
+      })
+      .addCase(updateExistingEvent.rejected, (state, action) => {
+        state.error = action.payload as string;
       });
-  }
+  },
 });
 
-export const { initializeUserParticipation } = eventSlice.actions;
+export const { initializeUserParticipation, clearEventError } = eventSlice.actions;
 export default eventSlice.reducer;
