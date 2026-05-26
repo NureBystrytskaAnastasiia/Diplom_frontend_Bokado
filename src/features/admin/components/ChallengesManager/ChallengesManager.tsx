@@ -74,9 +74,6 @@ const ChallengesManager: React.FC = () => {
                 <span className="adm-badge adm-badge--purple">
                   +{ch.reward} балів
                 </span>
-                {ch.isActive && (
-                  <span className="adm-badge adm-badge--green">Активний</span>
-                )}
               </div>
             </div>
           );

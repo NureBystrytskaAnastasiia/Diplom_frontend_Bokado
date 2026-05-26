@@ -1,7 +1,7 @@
 import React, { useEffect, useState, useMemo, useCallback } from 'react';
 import {
   FiTarget, FiStar, FiCheckCircle, FiClock, FiSearch,
-  FiX, FiAlertCircle, FiAward, FiTrendingUp, FiZap, FiUsers, FiInfo,
+  FiX, FiAlertCircle, FiAward, FiZap, FiUsers,
 } from 'react-icons/fi';
 import { useAppDispatch, useAppSelector } from '../../../shared/hooks/useAuth';
 import {

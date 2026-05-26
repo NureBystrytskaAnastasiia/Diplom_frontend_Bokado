@@ -452,3 +452,41 @@
   0%   { background-position: 200% 0; }
   100% { background-position: -200% 0; }
 }
+
+/* ================================================================
+   SKELETON LOADERS
+   ================================================================ */
+
+@keyframes shimmer {
+  0%   { background-position: 200% 0; }
+  100% { background-position: -200% 0; }
+}
+
+.db__event-skeleton,
+.db__chall-skeleton,
+.db__group-skeleton {
+  border-radius: 14px;
+  background: linear-gradient(
+    90deg,
+    var(--clr-border, #E4DCF5) 25%,
+    var(--clr-bg, #F7F4FD)    50%,
+    var(--clr-border, #E4DCF5) 75%
+  );
+  background-size: 200% 100%;
+  animation: shimmer 1.4s infinite;
+}
+
+/* Подія — висота як у реального db__event */
+.db__event-skeleton {
+  height: 72px;
+}
+
+/* Челендж — трохи менший */
+.db__chall-skeleton {
+  height: 58px;
+}
+
+/* Група */
+.db__group-skeleton {
+  height: 58px;
+}

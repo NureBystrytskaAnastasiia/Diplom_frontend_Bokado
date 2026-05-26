@@ -2,7 +2,24 @@ import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 import { login, register, loginWithGoogle } from '../api/auth';
 import type { AuthState, LoginRequest, RegisterRequest, AuthResponse } from '../types/auth';
 
-// 1️⃣ Функція для отримання даних із localStorage
+// Переклад помилок бекенду
+const translateAuthError = (msg: string): string => {
+  const map: Record<string, string> = {
+    'Invalid credentials':         'Невірний email або пароль',
+    'User already exists':         'Користувач з таким email вже існує',
+    'Email already taken':         'Цей email вже зайнятий',
+    'Username already taken':      'Цей нікнейм вже зайнятий',
+    'Invalid email or password':   'Невірний email або пароль',
+    'User not found':              'Користувача не знайдено',
+    'Registration failed':         'Помилка реєстрації',
+    'Login failed':                'Помилка входу',
+    'Google login failed':         'Помилка входу через Google',
+  };
+  return map[msg] ?? msg;
+};
+
+
+//Функція для отримання даних із localStorage
 const loadUserFromLocalStorage = (): { user: AuthState['user']; token: string | null } => {
   try {
     const user = JSON.parse(localStorage.getItem('user') || 'null');
@@ -14,7 +31,7 @@ const loadUserFromLocalStorage = (): { user: AuthState['user']; token: string | 
   }
 };
 
-// 2️⃣ Ініціалізація стану
+// Ініціалізація стану
 const { user, token } = loadUserFromLocalStorage();
 
 const initialState: AuthState = {
@@ -24,7 +41,7 @@ const initialState: AuthState = {
   error: null,
 };
 
-// 3️⃣ Async Thunks
+// Async Thunks
 export const loginUser = createAsyncThunk<AuthResponse, LoginRequest, { rejectValue: string }>(
   'auth/login',
   async (credentials, { rejectWithValue }) => {
@@ -35,7 +52,9 @@ export const loginUser = createAsyncThunk<AuthResponse, LoginRequest, { rejectVa
       localStorage.setItem('user', JSON.stringify(response.user));
       return response;
     } catch (error: any) {
-      return rejectWithValue(error.response?.data || 'Login failed');
+      const msg = error.response?.data;
+      const uk = typeof msg === 'string' ? translateAuthError(msg) : 'Невірний email або пароль';
+      return rejectWithValue(uk);
     }
   }
 );
@@ -50,12 +69,14 @@ export const registerUser = createAsyncThunk<AuthResponse, RegisterRequest, { re
       localStorage.setItem('user', JSON.stringify(response.user));
       return response;
     } catch (error: any) {
-      return rejectWithValue(error.response?.data || 'Registration failed');
+      const msg = error.response?.data;
+      const uk = typeof msg === 'string' ? translateAuthError(msg) : 'Помилка реєстрації';
+      return rejectWithValue(uk);
     }
   }
 );
 
-// 🆕 Google Login Thunk
+//Google Login Thunk
 export const loginWithGoogleUser = createAsyncThunk<
   AuthResponse, 
   { userId: number, token: string }, 
@@ -70,12 +91,14 @@ export const loginWithGoogleUser = createAsyncThunk<
       localStorage.setItem('user', JSON.stringify(response.user));
       return response;
     } catch (error: any) {
-      return rejectWithValue(error.response?.data || 'Google login failed');
+      const msg = error.response?.data;
+      const uk = typeof msg === 'string' ? translateAuthError(msg) : 'Помилка входу через Google';
+      return rejectWithValue(uk);
     }
   }
 );
 
-// 4️⃣ Slice
+//Slice
 const authSlice = createSlice({
   name: 'auth',
   initialState,
@@ -92,7 +115,7 @@ const authSlice = createSlice({
   },
   extraReducers: (builder) => {
     builder
-      // 🔐 Login
+      // Login
       .addCase(loginUser.pending, (state) => {
         state.isLoading = true;
         state.error = null;
@@ -106,7 +129,7 @@ const authSlice = createSlice({
         state.isLoading = false;
         state.error = action.payload as string;
       })
-      // 🔐 Register
+      // Register
       .addCase(registerUser.pending, (state) => {
         state.isLoading = true;
         state.error = null;
@@ -120,7 +143,7 @@ const authSlice = createSlice({
         state.isLoading = false;
         state.error = action.payload as string;
       })
-      // 🆕 Google Login
+      // Google Login
       .addCase(loginWithGoogleUser.pending, (state) => {
         state.isLoading = true;
         state.error = null;

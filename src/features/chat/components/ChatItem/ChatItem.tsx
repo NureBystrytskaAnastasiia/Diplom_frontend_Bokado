@@ -37,9 +37,7 @@ const ChatItem: React.FC<ChatItemProps> = ({ chat, isActive, onClick, onDelete, 
     : null;
 
   const lastMsg   = chat.lastMessage;
-  const preview   = lastMsg?.attachment && !lastMsg.text
-    ? '📎 Вкладення'
-    : (lastMsg?.text || '');
+  const preview   = lastMsg?.text || '';
 
   const time      = lastMsg ? formatTime(lastMsg.sentAt) : '';
   const unread    = chat.unreadCount ?? 0;

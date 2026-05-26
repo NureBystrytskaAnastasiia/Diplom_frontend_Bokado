@@ -69,7 +69,7 @@ const challengesSlice = createSlice({
       .addCase(loadAllChallenges.fulfilled, (state, action) => {
         state.challenges = action.payload;
         state.selectedChallengeIds = action.payload
-          .filter(challenge => challenge.isActive)
+          
           .map(challenge => challenge.challengeId);
         state.loading = false;
       })

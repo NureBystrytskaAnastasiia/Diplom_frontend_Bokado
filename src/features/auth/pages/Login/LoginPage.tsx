@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { FiMail, FiLock, FiArrowRight } from 'react-icons/fi';
+import { FiMail, FiLock, FiArrowRight, FiEye, FiEyeOff } from 'react-icons/fi';
 import { useAppDispatch, useAppSelector } from '../../../../shared/hooks/useAuth';
 import { loginUser } from '../../store/authSlice';
 import type { AuthResponse } from '../../types/auth';
@@ -20,20 +20,47 @@ const formVariants = {
   },
 };
 
+const validateEmail = (v: string) => {
+  if (!v) return 'Введи email';
+  if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v)) return 'Невірний формат email';
+  return '';
+};
+const validatePassword = (v: string) => {
+  if (!v) return 'Введи пароль';
+  if (v.length < 6) return 'Мінімум 6 символів';
+  return '';
+};
+
 const LoginPage: React.FC = () => {
   const [email, setEmail]       = useState('');
   const [password, setPassword] = useState('');
+  const [showPass, setShowPass] = useState(false);
+  const [touched, setTouched]   = useState({ email: false, password: false });
   const dispatch  = useAppDispatch();
   const navigate  = useNavigate();
   const { isLoading, error } = useAppSelector((state) => state.auth);
 
+  const emailErr    = touched.email    ? validateEmail(email)       : '';
+  const passwordErr = touched.password ? validatePassword(password) : '';
+
+  const handleBlur = (field: 'email' | 'password') =>
+    setTouched((t) => ({ ...t, [field]: true }));
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    setTouched({ email: true, password: true });
+    if (validateEmail(email) || validatePassword(password)) return;
     const result = await dispatch(loginUser({ email, password }));
     if (result.meta.requestStatus === 'fulfilled' && result.payload) {
       const user = (result.payload as AuthResponse).user;
       navigate(user.isAdmin ? '/admin' : '/dashboard');
     }
+  };
+
+  const fieldClass = (err: string, val: string, isTouched: boolean) => {
+    const base = 'auth-field__input';
+    if (!isTouched || !val) return base;
+    return err ? `${base} auth-field__input--error` : `${base} auth-field__input--valid`;
   };
 
   return (
@@ -54,6 +81,7 @@ const LoginPage: React.FC = () => {
         {error && <div className="auth-form__error">{error}</div>}
 
         <form onSubmit={handleSubmit} className="auth-form" noValidate>
+          {/* Email */}
           <div className="auth-field">
             <label htmlFor="email" className="auth-field__label">Email</label>
             <div className="auth-field__wrap">
@@ -61,16 +89,22 @@ const LoginPage: React.FC = () => {
               <input
                 id="email"
                 type="email"
-                className="auth-field__input"
+                className={fieldClass(emailErr, email, touched.email)}
                 placeholder="your@email.com"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
+                onBlur={() => handleBlur('email')}
                 required
                 autoComplete="email"
               />
+              {touched.email && !emailErr && email && (
+                <span className="auth-field__check" aria-hidden="true">✓</span>
+              )}
             </div>
+            {emailErr && <p className="auth-field__hint auth-field__hint--error">{emailErr}</p>}
           </div>
 
+          {/* Password */}
           <div className="auth-field">
             <div className="auth-field__label-row">
               <label htmlFor="password" className="auth-field__label">Пароль</label>
@@ -80,15 +114,26 @@ const LoginPage: React.FC = () => {
               <FiLock className="auth-field__icon" size={16} />
               <input
                 id="password"
-                type="password"
-                className="auth-field__input"
+                type={showPass ? 'text' : 'password'}
+                className={fieldClass(passwordErr, password, touched.password)}
                 placeholder="••••••••"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
+                onBlur={() => handleBlur('password')}
                 required
                 autoComplete="current-password"
               />
+              <button
+                type="button"
+                className="auth-field__eye"
+                onClick={() => setShowPass((s) => !s)}
+                tabIndex={-1}
+                aria-label={showPass ? 'Сховати пароль' : 'Показати пароль'}
+              >
+                {showPass ? <FiEyeOff size={16} /> : <FiEye size={16} />}
+              </button>
             </div>
+            {passwordErr && <p className="auth-field__hint auth-field__hint--error">{passwordErr}</p>}
           </div>
 
           <button
