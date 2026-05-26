@@ -4,7 +4,7 @@ import { FiUser, FiUserPlus, FiCheck, FiArrowRight } from 'react-icons/fi';
 import type { FriendDto, FriendStatus } from '../../../friends/types/friends';
 import './UserSearchCard.css';
 
-const API_BASE = 'https://localhost:7192';
+const API_BASE = import.meta.env.VITE_API_URL ?? 'https://bokadoserver-production.up.railway.app';
 
 interface UserSearchCardProps {
   user: FriendDto;

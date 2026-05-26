@@ -2,7 +2,7 @@
 import React from 'react';
 import type { Message } from '../types/chat';
 
-const BASE_URL = import.meta.env.VITE_API_URL ?? 'https://localhost:7192';
+const BASE_URL = import.meta.env.VITE_API_URL ?? import.meta.env.VITE_API_URL ?? 'https://bokadoserver-production.up.railway.app';
 
 interface MessagesListProps {
   messages:        Message[];

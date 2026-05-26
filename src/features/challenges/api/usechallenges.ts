@@ -1,6 +1,6 @@
 import type { ChallengeDto, CheckChallengeResponse } from '../types/challenge';
 
-const API_BASE_URL = 'https://localhost:7192/api/Challenge';
+const API_BASE_URL = `${import.meta.env.VITE_API_URL ?? 'https://bokadoserver-production.up.railway.app'}/api/Challenge`;
 
 /**
  * Дістає повідомлення про помилку з відповіді беку.

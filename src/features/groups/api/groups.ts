@@ -1,7 +1,7 @@
 import axios from 'axios';
 import type { GetGroupDto, CreateGroupDto, UpdateGroupDto } from '../types/group';
 
-const BASE = 'https://localhost:7192/api/Group';
+const BASE = `${import.meta.env.VITE_API_URL ?? 'https://bokadoserver-production.up.railway.app'}/api/Group`;
 
 const authHeader = () => ({
   Authorization: `Bearer ${localStorage.getItem('token')}`,

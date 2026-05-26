@@ -4,7 +4,7 @@ import { FiUsers, FiTrash2, FiCheck } from 'react-icons/fi';
 import type { Chat } from '../../types/chat';
 import './ChatItem.css';
 
-const BASE_URL = import.meta.env.VITE_API_URL ?? 'https://localhost:7192';
+const BASE_URL = import.meta.env.VITE_API_URL ?? import.meta.env.VITE_API_URL ?? 'https://bokadoserver-production.up.railway.app';
 
 interface ChatItemProps {
   chat:      Chat;

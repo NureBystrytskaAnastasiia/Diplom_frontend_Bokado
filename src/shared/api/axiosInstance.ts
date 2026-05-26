@@ -2,7 +2,7 @@
   import { store } from '../../store';
   import { logout } from '../../features/auth/store/authSlice';
 
-  export const BASE_URL = import.meta.env.VITE_API_URL ?? 'https://api.bokado.website';
+  export const BASE_URL = import.meta.env.VITE_API_URL ?? 'https://bokadoserver-production.up.railway.app';
 
   const axiosInstance = axios.create({
     baseURL: BASE_URL,

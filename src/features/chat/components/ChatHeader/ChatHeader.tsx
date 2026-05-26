@@ -6,7 +6,7 @@ import type { Chat } from '../../types/chat';
 import UserCardDrawer from '../UserCardDrawer/UserCardDrawer';
 import './ChatHeader.css';
 
-const BASE_URL = import.meta.env.VITE_API_URL ?? 'https://localhost:7192';
+const BASE_URL = import.meta.env.VITE_API_URL ?? import.meta.env.VITE_API_URL ?? 'https://bokadoserver-production.up.railway.app';
 
 interface ChatHeaderProps {
   chat: Chat | null;

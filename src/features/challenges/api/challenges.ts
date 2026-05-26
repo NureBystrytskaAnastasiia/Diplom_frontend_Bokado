@@ -1,7 +1,7 @@
 import axios from 'axios';
 import type { Challenge } from '../types/challenge';
 
-const API_BASE_URL = 'https://localhost:7192/api/Admin';
+const API_BASE_URL = `${import.meta.env.VITE_API_URL ?? 'https://bokadoserver-production.up.railway.app'}/api/Admin`;
 
 
 export const fetchAllChallenges = async (): Promise<Challenge[]> => {

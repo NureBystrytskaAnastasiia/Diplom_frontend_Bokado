@@ -1,7 +1,7 @@
 import axios from 'axios';
 import type { Event, EventDto, UpdateEventDto } from '../types/event';
 
-const API_BASE_URL = 'https://localhost:7192/api/Event';
+const API_BASE_URL = `${import.meta.env.VITE_API_URL ?? 'https://bokadoserver-production.up.railway.app'}/api/Event`;
 
 const authHeaders = () => {
   const token = localStorage.getItem('token');

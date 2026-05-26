@@ -1,7 +1,7 @@
 import axios from 'axios';
 import type { FriendDto, FriendRequestDto, FriendStatusDto } from '../types/friends';
 
-const BASE = 'https://localhost:7192/api/Friends';
+const BASE = `${import.meta.env.VITE_API_URL ?? 'https://bokadoserver-production.up.railway.app'}/api/Friends`;
 
 const authHeader = () => {
   const token = localStorage.getItem('token');

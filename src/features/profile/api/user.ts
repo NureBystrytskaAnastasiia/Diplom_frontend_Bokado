@@ -1,7 +1,7 @@
 import axios from 'axios';
 import type { UserProfile, UserDetailInfo, UpdateProfileRequest, Interest } from '../types/user';
 
-const API_URL = 'https://localhost:7192/api/users';
+const API_URL = `${import.meta.env.VITE_API_URL ?? 'https://bokadoserver-production.up.railway.app'}/api/users`;
 
 axios.interceptors.request.use(config => {
   const token = localStorage.getItem('token');
@@ -48,6 +48,6 @@ export const updateUserProfile = async (
 };
 
 export const getAvailableInterests = async (): Promise<Interest[]> => {
-  const response = await axios.get('https://localhost:7192/api/Interest');
+  const response = await axios.get(`${import.meta.env.VITE_API_URL ?? 'https://bokadoserver-production.up.railway.app'}/api/Interest`);
   return response.data;
 };

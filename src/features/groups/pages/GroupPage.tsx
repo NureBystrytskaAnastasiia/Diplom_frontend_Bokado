@@ -19,7 +19,7 @@ import {
 import AppLayout from '../../../shared/components/AppLayout/AppLayout';
 import '../styles/GroupPage.css';
 
-const API_BASE = 'https://localhost:7192';
+const API_BASE = import.meta.env.VITE_API_URL ?? 'https://bokadoserver-production.up.railway.app';
 
 const roleLabel: Record<string, string> = {
   Owner: 'Власник',

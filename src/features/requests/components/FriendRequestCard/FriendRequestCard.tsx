@@ -3,7 +3,7 @@ import { FiUser, FiCheck, FiX } from 'react-icons/fi';
 import type { FriendRequestDto } from '../../../friends/types/friends';
 import './FriendRequestCard.css';
 
-const API_BASE = 'https://localhost:7192';
+const API_BASE = import.meta.env.VITE_API_URL ?? 'https://bokadoserver-production.up.railway.app';
 
 interface FriendRequestCardProps {
   request: FriendRequestDto;

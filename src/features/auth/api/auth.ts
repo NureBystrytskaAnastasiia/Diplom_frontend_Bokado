@@ -1,7 +1,7 @@
 import axios from 'axios';
 import type { LoginRequest, RegisterRequest, AuthResponse } from '../types/auth';
 
-const API_URL = 'https://localhost:7192/api/auth';
+const API_URL = `${import.meta.env.VITE_API_URL ?? 'https://bokadoserver-production.up.railway.app'}/api/auth`;
 
 export const login = async (data: LoginRequest): Promise<AuthResponse> => {
   const response = await axios.post<AuthResponse>(`${API_URL}/login`, data);
