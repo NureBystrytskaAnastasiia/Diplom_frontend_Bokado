@@ -39,7 +39,7 @@ const EditProfileModal: React.FC<Props> = ({
   const [avatarFile, setAvatarFile] = useState<File | null>(null);
   const [avatarPreview, setAvatarPreview] = useState<string | null>(
     profile.avatarUrl
-      ? (profile.avatarUrl.startsWith('http') ? profile.avatarUrl : `https://localhost:7192${profile.avatarUrl}`)
+      ? (profile.avatarUrl.startsWith('http') ? profile.avatarUrl : `https://bokadoserver-production.up.railway.app${profile.avatarUrl}`)
       : null
   );
   const fileInputRef = useRef<HTMLInputElement>(null);

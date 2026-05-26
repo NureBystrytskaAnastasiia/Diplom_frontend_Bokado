@@ -36,7 +36,7 @@ const ProfileHeader: React.FC<Props> = ({
   const avatarUrl = profile.avatarUrl
     ? (profile.avatarUrl.startsWith('http')
         ? profile.avatarUrl
-        : `https://localhost:7192${profile.avatarUrl}`)
+        : `https://bokadoserver-production.up.railway.app${profile.avatarUrl}`)
     : null;
 
   return (

@@ -100,7 +100,7 @@ const UsersTable: React.FC<UsersTableProps> = ({ users }) => {
                       <div className="users-table__avatar">
                         {user.avatarUrl ? (
                           <img
-                            src={`https://localhost:7192${user.avatarUrl}`}
+                            src={`https://bokadoserver-production.up.railway.app${user.avatarUrl}`}
                             alt={user.username}
                             onError={(e) => {
                               e.currentTarget.style.display = 'none';
