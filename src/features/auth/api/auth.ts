@@ -20,10 +20,9 @@ export const resetPassword = async (email: string): Promise<void> => {
     },
   });
 };
-export const loginWithGoogle = async (userId: number, token: string): Promise<AuthResponse> => {
+export const loginWithGoogle = async (idToken: string): Promise<AuthResponse> => {
   const response = await axios.post<AuthResponse>(`${API_URL}/login-with-google`, {
-    userId,
-    token
+    idToken
   });
   return response.data;
 };

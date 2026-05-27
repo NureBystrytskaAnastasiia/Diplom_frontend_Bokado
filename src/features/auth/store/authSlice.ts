@@ -18,8 +18,7 @@ const translateAuthError = (msg: string): string => {
   return map[msg] ?? msg;
 };
 
-
-//Функція для отримання даних із localStorage
+// Функція для отримання даних із localStorage
 const loadUserFromLocalStorage = (): { user: AuthState['user']; token: string | null } => {
   try {
     const user = JSON.parse(localStorage.getItem('user') || 'null');
@@ -47,7 +46,6 @@ export const loginUser = createAsyncThunk<AuthResponse, LoginRequest, { rejectVa
   async (credentials, { rejectWithValue }) => {
     try {
       const response = await login(credentials);
-      // Зберігаємо у localStorage
       localStorage.setItem('token', response.token);
       localStorage.setItem('user', JSON.stringify(response.user));
       return response;
@@ -64,7 +62,6 @@ export const registerUser = createAsyncThunk<AuthResponse, RegisterRequest, { re
   async (userData, { rejectWithValue }) => {
     try {
       const response = await register(userData);
-      // Зберігаємо у localStorage
       localStorage.setItem('token', response.token);
       localStorage.setItem('user', JSON.stringify(response.user));
       return response;
@@ -76,17 +73,16 @@ export const registerUser = createAsyncThunk<AuthResponse, RegisterRequest, { re
   }
 );
 
-//Google Login Thunk
+// Google Login Thunk
 export const loginWithGoogleUser = createAsyncThunk<
-  AuthResponse, 
-  { userId: number, token: string }, 
+  AuthResponse,
+  string,
   { rejectValue: string }
 >(
   'auth/loginWithGoogle',
-  async ({ userId, token }, { rejectWithValue }) => {
+  async (idToken, { rejectWithValue }) => {
     try {
-      const response = await loginWithGoogle(userId, token);
-      // Зберігаємо у localStorage
+      const response = await loginWithGoogle(idToken);
       localStorage.setItem('token', response.token);
       localStorage.setItem('user', JSON.stringify(response.user));
       return response;
@@ -98,7 +94,7 @@ export const loginWithGoogleUser = createAsyncThunk<
   }
 );
 
-//Slice
+// Slice
 const authSlice = createSlice({
   name: 'auth',
   initialState,

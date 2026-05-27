@@ -2,8 +2,9 @@ import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { FiMail, FiLock, FiArrowRight, FiEye, FiEyeOff } from 'react-icons/fi';
+import { GoogleLogin } from '@react-oauth/google';
 import { useAppDispatch, useAppSelector } from '../../../../shared/hooks/useAuth';
-import { loginUser } from '../../store/authSlice';
+import { loginUser, loginWithGoogleUser } from '../../store/authSlice';
 import type { AuthResponse } from '../../types/auth';
 import AuthLayout from '../../components/AuthLayout/AuthLayout';
 import '../../styles/AuthForm.css';
@@ -81,7 +82,6 @@ const LoginPage: React.FC = () => {
         {error && <div className="auth-form__error">{error}</div>}
 
         <form onSubmit={handleSubmit} className="auth-form" noValidate>
-          {/* Email */}
           <div className="auth-field">
             <label htmlFor="email" className="auth-field__label">Email</label>
             <div className="auth-field__wrap">
@@ -104,7 +104,6 @@ const LoginPage: React.FC = () => {
             {emailErr && <p className="auth-field__hint auth-field__hint--error">{emailErr}</p>}
           </div>
 
-          {/* Password */}
           <div className="auth-field">
             <div className="auth-field__label-row">
               <label htmlFor="password" className="auth-field__label">Пароль</label>
@@ -146,6 +145,32 @@ const LoginPage: React.FC = () => {
             )}
           </button>
         </form>
+
+        <div className="auth-form__divider">
+          <span>або</span>
+        </div>
+
+        <div className="auth-form__google">
+          <GoogleLogin
+            onSuccess={async (credentialResponse) => {
+              if (!credentialResponse.credential) return;
+              const result = await dispatch(loginWithGoogleUser(credentialResponse.credential));
+              if (result.meta.requestStatus === 'fulfilled' && result.payload) {
+                const user = (result.payload as AuthResponse).user;
+                navigate(user.isAdmin ? '/admin' : '/dashboard');
+              }
+            }}
+            onError={() => console.error('Google login failed')}
+            useOneTap={false}
+            type="standard"
+            theme="outline"
+            size="large"
+            text="signin_with"
+            shape="rectangular"
+            width="360"
+            locale="uk"
+          />
+        </div>
 
         <p className="auth-form__switch">
           Немає акаунту?{' '}
