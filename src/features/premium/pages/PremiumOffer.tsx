@@ -1,8 +1,8 @@
 // src/features/premium/pages/PremiumOffer.tsx
-import React, { useState } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import {
-  FiStar, FiCheck, FiX, FiSend, FiMail,
-  FiUsers, FiMessageCircle, FiZap, FiImage,
+  FiStar, FiCheck, FiX, FiMail,
+  FiUsers, FiMessageCircle, FiZap, FiImage, FiShield, FiCreditCard,
 } from 'react-icons/fi';
 import AppLayout from '../../../shared/components/AppLayout/AppLayout';
 import ContactAdminButton from '../../admin/components/ContactAdminButton/ContactAdminButton';
@@ -10,208 +10,166 @@ import { useAppSelector } from '../../../shared/hooks/useAuth';
 import axiosInstance from '../../../shared/api/axiosInstance';
 import '../styles/PremiumOffer.css';
 
-/* ── Дані таблиці порівняння ── */
 const FEATURES = [
-  { label: 'Груп можна створити',        free: 'до 3',      premium: 'Без обмежень', icon: <FiUsers size={15}/> },
-  { label: 'Учасників у групі',          free: 'до 10',     premium: 'до 100',       icon: <FiUsers size={15}/> },
-  { label: 'Rich-text редактор у постах', free: false,       premium: true,           icon: <FiMessageCircle size={15}/> },
-  { label: 'Rich-text в описі події',    free: false,       premium: true,           icon: <FiZap size={15}/> },
-  { label: 'Premium-значок на профілі',  free: false,       premium: true,           icon: <FiStar size={15}/> },
-  { label: 'Фото у профілі',             free: true,        premium: true,           icon: <FiImage size={15}/> },
-  { label: 'Участь у подіях',            free: true,        premium: true,           icon: <FiCheck size={15}/> },
-  { label: 'Групові чати',               free: true,        premium: true,           icon: <FiMessageCircle size={15}/> },
+  { label: 'Груп можна створити',         free: 'до 3',  premium: 'Без обмежень', icon: <FiUsers size={15}/> },
+  { label: 'Учасників у групі',           free: 'до 10', premium: 'до 100',       icon: <FiUsers size={15}/> },
+  { label: 'Rich-text редактор у постах', free: false,   premium: true,           icon: <FiMessageCircle size={15}/> },
+  { label: 'Rich-text в описі події',     free: false,   premium: true,           icon: <FiZap size={15}/> },
+  { label: 'Premium-значок на профілі',   free: false,   premium: true,           icon: <FiStar size={15}/> },
+  { label: 'Фото у профілі',              free: true,    premium: true,           icon: <FiImage size={15}/> },
+  { label: 'Участь у подіях',             free: true,    premium: true,           icon: <FiCheck size={15}/> },
+  { label: 'Групові чати',                free: true,    premium: true,           icon: <FiMessageCircle size={15}/> },
 ];
 
 const Cell: React.FC<{ value: boolean | string }> = ({ value }) => {
-  if (typeof value === 'string') {
-    return <span className="pm-table__val">{value}</span>;
-  }
+  if (typeof value === 'string') return <span className="pm-table__val">{value}</span>;
   return value
     ? <FiCheck size={17} className="pm-table__yes" />
     : <FiX    size={17} className="pm-table__no"  />;
 };
 
 const PremiumOffer: React.FC = () => {
-  const { user }    = useAppSelector(s => s.auth);
-  const isPremium   = useAppSelector(s => s.user?.profile?.isPremium ?? false);
+  const { user }  = useAppSelector(s => s.auth);
+  const isPremium = useAppSelector(s => s.user?.profile?.isPremium ?? false);
 
-  const [name,    setName]    = useState(user?.username ?? '');
-  const [email,   setEmail]   = useState('');
-  const [message, setMessage] = useState('');
-  const [sent,    setSent]    = useState(false);
-  const [sending, setSending] = useState(false);
-  const [error,   setError]   = useState<string | null>(null);
+  const [loading,  setLoading]  = useState(false);
+  const [error,    setError]    = useState<string | null>(null);
+  const [success,  setSuccess]  = useState(false);
 
-  const handleSend = async () => {
-    if (!email.trim()) { setError('Вкажіть email'); return; }
-    setSending(true);
+  const formRef = useRef<HTMLFormElement>(null);
+  const dataRef = useRef<HTMLInputElement>(null);
+  const signRef = useRef<HTMLInputElement>(null);
+
+  // Перевіряємо чи повернулись після успішної оплати
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    if (params.get('success') === 'true') setSuccess(true);
+  }, []);
+
+  const handlePay = async () => {
+    if (!user?.userId) return;
+    setLoading(true);
     setError(null);
     try {
-      /* Надсилаємо заявку на пошту адміна через бек.
-         Якщо окремого ендпоінту немає — просто позначаємо як «надіслано»
-         і адмін вручну активує підписку через адмін-панель. */
-      await axiosInstance.post('/api/Admin/premium-request', {
-        userId:  user?.userId,
-        name:    name.trim(),
-        email:   email.trim(),
-        message: message.trim(),
-      }).catch(() => {
-        /* Ендпоінт може не існувати — ігноруємо помилку,
-           бо за документацією активація ручна через адмін-панель */
+      const res = await axiosInstance.post('/api/LiqPay/create-payment', {
+        userId: user.userId,
       });
-      setSent(true);
+      const { data, signature } = res.data;
+
+      // Вставляємо data і signature в форму і сабмітимо
+      if (dataRef.current) dataRef.current.value = data;
+      if (signRef.current) signRef.current.value = signature;
+      formRef.current?.submit();
     } catch {
-      setError('Щось пішло не так. Напишіть напряму адміністратору.');
+      setError('Помилка при створенні платежу. Спробуйте ще раз.');
     } finally {
-      setSending(false);
+      setLoading(false);
     }
   };
 
   return (
     <AppLayout>
+      {/* Прихована форма для LiqPay */}
+      <form
+        ref={formRef}
+        method="POST"
+        action="https://www.liqpay.ua/api/3/checkout"
+        acceptCharset="utf-8"
+        style={{ display: 'none' }}
+      >
+        <input ref={dataRef}  type="hidden" name="data"      />
+        <input ref={signRef}  type="hidden" name="signature" />
+      </form>
+
       <div className="pm-page">
 
-        {/* ── Hero ── */}
+        {/* Hero */}
         <div className="pm-hero">
-          <div className="pm-hero__badge">
-            <FiStar size={14} />
-            Premium
-          </div>
-          <h1 className="pm-hero__title">
-            Розблокуй всі<br />можливості Bokado
-          </h1>
+          <div className="pm-hero__badge"><FiStar size={14} /> Premium</div>
+          <h1 className="pm-hero__title">Розблокуй всі<br />можливості Bokado</h1>
           <p className="pm-hero__sub">
             Більше груп, більше учасників, форматований текст і золотий значок на профілі.
           </p>
-
           {isPremium && (
-            <div className="pm-hero__active">
-              <FiStar size={16} />
-              У вас вже є Premium підписка!
-            </div>
+            <div className="pm-hero__active"><FiStar size={16} /> У вас вже є Premium підписка!</div>
           )}
         </div>
 
-        {/* ── Ціна ── */}
+        {/* Ціна */}
         <div className="pm-price-card">
           <div className="pm-price-card__amount">
-            <span className="pm-price-card__currency">₴</span>
-            100
+            <span className="pm-price-card__currency">₴</span>100
           </div>
           <div className="pm-price-card__period">одноразово</div>
           <p className="pm-price-card__note">
-            Підписка активується адміністратором після підтвердження оплати
+            Підписка активується автоматично після підтвердження оплати
           </p>
         </div>
 
-        {/* ── Таблиця порівняння ── */}
+        {/* Таблиця */}
         <div className="pm-section">
           <h2 className="pm-section__title">Що ви отримуєте</h2>
-
           <div className="pm-table">
-            {/* Header */}
             <div className="pm-table__header">
               <div className="pm-table__col-label" />
-              <div className="pm-table__col pm-table__col--free">
-                Безкоштовно
-              </div>
-              <div className="pm-table__col pm-table__col--premium">
-                <FiStar size={13} />
-                Premium
-              </div>
+              <div className="pm-table__col pm-table__col--free">Безкоштовно</div>
+              <div className="pm-table__col pm-table__col--premium"><FiStar size={13} /> Premium</div>
             </div>
-
-            {/* Rows */}
             {FEATURES.map((f, i) => (
               <div key={i} className="pm-table__row">
                 <div className="pm-table__row-label">
-                  <span className="pm-table__row-icon">{f.icon}</span>
-                  {f.label}
+                  <span className="pm-table__row-icon">{f.icon}</span>{f.label}
                 </div>
-                <div className="pm-table__col pm-table__col--free">
-                  <Cell value={f.free} />
-                </div>
-                <div className="pm-table__col pm-table__col--premium">
-                  <Cell value={f.premium} />
-                </div>
+                <div className="pm-table__col pm-table__col--free"><Cell value={f.free} /></div>
+                <div className="pm-table__col pm-table__col--premium"><Cell value={f.premium} /></div>
               </div>
             ))}
           </div>
         </div>
 
-        {/* ── Форма заявки ── */}
+        {/* Оплата */}
         {!isPremium && (
           <div className="pm-section">
-            <h2 className="pm-section__title">Залишити заявку</h2>
-            <p className="pm-section__sub">
-              Заповніть форму — адміністратор зв'яжеться з вами та активує підписку після оплати.
-            </p>
+            <h2 className="pm-section__title">Оплатити</h2>
 
-            {sent ? (
+            {success ? (
               <div className="pm-sent">
                 <FiCheck size={28} />
-                <p>Заявку надіслано! Адміністратор зв'яжеться з вами найближчим часом.</p>
+                <p>Оплату прийнято! Підписка активована автоматично. Перезайдіть в акаунт.</p>
               </div>
             ) : (
-              <div className="pm-form">
-                <div className="pm-form__field">
-                  <label className="pm-form__label">Ваше ім'я</label>
-                  <input
-                    className="pm-form__input"
-                    placeholder="Нікнейм або ім'я"
-                    value={name}
-                    onChange={e => setName(e.target.value)}
-                  />
-                </div>
-
-                <div className="pm-form__field">
-                  <label className="pm-form__label">Email для зворотного зв'язку *</label>
-                  <input
-                    className="pm-form__input"
-                    type="email"
-                    placeholder="your@email.com"
-                    value={email}
-                    onChange={e => { setEmail(e.target.value); setError(null); }}
-                  />
-                </div>
-
-                <div className="pm-form__field">
-                  <label className="pm-form__label">Повідомлення (необов'язково)</label>
-                  <textarea
-                    className="pm-form__input pm-form__textarea"
-                    placeholder="Додаткова інформація або питання..."
-                    value={message}
-                    onChange={e => setMessage(e.target.value)}
-                    rows={3}
-                  />
-                </div>
-
+              <>
                 {error && <p className="pm-form__error">{error}</p>}
 
                 <button
-                  className="pm-form__submit"
-                  onClick={handleSend}
-                  disabled={sending}
+                  className="pm-liqpay-btn"
+                  onClick={handlePay}
+                  disabled={loading}
                 >
-                  {sending ? (
+                  {loading ? (
                     <span className="pm-form__spinner" />
                   ) : (
-                    <FiSend size={15} />
+                    <FiCreditCard size={18} />
                   )}
-                  {sending ? 'Надсилаю...' : 'Надіслати заявку'}
+                  {loading ? 'Завантаження...' : 'Оплатити ₴100 через LiqPay'}
                 </button>
-              </div>
+
+                <div className="pm-security">
+                  <FiShield size={14} />
+                  <span>Захищена оплата через LiqPay. Visa, Mastercard, Google Pay, Apple Pay.</span>
+                </div>
+              </>
             )}
           </div>
         )}
 
-        {/* ── Контакт адміна ── */}
+        {/* Контакт адміна */}
         <div className="pm-contact">
           <FiMail size={18} className="pm-contact__icon" />
           <div style={{ flex: 1 }}>
-            <p className="pm-contact__title">Або напишіть напряму в чаті</p>
+            <p className="pm-contact__title">Є питання?</p>
             <p style={{ fontSize: '0.78rem', color: 'var(--clr-text-muted)', marginTop: 4 }}>
-              Адміністратор відповість і активує підписку
+              Напишіть адміністратору — він допоможе
             </p>
           </div>
           <ContactAdminButton label="Написати" variant="outline" size="sm" />

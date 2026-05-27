@@ -1,3 +1,52 @@
+/* ── Google Pay ── */
+.pm-gpay-wrap {
+  margin-bottom: 1rem;
+}
+
+.pm-gpay-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.6rem;
+  width: 100%;
+  padding: 14px 20px;
+  background: #000;
+  color: #fff;
+  border: none;
+  border-radius: 12px;
+  font-size: 0.95rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: opacity 0.2s, transform 0.1s;
+}
+.pm-gpay-btn:hover { opacity: 0.88; transform: translateY(-1px); }
+.pm-gpay-btn:active { transform: translateY(0); }
+.pm-gpay-btn:disabled { opacity: 0.6; cursor: not-allowed; }
+
+.pm-divider {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  margin: 1.25rem 0 1rem;
+  color: var(--clr-text-muted);
+  font-size: 0.8rem;
+}
+.pm-divider::before,
+.pm-divider::after {
+  content: '';
+  flex: 1;
+  height: 1px;
+  background: var(--clr-border, #e5e5e5);
+}
+
+.pm-security {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-top: 1rem;
+  color: var(--clr-text-muted);
+  font-size: 0.75rem;
+}
 /* src/features/premium/styles/PremiumOffer.css */
 
 .pm-page {
@@ -363,4 +412,37 @@
   .pm-table__row { grid-template-columns: 1fr 90px 90px; }
   .pm-table__row-label { padding: 0.7rem 0.75rem; font-size: 0.8rem; }
   .pm-section { padding: 1.25rem 1rem; }
+}
+/* Додай в кінець PremiumOffer.css */
+
+/* ── LiqPay кнопка ── */
+.pm-liqpay-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.6rem;
+  width: 100%;
+  padding: 15px 20px;
+  background: linear-gradient(135deg, #00a046 0%, #00c853 100%);
+  color: #fff;
+  border: none;
+  border-radius: 12px;
+  font-size: 1rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: opacity 0.2s, transform 0.1s;
+  box-shadow: 0 4px 15px rgba(0, 160, 70, 0.3);
+}
+.pm-liqpay-btn:hover   { opacity: 0.9; transform: translateY(-1px); }
+.pm-liqpay-btn:active  { transform: translateY(0); }
+.pm-liqpay-btn:disabled { opacity: 0.6; cursor: not-allowed; }
+
+/* ── Безпека ── */
+.pm-security {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-top: 1rem;
+  color: var(--clr-text-muted);
+  font-size: 0.75rem;
 }
