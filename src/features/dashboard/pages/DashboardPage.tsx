@@ -5,6 +5,8 @@ import { fetchChallenges, completeChallenge } from '../../challenges/store/usech
 import { loadRecommendations, joinGroupById } from '../../groups/store/groupsSlice';
 import { useCats } from '../../../hooks/useCat';
 import AppLayout from '../../../shared/components/AppLayout/AppLayout';
+import WeatherWidget from '../components/WeatherWidget/Weatherwidget';
+import NearbyUsersMap from '../components/Nearbyusersmap/Nearbyusersmap';
 
 import DashboardHero       from '../components/DashboardHero';
 import EventsCard          from '../components/EventsCard';
@@ -95,12 +97,13 @@ const DashboardPage: React.FC = () => {
             onJoin={handleJoinGroup}
           />
         </div>
-
+        <WeatherWidget />
         <CatsCard
           cats={cats}
           loading={catsLoading}
           onRefetch={refetchCats}
         />
+        <NearbyUsersMap />
 
       </div>
     </AppLayout>

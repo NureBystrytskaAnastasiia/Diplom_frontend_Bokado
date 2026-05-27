@@ -3,6 +3,7 @@ export interface User {
   username: string;
   email: string;
   isAdmin: boolean;
+  city?: string;
 }
 
 export interface AuthState {
