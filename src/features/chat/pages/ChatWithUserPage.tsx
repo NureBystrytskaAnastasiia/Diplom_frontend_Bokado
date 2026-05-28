@@ -13,7 +13,6 @@ const ChatRoomPage: React.FC = () => {
   const { user }   = useAppSelector((s) => s.auth);
   const { chats }  = useAppSelector((s) => s.chat);
 
-  // Знаходимо поточний чат зі store щоб показати правильну назву
   const currentChat = chats.find(c => c.chatId === Number(chatId)) ?? null;
 
   const [messages, setMessages]                     = useState<Message[]>([]);
@@ -26,7 +25,7 @@ const ChatRoomPage: React.FC = () => {
   const [recordingTime, setRecordingTime]           = useState(0);
   const [showRecordingControls, setShowRecordingControls] = useState(false);
 
-  const messagesEndRef      = useRef<HTMLDivElement>(document.createElement('div'));
+  const messagesEndRef       = useRef<HTMLDivElement>(document.createElement('div'));
   const recordingIntervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
 
   const fetchMessages = async () => {
@@ -41,18 +40,25 @@ const ChatRoomPage: React.FC = () => {
 
   const handleSendMessage = async () => {
     if (!newMessage.trim() && !file) return;
+    if (loading) return; // захист від подвійного кліку
+
+    // Очищаємо поля ДО запиту — кнопка одразу стає неактивною
+    const messageToSend = newMessage.trim();
+    const fileToSend = file;
+    setNewMessage('');
+    setFile(null);
+    setFilePreview(null);
+
     setLoading(true);
     try {
-      await sendMessage(Number(chatId), newMessage.trim(), file ?? undefined);
-      setNewMessage('');
-      setFile(null);
-      setFilePreview(null);
-      fetchMessages();
+      await sendMessage(Number(chatId), messageToSend, fileToSend ?? undefined);
     } catch (error) {
       console.error('Failed to send message', error);
+      setNewMessage(messageToSend);
     } finally {
       setLoading(false);
     }
+    fetchMessages(); // без await — оновлюємо у фоні
   };
 
   const handleSendVoiceMessage = async (voiceBlob: Blob) => {
@@ -127,7 +133,6 @@ const ChatRoomPage: React.FC = () => {
 
   useEffect(() => {
     fetchMessages();
-    // Позначаємо чат як прочитаний на беку при відкритті
     if (chatId) {
       markChatAsReadApi(Number(chatId));
     }

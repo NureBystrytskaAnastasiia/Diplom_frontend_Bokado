@@ -1,14 +1,14 @@
-import { useEffect } from 'react';
-import * as signalR from '@microsoft/signalr';
+import { useEffect, useRef } from 'react';
 import { useAppDispatch, useAppSelector } from '../../../shared/hooks/useAuth';
-import { addNotification, fetchNotifications } from '../store/notificationsSlice';
-import type { Notification } from '../store/notificationsSlice';
+import { fetchNotifications } from '../store/notificationsSlice';
 
-const BASE_URL = import.meta.env.VITE_API_URL ?? 'https://bokadoserver-production.up.railway.app';
+// Замість SignalR — простий polling кожні 30 секунд
+// Railway не підтримує довгі з'єднання на безкоштовному плані
 
 export const useNotificationHub = () => {
   const dispatch = useAppDispatch();
   const token = useAppSelector(s => s.auth.token);
+  const prevCountRef = useRef(0);
 
   // Запит дозволу на browser push
   useEffect(() => {
@@ -20,43 +20,43 @@ export const useNotificationHub = () => {
   useEffect(() => {
     if (!token) return;
 
-    // Завантажуємо існуючі сповіщення
-    dispatch(fetchNotifications());
+    const poll = async () => {
+      const result = await dispatch(fetchNotifications());
+      
+      if (fetchNotifications.fulfilled.match(result)) {
+        const notifications = result.payload;
+        const unreadCount = notifications.filter((n: any) => !n.isRead).length;
 
-    // Підключаємось до SignalR
-    const connection = new signalR.HubConnectionBuilder()
-      .withUrl(`${BASE_URL}/hubs/notifications`, {
-        accessTokenFactory: () => token,
-        transport: signalR.HttpTransportType.WebSockets |
-                   signalR.HttpTransportType.LongPolling,
-      })
-      .withAutomaticReconnect([0, 2000, 5000, 10000])
-      .configureLogging(signalR.LogLevel.Warning)
-      .build();
+        // Якщо з'явились нові непрочитані — звук і push
+        if (unreadCount > prevCountRef.current) {
+          // 🔊 Звук
+          try {
+            const audio = new Audio('/universfield-new-notification-051-494246.mp3');
+            audio.volume = 0.4;
+            audio.play().catch(() => {});
+          } catch {}
 
-    connection.on('ReceiveNotification', (notification: Notification) => {
-      dispatch(addNotification(notification));
+          // Browser push
+          if ('Notification' in window && Notification.permission === 'granted') {
+            const newest = notifications.find((n: any) => !n.isRead);
+            if (newest) {
+              new Notification('Bokado', {
+                body: newest.message,
+                icon: '/favicon.ico',
+              });
+            }
+          }
+        }
 
-      // 🔊 Звук сповіщення
-      try {
-        const audio = new Audio('/universfield-new-notification-051-494246.mp3');
-        audio.volume = 0.4;
-        audio.play().catch(() => {});
-      } catch {}
-
-      // Browser push notification
-      if ('Notification' in window && Notification.permission === 'granted') {
-        new Notification('Bokado', {
-          body: notification.message,
-          icon: '/favicon.ico',
-        });
+        prevCountRef.current = unreadCount;
       }
-    });
-
-    connection.start().catch(err => console.warn('SignalR connection failed:', err));
-
-    return () => {
-      connection.stop();
     };
+
+    // Одразу при вході
+    poll();
+
+    // Потім кожні 10 секунд
+    const interval = setInterval(poll, 10000);
+    return () => clearInterval(interval);
   }, [token, dispatch]);
 };
