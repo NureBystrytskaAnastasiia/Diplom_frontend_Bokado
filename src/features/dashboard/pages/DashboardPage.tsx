@@ -25,10 +25,34 @@ const DashboardPage: React.FC = () => {
   const { recommendations, actionLoading, loading: groupsLoading } = useAppSelector((s) => s.groups);
   const { cats, loading: catsLoading, refetch: refetchCats }     = useCats(3);
 
-  useEffect(() => {
+ useEffect(() => {
     dispatch(loadEvents());
     if (token) dispatch(fetchChallenges(token));
     dispatch(loadRecommendations());
+
+    // Відправляємо геолокацію на бекенд
+    if (token && navigator.geolocation) {
+      navigator.geolocation.getCurrentPosition(async (pos) => {
+        try {
+          await fetch(
+            `${import.meta.env.VITE_API_URL ?? 'https://bokadoserver-production.up.railway.app'}/api/users/update-location`,
+            {
+              method: 'PUT',
+              headers: {
+                'Content-Type': 'application/json',
+                Authorization: `Bearer ${token}`,
+              },
+              body: JSON.stringify({
+                latitude: pos.coords.latitude,
+                longitude: pos.coords.longitude,
+              }),
+            }
+          );
+        } catch (e) {
+          console.error('Не вдалося оновити геолокацію', e);
+        }
+      });
+    }
   }, [dispatch, token]);
 
   useEffect(() => {
@@ -103,7 +127,7 @@ const DashboardPage: React.FC = () => {
           loading={catsLoading}
           onRefetch={refetchCats}
         />
-        <NearbyUsersMap />
+<NearbyUsersMap />
 
       </div>
     </AppLayout>
