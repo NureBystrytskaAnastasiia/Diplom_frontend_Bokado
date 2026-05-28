@@ -1,33 +1,74 @@
-import React, { useEffect, useState, useRef } from 'react';
+import React, { useEffect, useState, useRef, useCallback } from 'react';
 import { useParams } from 'react-router-dom';
 import { useAppSelector } from '../../../shared/hooks/useAuth';
-import { getChatMessages, sendMessage, deleteMessage, sendVoiceMessage, markChatAsRead as markChatAsReadApi } from '../api/chat';
+import {
+  getChatMessages, sendMessage, deleteMessage,
+  sendVoiceMessage, markChatAsRead as markChatAsReadApi,
+} from '../api/chat';
 import type { Message } from '../types/chat';
 import ChatHeader from '../components/ChatHeader/ChatHeader';
 import MessagesList from '../components/MessagesList';
 import MessageInput from '../components/MessageInput';
+import { useChatHub } from '../hooks/useChatHub';
 import './ChatWithUserPage.css';
 
+const TYPING_STOP_DELAY = 2500;
+
 const ChatRoomPage: React.FC = () => {
-  const { chatId } = useParams<{ chatId: string }>();
-  const { user }   = useAppSelector((s) => s.auth);
-  const { chats }  = useAppSelector((s) => s.chat);
+  const { chatId }      = useParams<{ chatId: string }>();
+  const { user, token } = useAppSelector((s) => s.auth);
+  const { chats }       = useAppSelector((s) => s.chat);
 
   const currentChat = chats.find(c => c.chatId === Number(chatId)) ?? null;
+  const otherUserId = currentChat?.secondMember?.userId;
 
-  const [messages, setMessages]                     = useState<Message[]>([]);
-  const [newMessage, setNewMessage]                 = useState('');
-  const [file, setFile]                             = useState<File | null>(null);
-  const [filePreview, setFilePreview]               = useState<string | null>(null);
-  const [loading, setLoading]                       = useState(false);
-  const [isRecording, setIsRecording]               = useState(false);
-  const [mediaRecorder, setMediaRecorder]           = useState<MediaRecorder | null>(null);
-  const [recordingTime, setRecordingTime]           = useState(0);
+  const [messages, setMessages]     = useState<Message[]>([]);
+  const [newMessage, setNewMessage] = useState('');
+  const [file, setFile]             = useState<File | null>(null);
+  const [filePreview, setFilePreview] = useState<string | null>(null);
+  const [loading, setLoading]       = useState(false);
+
+  const [isRecording, setIsRecording]                     = useState(false);
+  const [mediaRecorder, setMediaRecorder]                 = useState<MediaRecorder | null>(null);
+  const [recordingTime, setRecordingTime]                 = useState(0);
   const [showRecordingControls, setShowRecordingControls] = useState(false);
+
+  const [isOtherOnline, setIsOtherOnline] = useState(false);
+  const [isOtherTyping, setIsOtherTyping] = useState(false);
 
   const messagesEndRef       = useRef<HTMLDivElement>(document.createElement('div'));
   const recordingIntervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
+  const typingTimeoutRef     = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const isTypingSentRef      = useRef(false);
 
+  /* ── SignalR ──────────────────────────────────────────────────────── */
+  const handleTyping = useCallback(
+    (incomingChatId: number, userId: number, typing: boolean) => {
+      if (incomingChatId !== Number(chatId) || userId === user?.userId) return;
+      setIsOtherTyping(typing);
+      if (typing) {
+        if (typingTimeoutRef.current) clearTimeout(typingTimeoutRef.current);
+        typingTimeoutRef.current = setTimeout(() => setIsOtherTyping(false), 4000);
+      }
+    },
+    [chatId, user?.userId]
+  );
+
+  const handleUserOnlineStatus = useCallback(
+    (userId: number, online: boolean) => {
+      if (userId === otherUserId) setIsOtherOnline(online);
+    },
+    [otherUserId]
+  );
+
+  const { sendTyping } = useChatHub({
+    token: token ?? null,
+    chatId: Number(chatId) || null,
+    onTyping: handleTyping,
+    onUserOnlineStatus: handleUserOnlineStatus,
+  });
+
+  /* ── Повідомлення ─────────────────────────────────────────────────── */
   const fetchMessages = async () => {
     if (!chatId) return;
     try {
@@ -40,9 +81,12 @@ const ChatRoomPage: React.FC = () => {
 
   const handleSendMessage = async () => {
     if (!newMessage.trim() && !file) return;
-    if (loading) return; // захист від подвійного кліку
+    if (loading) return;
 
-    // Очищаємо поля ДО запиту — кнопка одразу стає неактивною
+    sendTyping(false);
+    isTypingSentRef.current = false;
+    if (typingTimeoutRef.current) clearTimeout(typingTimeoutRef.current);
+
     const messageToSend = newMessage.trim();
     const fileToSend = file;
     setNewMessage('');
@@ -58,9 +102,27 @@ const ChatRoomPage: React.FC = () => {
     } finally {
       setLoading(false);
     }
-    fetchMessages(); // без await — оновлюємо у фоні
+    fetchMessages();
   };
 
+  /* ── Typing при введенні ──────────────────────────────────────────── */
+  const handleMessageChange = useCallback(
+    (value: string | ((p: string) => string)) => {
+      setNewMessage(value);
+      if (!isTypingSentRef.current) {
+        sendTyping(true);
+        isTypingSentRef.current = true;
+      }
+      if (typingTimeoutRef.current) clearTimeout(typingTimeoutRef.current);
+      typingTimeoutRef.current = setTimeout(() => {
+        sendTyping(false);
+        isTypingSentRef.current = false;
+      }, TYPING_STOP_DELAY);
+    },
+    [sendTyping]
+  );
+
+  /* ── Голосові ─────────────────────────────────────────────────────── */
   const handleSendVoiceMessage = async (voiceBlob: Blob) => {
     try {
       const voiceFile = new File([voiceBlob], 'voice_message.mp3', { type: 'audio/mp3' });
@@ -76,7 +138,6 @@ const ChatRoomPage: React.FC = () => {
       const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
       const recorder = new MediaRecorder(stream);
       const chunks: Blob[] = [];
-
       recorder.ondataavailable = (e) => { if (e.data.size > 0) chunks.push(e.data); };
       recorder.onstop = () => {
         const voiceBlob = new Blob(chunks, { type: 'audio/mp3' });
@@ -84,7 +145,6 @@ const ChatRoomPage: React.FC = () => {
         stream.getTracks().forEach(t => t.stop());
         setRecordingTime(0);
       };
-
       recorder.start();
       setMediaRecorder(recorder);
       setIsRecording(true);
@@ -133,9 +193,7 @@ const ChatRoomPage: React.FC = () => {
 
   useEffect(() => {
     fetchMessages();
-    if (chatId) {
-      markChatAsReadApi(Number(chatId));
-    }
+    if (chatId) markChatAsReadApi(Number(chatId));
     const interval = setInterval(fetchMessages, 5000);
     return () => clearInterval(interval);
   }, [chatId]);
@@ -148,12 +206,17 @@ const ChatRoomPage: React.FC = () => {
     return () => {
       if (mediaRecorder?.state === 'recording') stopRecording(false);
       if (recordingIntervalRef.current) clearInterval(recordingIntervalRef.current);
+      if (typingTimeoutRef.current) clearTimeout(typingTimeoutRef.current);
     };
   }, [mediaRecorder]);
 
   return (
     <div className="chat-room">
-      <ChatHeader chat={currentChat} />
+      <ChatHeader
+        chat={currentChat}
+        isOtherOnline={isOtherOnline}
+        isOtherTyping={isOtherTyping}
+      />
       <MessagesList
         messages={messages}
         userId={user?.userId}
@@ -162,7 +225,7 @@ const ChatRoomPage: React.FC = () => {
       />
       <MessageInput
         newMessage={newMessage}
-        setNewMessage={setNewMessage}
+        setNewMessage={handleMessageChange}
         file={file}
         setFile={setFile}
         filePreview={filePreview}

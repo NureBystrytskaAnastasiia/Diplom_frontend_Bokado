@@ -1,4 +1,3 @@
-// src/features/chat/components/ChatHeader/ChatHeader.tsx
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { FiArrowLeft, FiUsers, FiUser } from 'react-icons/fi';
@@ -6,13 +5,20 @@ import type { Chat } from '../../types/chat';
 import UserCardDrawer from '../UserCardDrawer/UserCardDrawer';
 import './ChatHeader.css';
 
-const BASE_URL = import.meta.env.VITE_API_URL ?? import.meta.env.VITE_API_URL ?? 'https://bokadoserver-production.up.railway.app';
+const BASE_URL =
+  import.meta.env.VITE_API_URL ?? 'https://bokadoserver-production.up.railway.app';
 
 interface ChatHeaderProps {
   chat: Chat | null;
+  isOtherOnline?: boolean;
+  isOtherTyping?: boolean;
 }
 
-const ChatHeader: React.FC<ChatHeaderProps> = ({ chat }) => {
+const ChatHeader: React.FC<ChatHeaderProps> = ({
+  chat,
+  isOtherOnline = false,
+  isOtherTyping = false,
+}) => {
   const navigate = useNavigate();
   const [drawerOpen, setDrawerOpen] = useState(false);
 
@@ -23,45 +29,57 @@ const ChatHeader: React.FC<ChatHeaderProps> = ({ chat }) => {
     ? (rawAvatar.startsWith('http') ? rawAvatar : `${BASE_URL}${rawAvatar}`)
     : null;
 
-  const subtitle  = isGroup ? 'Груповий чат' : 'Особистий чат';
+  let subtitle: React.ReactNode;
+  if (!isGroup && isOtherTyping) {
+    subtitle = (
+      <span className="chat-header__typing">
+        <span className="chat-header__typing-dots">
+          <span /><span /><span />
+        </span>
+        друкує...
+      </span>
+    );
+  } else if (!isGroup && isOtherOnline) {
+    subtitle = <span className="chat-header__online-label">онлайн</span>;
+  } else {
+    subtitle = isGroup ? 'Груповий чат' : 'Особистий чат';
+  }
 
   const handleAvatarClick = () => {
-    // Для особистого чату відкриваємо картку, для групового — не відкриваємо
-    if (!isGroup && chat?.secondMember) {
-      setDrawerOpen(true);
-    }
+    if (!isGroup && chat?.secondMember) setDrawerOpen(true);
   };
 
   return (
     <>
       <div className="chat-header">
-        {/* Назад */}
         <button className="chat-header__back" onClick={() => navigate('/chats')}>
           <FiArrowLeft size={20} />
         </button>
 
-        {/* Аватар — клікабельний для особистих чатів */}
         <button
           className={`chat-header__avatar-btn${!isGroup ? ' chat-header__avatar-btn--clickable' : ''}`}
           onClick={handleAvatarClick}
           disabled={isGroup}
-          title={!isGroup ? 'Переглянути інформацію' : undefined}
         >
-          {avatarUrl ? (
-            <img
-              src={avatarUrl}
-              alt={name}
-              className="chat-header__avatar-img"
-              onError={(e) => { (e.target as HTMLImageElement).style.display = 'none'; }}
-            />
-          ) : (
-            <div className={`chat-header__avatar-fallback${isGroup ? ' chat-header__avatar-fallback--group' : ''}`}>
-              {isGroup ? <FiUsers size={18} /> : <FiUser size={18} />}
-            </div>
-          )}
+          <div className="chat-header__avatar-wrap">
+            {avatarUrl ? (
+              <img
+                src={avatarUrl}
+                alt={name}
+                className="chat-header__avatar-img"
+                onError={(e) => { (e.target as HTMLImageElement).style.display = 'none'; }}
+              />
+            ) : (
+              <div className={`chat-header__avatar-fallback${isGroup ? ' chat-header__avatar-fallback--group' : ''}`}>
+                {isGroup ? <FiUsers size={18} /> : <FiUser size={18} />}
+              </div>
+            )}
+            {!isGroup && isOtherOnline && (
+              <span className="chat-header__online-dot" />
+            )}
+          </div>
         </button>
 
-        {/* Ім'я + підзаголовок — теж клікабельно для особистих */}
         <button
           className={`chat-header__info-btn${!isGroup ? ' chat-header__info-btn--clickable' : ''}`}
           onClick={handleAvatarClick}
@@ -72,12 +90,8 @@ const ChatHeader: React.FC<ChatHeaderProps> = ({ chat }) => {
         </button>
       </div>
 
-      {/* Drawer з інформацією про юзера */}
       {drawerOpen && chat?.secondMember && (
-        <UserCardDrawer
-          user={chat.secondMember}
-          onClose={() => setDrawerOpen(false)}
-        />
+        <UserCardDrawer user={chat.secondMember} onClose={() => setDrawerOpen(false)} />
       )}
     </>
   );

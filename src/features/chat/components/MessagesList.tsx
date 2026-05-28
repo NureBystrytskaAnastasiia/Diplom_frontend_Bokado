@@ -1,8 +1,9 @@
 // src/features/chat/components/MessagesList.tsx
-import React from 'react';
+import React, { useEffect, useRef, useState, useCallback } from 'react';
+import { FiChevronDown } from 'react-icons/fi';
 import type { Message } from '../types/chat';
 
-const BASE_URL = import.meta.env.VITE_API_URL ?? import.meta.env.VITE_API_URL ?? 'https://bokadoserver-production.up.railway.app';
+const BASE_URL = import.meta.env.VITE_API_URL ?? 'https://bokadoserver-production.up.railway.app';
 
 interface MessagesListProps {
   messages:        Message[];
@@ -19,7 +20,6 @@ const formatDate = (iso: string) => {
   const today     = new Date();
   const yesterday = new Date(today);
   yesterday.setDate(yesterday.getDate() - 1);
-
   if (date.toDateString() === today.toDateString())     return 'Сьогодні';
   if (date.toDateString() === yesterday.toDateString()) return 'Вчора';
   return date.toLocaleDateString('uk-UA');
@@ -39,15 +39,40 @@ const MessagesList: React.FC<MessagesListProps> = ({
   onDeleteMessage,
   messagesEndRef,
 }) => {
-  // Сортуємо за часом
+  const containerRef    = useRef<HTMLDivElement>(null);
+  const [showScrollBtn, setShowScrollBtn] = useState(false);
+  const [newCount, setNewCount]           = useState(0);
+  const prevLengthRef   = useRef(messages.length);
+  const isNearBottomRef = useRef(true);
+
+  const checkScrollPosition = useCallback(() => {
+    const el = containerRef.current;
+    if (!el) return;
+    const distanceFromBottom = el.scrollHeight - el.scrollTop - el.clientHeight;
+    isNearBottomRef.current = distanceFromBottom < 80;
+    setShowScrollBtn(distanceFromBottom > 200);
+  }, []);
+
+  useEffect(() => {
+    const diff = messages.length - prevLengthRef.current;
+    if (diff > 0 && !isNearBottomRef.current) {
+      setNewCount(c => c + diff);
+    }
+    prevLengthRef.current = messages.length;
+  }, [messages.length]);
+
+  const scrollToBottom = () => {
+    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+    setNewCount(0);
+  };
+
   const sorted = [...messages].sort(
     (a, b) => new Date(a.sentAt).getTime() - new Date(b.sentAt).getTime()
   );
 
-  // Групуємо по даті
   const groups: { date: string; msgs: Message[] }[] = [];
   for (const msg of sorted) {
-    const d = formatDate(msg.sentAt);
+    const d    = formatDate(msg.sentAt);
     const last = groups[groups.length - 1];
     if (!last || last.date !== d) {
       groups.push({ date: d, msgs: [msg] });
@@ -57,23 +82,26 @@ const MessagesList: React.FC<MessagesListProps> = ({
   }
 
   return (
-    <div className="chat-room-messages">
+    <div
+      className="chat-room-messages"
+      ref={containerRef}
+      onScroll={checkScrollPosition}
+    >
       {groups.map(({ date, msgs }) => (
         <div key={date}>
           <div className="date-separator"><span>{date}</span></div>
 
           {msgs.map((msg) => {
-            const isOwn        = Number(msg.senderId) === Number(userId);
-            const avatarUrl    = resolveUrl(msg.senderAvatarUrl ?? msg.sender?.avatarUrl);
-            const attachUrl    = resolveUrl(msg.attachment);
-            const initials     = (msg.senderUsername ?? '?').charAt(0).toUpperCase();
+            const isOwn     = Number(msg.senderId) === Number(userId);
+            const avatarUrl = resolveUrl(msg.senderAvatarUrl ?? msg.sender?.avatarUrl);
+            const attachUrl = resolveUrl(msg.attachment);
+            const initials  = (msg.senderUsername ?? '?').charAt(0).toUpperCase();
 
             return (
               <div
                 key={msg.messageId}
                 className={`message ${isOwn ? 'message-own' : 'message-other'}`}
               >
-                {/* Аватар — тільки для чужих */}
                 {!isOwn && (
                   <div className="message-avatar">
                     {avatarUrl ? (
@@ -98,7 +126,6 @@ const MessagesList: React.FC<MessagesListProps> = ({
                 )}
 
                 <div className="message-content">
-                  {/* Ім'я відправника — тільки в груповому або для чужих */}
                   {!isOwn && (
                     <div className="message-sender">{msg.senderUsername}</div>
                   )}
@@ -137,7 +164,6 @@ const MessagesList: React.FC<MessagesListProps> = ({
                     <div className="message-time">{formatTime(msg.sentAt)}</div>
                   </div>
 
-                  {/* Видалення — лише своє */}
                   {isOwn && (
                     <button
                       className="message-delete"
@@ -145,7 +171,11 @@ const MessagesList: React.FC<MessagesListProps> = ({
                       title="Видалити"
                     >
                       <svg width="15" height="15" viewBox="0 0 24 24" fill="none">
-                        <path d="M3 6H21M8 6V4C8 3.45 8.45 3 9 3H15C15.55 3 16 3.45 16 4V6M19 6V20C19 21.1 18.1 22 17 22H7C5.9 22 5 21.1 5 20V6H19Z" stroke="currentColor" strokeWidth="2"/>
+                        <path
+                          d="M3 6H21M8 6V4C8 3.45 8.45 3 9 3H15C15.55 3 16 3.45 16 4V6M19 6V20C19 21.1 18.1 22 17 22H7C5.9 22 5 21.1 5 20V6H19Z"
+                          stroke="currentColor"
+                          strokeWidth="2"
+                        />
                       </svg>
                     </button>
                   )}
@@ -155,7 +185,23 @@ const MessagesList: React.FC<MessagesListProps> = ({
           })}
         </div>
       ))}
+
       <div ref={messagesEndRef} />
+
+      {showScrollBtn && (
+        <button
+          className="scroll-to-bottom"
+          onClick={scrollToBottom}
+          title="До останніх повідомлень"
+        >
+          <FiChevronDown size={20} />
+          {newCount > 0 && (
+            <span className="scroll-to-bottom__badge">
+              {newCount > 99 ? '99+' : newCount}
+            </span>
+          )}
+        </button>
+      )}
     </div>
   );
 };

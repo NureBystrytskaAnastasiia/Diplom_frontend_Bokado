@@ -335,3 +335,77 @@
   display: block;
   flex-shrink: 0;
 }
+/* ── Drag & Drop обгортка ───────────────────────────────────────────── */
+.message-input-root {
+  position: relative;
+  flex-shrink: 0;
+}
+
+.message-input-root--dragging .chat-room-input,
+.message-input-root--dragging .file-preview-container,
+.message-input-root--dragging .emoji-picker-container,
+.message-input-root--dragging .gif-picker-container {
+  opacity: 0.4;
+  pointer-events: none;
+}
+
+.drag-overlay {
+  position: absolute;
+  inset: 0;
+  z-index: 20;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  background: rgba(124, 77, 255, 0.08);
+  border: 2px dashed var(--clr-accent, #7C4DFF);
+  border-radius: 14px;
+  color: var(--clr-accent, #7C4DFF);
+  font-size: 0.9rem;
+  font-weight: 500;
+  pointer-events: none;
+}
+
+/* ── Кнопка "↓ нові повідомлення" ──────────────────────────────────── */
+.scroll-to-bottom {
+  position: sticky;
+  bottom: 12px;
+  float: right;
+  margin-right: 16px;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  border: none;
+  background: var(--clr-accent, #7C4DFF);
+  color: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  box-shadow: 0 2px 12px rgba(124, 77, 255, 0.35);
+  transition: transform 0.15s, box-shadow 0.15s;
+  z-index: 10;
+}
+.scroll-to-bottom:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 16px rgba(124, 77, 255, 0.45);
+}
+
+.scroll-to-bottom__badge {
+  position: absolute;
+  top: -4px;
+  right: -4px;
+  min-width: 18px;
+  height: 18px;
+  padding: 0 4px;
+  border-radius: 9px;
+  background: #ef4444;
+  color: #fff;
+  font-size: 0.65rem;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 2px solid var(--clr-surface, #fff);
+}

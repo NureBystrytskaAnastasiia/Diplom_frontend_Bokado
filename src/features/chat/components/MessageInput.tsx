@@ -1,5 +1,5 @@
 // src/features/chat/components/MessageInput.tsx
-import React, { useRef, useState } from 'react';
+import React, { useRef, useState, useCallback } from 'react';
 import EmojiPicker, { type EmojiClickData } from 'emoji-picker-react';
 import GifPicker, { type TenorImage } from 'gif-picker-react';
 import {
@@ -28,6 +28,15 @@ const TENOR_KEY = 'AIzaSyDTCr5BkrQRF7jJCgahsaEqaqy7mEeRg7I';
 const fmtTime = (s: number) =>
   `${Math.floor(s / 60)}:${String(s % 60).padStart(2, '0')}`;
 
+const applyFile = (
+  f: File,
+  setFile: (f: File | null) => void,
+  setFilePreview: (p: string | null) => void
+) => {
+  setFile(f);
+  setFilePreview(f.type.startsWith('image/') ? URL.createObjectURL(f) : null);
+};
+
 const MessageInput: React.FC<MessageInputProps> = ({
   newMessage, setNewMessage,
   file, setFile,
@@ -35,11 +44,12 @@ const MessageInput: React.FC<MessageInputProps> = ({
   loading, isRecording, showRecordingControls, recordingTime,
   onSendMessage, onStartRecording, onStopRecording, onKeyPress,
 }) => {
-  const textareaRef = useRef<HTMLTextAreaElement>(null);
+  const textareaRef  = useRef<HTMLTextAreaElement>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const [showEmoji, setShowEmoji] = useState(false);
   const [showGif,   setShowGif]   = useState(false);
+  const [isDragging, setIsDragging] = useState(false);
 
   const adjustHeight = () => {
     const el = textareaRef.current;
@@ -50,8 +60,7 @@ const MessageInput: React.FC<MessageInputProps> = ({
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const f = e.target.files?.[0] ?? null;
-    setFile(f);
-    setFilePreview(f && f.type.startsWith('image/') ? URL.createObjectURL(f) : null);
+    if (f) applyFile(f, setFile, setFilePreview);
   };
 
   const clearFile = () => {
@@ -71,16 +80,61 @@ const MessageInput: React.FC<MessageInputProps> = ({
       .then(r => r.blob())
       .then(blob => {
         const gifFile = new File([blob], 'gif.gif', { type: 'image/gif' });
-        setFile(gifFile);
-        setFilePreview(gif.url);
+        applyFile(gifFile, setFile, setFilePreview);
         setShowGif(false);
       });
   };
 
+  // ── Ctrl+V — вставка зображення з буфера ──────────────────────────
+  const handlePaste = useCallback((e: React.ClipboardEvent<HTMLTextAreaElement>) => {
+    const items = Array.from(e.clipboardData.items);
+    const imageItem = items.find(i => i.type.startsWith('image/'));
+    if (!imageItem) return;
+    e.preventDefault();
+    const f = imageItem.getAsFile();
+    if (f) applyFile(f, setFile, setFilePreview);
+  }, [setFile, setFilePreview]);
+
+  // ── Drag & Drop ───────────────────────────────────────────────────
+  const handleDragOver = useCallback((e: React.DragEvent) => {
+    e.preventDefault();
+    if (!isRecording) setIsDragging(true);
+  }, [isRecording]);
+
+  const handleDragLeave = useCallback((e: React.DragEvent) => {
+    // тільки якщо справді вийшли за межі контейнера
+    if (!e.currentTarget.contains(e.relatedTarget as Node)) {
+      setIsDragging(false);
+    }
+  }, []);
+
+  const handleDrop = useCallback((e: React.DragEvent) => {
+    e.preventDefault();
+    setIsDragging(false);
+    if (isRecording) return;
+    const f = e.dataTransfer.files?.[0];
+    if (f && f.type.startsWith('image/')) {
+      applyFile(f, setFile, setFilePreview);
+    }
+  }, [isRecording, setFile, setFilePreview]);
+
   const canSend = (newMessage.trim().length > 0 || file !== null) && !isRecording;
 
   return (
-    <>
+    <div
+      className={`message-input-root${isDragging ? ' message-input-root--dragging' : ''}`}
+      onDragOver={handleDragOver}
+      onDragLeave={handleDragLeave}
+      onDrop={handleDrop}
+    >
+      {/* Drag overlay */}
+      {isDragging && (
+        <div className="drag-overlay">
+          <FiImage size={32} />
+          <span>Відпустіть щоб прикріпити фото</span>
+        </div>
+      )}
+
       {/* Прев'ю файлу */}
       {filePreview && (
         <div className="file-preview-container">
@@ -143,7 +197,6 @@ const MessageInput: React.FC<MessageInputProps> = ({
       <div className="chat-room-input">
         <div className="input-container">
 
-          {/* Фото */}
           <button
             className="input-action-button"
             onClick={() => fileInputRef.current?.click()}
@@ -153,7 +206,6 @@ const MessageInput: React.FC<MessageInputProps> = ({
             <FiImage size={19} />
           </button>
 
-          {/* Emoji */}
           <button
             className="input-action-button"
             onClick={() => { setShowEmoji(p => !p); setShowGif(false); }}
@@ -163,7 +215,6 @@ const MessageInput: React.FC<MessageInputProps> = ({
             <FiSmile size={19} />
           </button>
 
-          {/* GIF */}
           <button
             className="input-action-button gif-btn"
             onClick={() => { setShowGif(p => !p); setShowEmoji(false); }}
@@ -173,19 +224,18 @@ const MessageInput: React.FC<MessageInputProps> = ({
             <span className="gif-label">GIF</span>
           </button>
 
-          {/* Textarea */}
           <textarea
             ref={textareaRef}
             className="message-input"
-            placeholder={isRecording ? 'Йде запис...' : 'Повідомлення...'}
+            placeholder={isRecording ? 'Йде запис...' : 'Повідомлення... (Ctrl+V щоб вставити фото)'}
             value={newMessage}
             onChange={(e) => { setNewMessage(e.target.value); adjustHeight(); }}
             onKeyPress={onKeyPress}
+            onPaste={handlePaste}
             rows={1}
             disabled={isRecording}
           />
 
-          {/* Мікрофон */}
           <button
             className={`input-action-button${isRecording ? ' recording-active' : ''}`}
             onClick={isRecording ? () => onStopRecording(true) : onStartRecording}
@@ -194,7 +244,6 @@ const MessageInput: React.FC<MessageInputProps> = ({
             {isRecording ? <FiSquare size={18} /> : <FiMic size={18} />}
           </button>
 
-          {/* Відправити */}
           <button
             className={`send-button${canSend ? ' active' : ''}`}
             onClick={onSendMessage}
@@ -211,12 +260,12 @@ const MessageInput: React.FC<MessageInputProps> = ({
         <input
           ref={fileInputRef}
           type="file"
-          accept="image/png,image/jpeg,image/gif,image/webp,audio/mp3"
+          accept="image/png,image/jpeg,image/gif,image/webp"
           onChange={handleFileChange}
           style={{ display: 'none' }}
         />
       </div>
-    </>
+    </div>
   );
 };
 
