@@ -2,15 +2,25 @@ import { useEffect, useRef } from 'react';
 import { useAppDispatch, useAppSelector } from '../../../shared/hooks/useAuth';
 import { fetchNotifications } from '../store/notificationsSlice';
 
-// Замість SignalR — простий polling кожні 30 секунд
-// Railway не підтримує довгі з'єднання на безкоштовному плані
+const playSound = () => {
+  try {
+    const audio = new Audio('/universfield-new-notification-051-494246.mp3');
+    audio.volume = 0.4;
+    audio.play().catch(() => {});
+  } catch {}
+};
+
+const showPush = (message: string) => {
+  if ('Notification' in window && Notification.permission === 'granted') {
+    new Notification('Bokado', { body: message, icon: '/favicon.ico' });
+  }
+};
 
 export const useNotificationHub = () => {
   const dispatch = useAppDispatch();
   const token = useAppSelector(s => s.auth.token);
-  const prevCountRef = useRef(0);
+  const prevUnreadRef = useRef<number | null>(null); // null = ще не ініціалізовано
 
-  // Запит дозволу на browser push
   useEffect(() => {
     if ('Notification' in window && Notification.permission === 'default') {
       Notification.requestPermission();
@@ -22,41 +32,28 @@ export const useNotificationHub = () => {
 
     const poll = async () => {
       const result = await dispatch(fetchNotifications());
-      
-      if (fetchNotifications.fulfilled.match(result)) {
-        const notifications = result.payload;
-        const unreadCount = notifications.filter((n: any) => !n.isRead).length;
+      if (!fetchNotifications.fulfilled.match(result)) return;
 
-        // Якщо з'явились нові непрочитані — звук і push
-        if (unreadCount > prevCountRef.current) {
-          // 🔊 Звук
-          try {
-            const audio = new Audio('/universfield-new-notification-051-494246.mp3');
-            audio.volume = 0.4;
-            audio.play().catch(() => {});
-          } catch {}
+      const unread = result.payload.filter((n: any) => !n.isRead).length;
 
-          // Browser push
-          if ('Notification' in window && Notification.permission === 'granted') {
-            const newest = notifications.find((n: any) => !n.isRead);
-            if (newest) {
-              new Notification('Bokado', {
-                body: newest.message,
-                icon: '/favicon.ico',
-              });
-            }
-          }
-        }
-
-        prevCountRef.current = unreadCount;
+      if (prevUnreadRef.current === null) {
+        // Перший запит — просто запам'ятовуємо, без звуку
+        prevUnreadRef.current = unread;
+        return;
       }
+
+      if (unread > prevUnreadRef.current) {
+        // З'явились нові — граємо звук і показуємо push
+        playSound();
+        const newest = result.payload.find((n: any) => !n.isRead);
+        if (newest) showPush(newest.message);
+      }
+
+      prevUnreadRef.current = unread;
     };
 
-    // Одразу при вході
-    poll();
-
-    // Потім кожні 10 секунд
-    const interval = setInterval(poll, 10000);
+    poll(); // одразу при вході
+    const interval = setInterval(poll, 15000); // кожні 15 секунд
     return () => clearInterval(interval);
   }, [token, dispatch]);
 };
