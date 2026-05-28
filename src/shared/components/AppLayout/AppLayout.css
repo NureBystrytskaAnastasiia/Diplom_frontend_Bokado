@@ -230,7 +230,20 @@
 .app-mobile-header {
   display: none;
 }
+/* Notification row in sidebar */
+.app-sidebar__notification-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 4px 8px;
+  width: 100%;
+}
 
+.app-sidebar__notification-label {
+  font-size: 14px;
+  color: var(--color-text-secondary, #aaa);
+  white-space: nowrap;
+}
 @media (max-width: 768px) {
   .app-mobile-header {
     display: flex;

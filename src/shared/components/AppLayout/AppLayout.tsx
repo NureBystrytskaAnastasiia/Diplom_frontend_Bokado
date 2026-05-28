@@ -1,3 +1,4 @@
+// src/shared/components/AppLayout/AppLayout.tsx
 import React, { useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { useDispatch } from 'react-redux';
@@ -8,6 +9,7 @@ import {
 } from 'react-icons/fi';
 import { useAppSelector } from '../../hooks/useAuth';
 import { logout } from '../../../features/auth/store/authSlice';
+import NotificationBell from '../../../features/notifications/components/NotificationBell/NotificationBell';
 import './AppLayout.css';
 
 interface NavItem {
@@ -29,14 +31,14 @@ const AppLayout: React.FC<AppLayoutProps> = ({ children }) => {
   const dispatch = useDispatch();
 
   const navItems: NavItem[] = [
-    { to: '/dashboard',              icon: <FiHome />,         label: 'Головна' },
-    { to: '/discover',               icon: <FiCompass />,      label: 'Пошук' },
-    { to: '/requests',               icon: <FiBell />,         label: 'Запити' },
-    { to: '/chats',                  icon: <FiMessageSquare />, label: 'Чати' },
-    { to: '/events',                 icon: <FiCalendar />,     label: 'Події' },
-    { to: '/challenges',             icon: <FiTarget />,       label: 'Челенджі' },
-    { to: '/premium',                icon: <FiStar />,         label: 'Преміум' },
-    { to: `/profile/${user?.userId}`, icon: <FiUser />,        label: 'Профіль' },
+    { to: '/dashboard',               icon: <FiHome />,          label: 'Головна' },
+    { to: '/discover',                icon: <FiCompass />,       label: 'Пошук' },
+    { to: '/requests',                icon: <FiBell />,          label: 'Запити' },
+    { to: '/chats',                   icon: <FiMessageSquare />, label: 'Чати' },
+    { to: '/events',                  icon: <FiCalendar />,      label: 'Події' },
+    { to: '/challenges',              icon: <FiTarget />,        label: 'Челенджі' },
+    { to: '/premium',                 icon: <FiStar />,          label: 'Преміум' },
+    { to: `/profile/${user?.userId}`, icon: <FiUser />,          label: 'Профіль' },
   ];
 
   const handleLogout = () => {
@@ -46,8 +48,8 @@ const AppLayout: React.FC<AppLayoutProps> = ({ children }) => {
 
   const sidebarClass = [
     'app-sidebar',
-    collapsed ? 'app-sidebar--collapsed' : '',
-    mobileOpen ? 'app-sidebar--mobile-open' : '',
+    collapsed   ? 'app-sidebar--collapsed'    : '',
+    mobileOpen  ? 'app-sidebar--mobile-open'  : '',
   ].filter(Boolean).join(' ');
 
   return (
@@ -70,7 +72,8 @@ const AppLayout: React.FC<AppLayoutProps> = ({ children }) => {
         {/* Nav */}
         <nav className="app-sidebar__nav">
           {navItems.map((item) => {
-            const isActive = location.pathname === item.to ||
+            const isActive =
+              location.pathname === item.to ||
               (item.to !== '/dashboard' && location.pathname.startsWith(item.to));
             return (
               <Link
@@ -91,6 +94,12 @@ const AppLayout: React.FC<AppLayoutProps> = ({ children }) => {
 
         {/* Footer */}
         <div className="app-sidebar__footer">
+          {/* 🔔 Сповіщення в сайдбарі */}
+          <div className="app-sidebar__notification-row">
+            <NotificationBell />
+            {!collapsed && <span className="app-sidebar__notification-label">Сповіщення</span>}
+          </div>
+
           <button
             className="app-sidebar__collapse-btn"
             onClick={() => setCollapsed(!collapsed)}
@@ -118,7 +127,11 @@ const AppLayout: React.FC<AppLayoutProps> = ({ children }) => {
           >
             <FiMenu size={22} />
           </button>
+
           <span className="app-mobile-header__title">Bokado</span>
+
+          {/* 🔔 Дзвоник сповіщень */}
+          <NotificationBell />
         </div>
 
         {children}

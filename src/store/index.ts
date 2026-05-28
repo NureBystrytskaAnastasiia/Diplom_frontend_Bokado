@@ -10,6 +10,7 @@ import userChallengesReducer from '../features/challenges/store/usechallengesSli
 import interestsReducer from '../features/profile/store/interestsSlice'; 
 import groupsReducer from '../features/groups/store/groupsSlice';
 import postsReducer  from '../features/posts/store/postsSlice';
+import notificationsSlice  from '../features/notifications/store/notificationsSlice';
 
 export const store = configureStore({
   reducer: {
@@ -24,6 +25,7 @@ export const store = configureStore({
       interests: interestsReducer,
       groups: groupsReducer,
       posts: postsReducer,
+      notifications: notificationsSlice,
   },
 });
 

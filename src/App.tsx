@@ -1,3 +1,4 @@
+// src/App.tsx
 import React from 'react';
 import { BrowserRouter, Routes, Route, useLocation } from 'react-router-dom';
 import { Provider } from 'react-redux';
@@ -23,16 +24,23 @@ import ChallengesPage     from './features/challenges/pages/ChallengesPage';
 import PremiumOffer       from './features/premium/pages/PremiumOffer';
 import AdminPage          from './features/admin/pages/AdminPage';
 import NotFoundPage       from './features/legal/pages/NotFoundPage';
-import DiscoverPage        from './features/friends/pages/DiscoverPage';
-import RequestsPage        from './features/requests/pages/RequestsPage';
-import GroupPage           from './features/groups/pages/GroupPage';
+import DiscoverPage       from './features/friends/pages/DiscoverPage';
+import RequestsPage       from './features/requests/pages/RequestsPage';
+import GroupPage          from './features/groups/pages/GroupPage';
+
 // Утиліти
 import ProtectedRoute      from './routes/ProtectedRoute';
 import ProtectedAdminRoute from './routes/ProtectedAdminRoute';
 import ScrollToTop         from './shared/components/ScrollToTop';
 
+// Сповіщення
+import { useNotificationHub } from './features/notifications/hooks/useNotificationHub';
+
 const AnimatedRoutes = () => {
   const location = useLocation();
+
+  // Підключаємо SignalR для сповіщень
+  useNotificationHub();
 
   return (
     <AnimatePresence mode="wait">
@@ -50,61 +58,39 @@ const AnimatedRoutes = () => {
 
         {/* Захищені */}
         <Route path="/events/create" element={
-          <ProtectedRoute>
-            <CreateEventPage />
-          </ProtectedRoute>
+          <ProtectedRoute><CreateEventPage /></ProtectedRoute>
         } />
         <Route path="/dashboard" element={
-          <ProtectedRoute>
-            <DashboardPage />
-          </ProtectedRoute>
+          <ProtectedRoute><DashboardPage /></ProtectedRoute>
         } />
         <Route path="/profile/:userId" element={
-          <ProtectedRoute>
-            <ProfilePage />
-          </ProtectedRoute>
+          <ProtectedRoute><ProfilePage /></ProtectedRoute>
         } />
         <Route path="/chats" element={
-          <ProtectedRoute>
-            <ChatsPage />
-          </ProtectedRoute>
+          <ProtectedRoute><ChatsPage /></ProtectedRoute>
         } />
         <Route path="/chat/:chatId" element={
-          <ProtectedRoute>
-            <ChatRoomPage />
-          </ProtectedRoute>
+          <ProtectedRoute><ChatRoomPage /></ProtectedRoute>
         } />
         <Route path="/challenges" element={
-          <ProtectedRoute>
-            <ChallengesPage />
-          </ProtectedRoute>
+          <ProtectedRoute><ChallengesPage /></ProtectedRoute>
         } />
         <Route path="/discover" element={
-          <ProtectedRoute>
-            <DiscoverPage />
-          </ProtectedRoute>
+          <ProtectedRoute><DiscoverPage /></ProtectedRoute>
         } />
         <Route path="/requests" element={
-          <ProtectedRoute>
-            <RequestsPage />
-          </ProtectedRoute>
+          <ProtectedRoute><RequestsPage /></ProtectedRoute>
         } />
-          <Route path="/groups/:groupId" element={
-          <ProtectedRoute>
-            <GroupPage />
-          </ProtectedRoute>
+        <Route path="/groups/:groupId" element={
+          <ProtectedRoute><GroupPage /></ProtectedRoute>
         } />
         <Route path="/premium" element={
-          <ProtectedRoute>
-            <PremiumOffer />
-          </ProtectedRoute>
+          <ProtectedRoute><PremiumOffer /></ProtectedRoute>
         } />
 
         {/* Адмін */}
         <Route path="/admin" element={
-          <ProtectedAdminRoute>
-            <AdminPage />
-          </ProtectedAdminRoute>
+          <ProtectedAdminRoute><AdminPage /></ProtectedAdminRoute>
         } />
 
         {/* Fallback */}
