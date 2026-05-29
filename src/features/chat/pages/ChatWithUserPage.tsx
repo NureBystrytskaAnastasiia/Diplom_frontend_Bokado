@@ -15,18 +15,18 @@ import './ChatWithUserPage.css';
 const TYPING_STOP_DELAY = 2500;
 
 const ChatRoomPage: React.FC = () => {
-  const { chatId }      = useParams<{ chatId: string }>();
-  const { user, token } = useAppSelector((s) => s.auth);
-  const { chats }       = useAppSelector((s) => s.chat);
+  const { chatId } = useParams<{ chatId: string }>();
+  const { user }   = useAppSelector((s) => s.auth);
+  const { chats }  = useAppSelector((s) => s.chat);
 
   const currentChat = chats.find(c => c.chatId === Number(chatId)) ?? null;
   const otherUserId = currentChat?.secondMember?.userId;
 
-  const [messages, setMessages]     = useState<Message[]>([]);
-  const [newMessage, setNewMessage] = useState('');
-  const [file, setFile]             = useState<File | null>(null);
+  const [messages, setMessages]       = useState<Message[]>([]);
+  const [newMessage, setNewMessage]   = useState('');
+  const [file, setFile]               = useState<File | null>(null);
   const [filePreview, setFilePreview] = useState<string | null>(null);
-  const [loading, setLoading]       = useState(false);
+  const [loading, setLoading]         = useState(false);
 
   const [isRecording, setIsRecording]                     = useState(false);
   const [mediaRecorder, setMediaRecorder]                 = useState<MediaRecorder | null>(null);
@@ -61,8 +61,8 @@ const ChatRoomPage: React.FC = () => {
     [otherUserId]
   );
 
+  // token більше не потрібен тут — з'єднання глобальне з App.tsx
   const { sendTyping } = useChatHub({
-    token: token ?? null,
     chatId: Number(chatId) || null,
     onTyping: handleTyping,
     onUserOnlineStatus: handleUserOnlineStatus,
@@ -88,7 +88,7 @@ const ChatRoomPage: React.FC = () => {
     if (typingTimeoutRef.current) clearTimeout(typingTimeoutRef.current);
 
     const messageToSend = newMessage.trim();
-    const fileToSend = file;
+    const fileToSend    = file;
     setNewMessage('');
     setFile(null);
     setFilePreview(null);
@@ -105,7 +105,6 @@ const ChatRoomPage: React.FC = () => {
     fetchMessages();
   };
 
-  /* ── Typing при введенні ──────────────────────────────────────────── */
   const handleMessageChange = useCallback(
     (value: string | ((p: string) => string)) => {
       setNewMessage(value);

@@ -1,3 +1,4 @@
+// src/features/chat/components/ChatHeader/ChatHeader.tsx
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { FiArrowLeft, FiUsers, FiUser } from 'react-icons/fi';
@@ -22,9 +23,27 @@ const ChatHeader: React.FC<ChatHeaderProps> = ({
   const navigate = useNavigate();
   const [drawerOpen, setDrawerOpen] = useState(false);
 
-  const isGroup   = !!chat?.isGroup;
-  const name      = isGroup ? (chat?.groupName ?? 'Група') : (chat?.secondMember?.username ?? 'Чат');
-  const rawAvatar = !isGroup ? chat?.secondMember?.avatarUrl : null;
+  // Поки чат не завантажився — показуємо скелетон
+  if (!chat) {
+    return (
+      <div className="chat-header">
+        <button className="chat-header__back" onClick={() => navigate('/chats')}>
+          <FiArrowLeft size={20} />
+        </button>
+        <div className="chat-header__avatar-btn">
+          <div className="chat-header__avatar-fallback chat-header__avatar-fallback--skeleton" />
+        </div>
+        <div className="chat-header__info-btn">
+          <span className="chat-header__skeleton chat-header__skeleton--name" />
+          <span className="chat-header__skeleton chat-header__skeleton--sub" />
+        </div>
+      </div>
+    );
+  }
+
+  const isGroup   = !!chat.isGroup;
+  const name      = isGroup ? (chat.groupName ?? 'Група') : (chat.secondMember?.username ?? '');
+  const rawAvatar = !isGroup ? chat.secondMember?.avatarUrl : null;
   const avatarUrl = rawAvatar
     ? (rawAvatar.startsWith('http') ? rawAvatar : `${BASE_URL}${rawAvatar}`)
     : null;
@@ -46,7 +65,7 @@ const ChatHeader: React.FC<ChatHeaderProps> = ({
   }
 
   const handleAvatarClick = () => {
-    if (!isGroup && chat?.secondMember) setDrawerOpen(true);
+    if (!isGroup && chat.secondMember) setDrawerOpen(true);
   };
 
   return (
@@ -90,7 +109,7 @@ const ChatHeader: React.FC<ChatHeaderProps> = ({
         </button>
       </div>
 
-      {drawerOpen && chat?.secondMember && (
+      {drawerOpen && chat.secondMember && (
         <UserCardDrawer user={chat.secondMember} onClose={() => setDrawerOpen(false)} />
       )}
     </>

@@ -1,3 +1,5 @@
+/* src/features/chat/components/ChatHeader/ChatHeader.css */
+
 .chat-header {
   display: flex;
   align-items: center;
@@ -9,6 +11,7 @@
   min-height: 62px;
 }
 
+/* Кнопка назад */
 .chat-header__back {
   width: 36px; height: 36px;
   border-radius: 10px;
@@ -25,6 +28,7 @@
   border-color: rgba(124,77,255,0.25);
 }
 
+/* Аватар */
 .chat-header__avatar-btn {
   border: none;
   background: transparent;
@@ -66,6 +70,12 @@
   color: #059669;
 }
 
+/* Скелетон аватара */
+.chat-header__avatar-fallback--skeleton {
+  background: var(--clr-border, #E4DCF5);
+  animation: skeleton-pulse 1.4s ease-in-out infinite;
+}
+
 /* ── Онлайн крапка ── */
 .chat-header__online-dot {
   position: absolute;
@@ -97,7 +107,6 @@
   font-weight: 500;
   font-style: italic;
 }
-
 .chat-header__typing-dots {
   display: inline-flex;
   align-items: center;
@@ -154,4 +163,26 @@
   color: var(--clr-text-muted, #B0A4CC);
   display: block;
   min-height: 1em;
+}
+
+/* ── Скелетон рядки ── */
+.chat-header__skeleton {
+  display: block;
+  border-radius: 6px;
+  background: var(--clr-border, #E4DCF5);
+  animation: skeleton-pulse 1.4s ease-in-out infinite;
+}
+.chat-header__skeleton--name {
+  width: 90px;
+  height: 13px;
+  margin-bottom: 4px;
+}
+.chat-header__skeleton--sub {
+  width: 60px;
+  height: 10px;
+}
+
+@keyframes skeleton-pulse {
+  0%, 100% { opacity: 1; }
+  50%       { opacity: 0.4; }
 }

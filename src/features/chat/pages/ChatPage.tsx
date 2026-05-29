@@ -29,7 +29,6 @@ const ChatPage: React.FC = () => {
     dispatch(loadMyFriends());
   }, [dispatch]);
 
-  // Розділяємо особисті та групові
   const personalChats = chats.filter(c => !c.isGroup);
   const groupChats    = chats.filter(c => c.isGroup);
 
@@ -75,7 +74,6 @@ const ChatPage: React.FC = () => {
     <AppLayout>
       <div className="chat-page">
 
-        {/* Top */}
         <div className="chat-page__top">
           <div className="chat-page__header">
             <h1 className="chat-page__title">Чати</h1>
@@ -90,7 +88,6 @@ const ChatPage: React.FC = () => {
             )}
           </div>
 
-          {/* Вкладки */}
           <div className="chat-page__tabs">
             <button
               className={`chat-page__tab${tab === 'personal' ? ' chat-page__tab--active' : ''}`}
@@ -114,7 +111,6 @@ const ChatPage: React.FC = () => {
             </button>
           </div>
 
-          {/* Пошук */}
           <div className="chat-page__search-wrap">
             <FiSearch className="chat-page__search-icon" size={15} />
             <input
@@ -126,7 +122,6 @@ const ChatPage: React.FC = () => {
           </div>
         </div>
 
-        {/* Список */}
         <div className="chat-page__list">
           {loading ? (
             <div className="chat-page__loading">

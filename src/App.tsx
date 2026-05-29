@@ -33,14 +33,18 @@ import ProtectedRoute      from './routes/ProtectedRoute';
 import ProtectedAdminRoute from './routes/ProtectedAdminRoute';
 import ScrollToTop         from './shared/components/ScrollToTop';
 
-// Сповіщення
+// Сповіщення та чат хаб
 import { useNotificationHub } from './features/notifications/hooks/useNotificationHub';
+import { useChatHubGlobal }   from './features/chat/hooks/useChatHub';
+import { useAppSelector }     from './shared/hooks/useAuth';
 
 const AnimatedRoutes = () => {
   const location = useLocation();
+  const token    = useAppSelector(s => s.auth.token);
 
-  // Підключаємо SignalR для сповіщень
+  // Глобальні хаби — працюють на всіх сторінках після логіну
   useNotificationHub();
+  useChatHubGlobal(token ?? null);
 
   return (
     <AnimatePresence mode="wait">
