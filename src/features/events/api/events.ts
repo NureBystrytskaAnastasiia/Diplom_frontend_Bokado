@@ -1,16 +1,9 @@
-import axios from 'axios';
+import axiosInstance from '../../../shared/api/axiosInstance';
 import type { Event, EventDto, UpdateEventDto } from '../types/event';
 
-const API_BASE_URL = `${import.meta.env.VITE_API_URL ?? 'https://bokadoserver-production.up.railway.app'}/api/Event`;
-
-const authHeaders = () => {
-  const token = localStorage.getItem('token');
-  return { Authorization: `Bearer ${token}` };
-};
-
 export const fetchEvents = async (): Promise<Event[]> => {
-  const response = await axios.get(`${API_BASE_URL}/events`);
-  return response.data;
+  const { data } = await axiosInstance.get<Event[]>('/api/Event/events');
+  return data;
 };
 
 export const createEvent = async (eventDto: EventDto): Promise<Event> => {
@@ -18,31 +11,21 @@ export const createEvent = async (eventDto: EventDto): Promise<Event> => {
     ...eventDto,
     createdAt: eventDto.createdAt || new Date().toISOString(),
   };
-  const response = await axios.post(`${API_BASE_URL}/events`, eventData, {
-    headers: authHeaders(),
-  });
-  return response.data;
+  const { data } = await axiosInstance.post<Event>('/api/Event/events', eventData);
+  return data;
 };
 
 export const joinEvent = async (eventId: number): Promise<{ message: string }> => {
-  const response = await axios.post(`${API_BASE_URL}/events/join/${eventId}`, null, {
-    headers: authHeaders(),
-  });
-  return response.data;
+  const { data } = await axiosInstance.post<{ message: string }>(
+    `/api/Event/events/join/${eventId}`
+  );
+  return data;
 };
 
 export const quitEvent = async (eventId: number): Promise<void> => {
-  await axios.delete(`${API_BASE_URL}/quit/${eventId}`, {
-    headers: authHeaders(),
-  });
+  await axiosInstance.delete(`/api/Event/quit/${eventId}`);
 };
 
-// PUT /api/Event/{eventId} — тільки для creator/admin
-export const updateEvent = async (
-  eventId: number,
-  data: UpdateEventDto
-): Promise<void> => {
-  await axios.put(`${API_BASE_URL}/${eventId}`, data, {
-    headers: authHeaders(),
-  });
+export const updateEvent = async (eventId: number, data: UpdateEventDto): Promise<void> => {
+  await axiosInstance.put(`/api/Event/${eventId}`, data);
 };

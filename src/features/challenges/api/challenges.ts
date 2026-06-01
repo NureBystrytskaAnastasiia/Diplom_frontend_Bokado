@@ -1,21 +1,16 @@
-import axios from 'axios';
-import type { Challenge } from '../types/challenge';
+import axiosInstance from '../../../shared/api/axiosInstance';
+import type { ChallengeDto, CheckChallengeResponse } from '../types/challenge';
 
-const API_BASE_URL = `${import.meta.env.VITE_API_URL ?? 'https://bokadoserver-production.up.railway.app'}/api/Admin`;
+export const challengeApi = {
+  async getChallenges(): Promise<ChallengeDto[]> {
+    const { data } = await axiosInstance.get<ChallengeDto[]>('/api/Challenge/challenges');
+    return data;
+  },
 
-
-export const fetchAllChallenges = async (): Promise<Challenge[]> => {
-  const token = localStorage.getItem('token');
-  const response = await axios.get(`${API_BASE_URL}/allChallenges`, {
-    headers: { Authorization: `Bearer ${token}` }
-  });
-  return response.data;
-};
-
-export const selectChallenges = async (challengeIds: number[]): Promise<{ message: string }> => {
-  const token = localStorage.getItem('token');
-  const response = await axios.post(`${API_BASE_URL}/select-challenges`, challengeIds, {
-    headers: { Authorization: `Bearer ${token}` }
-  });
-  return response.data;
+  async checkChallenge(challengeId: number): Promise<CheckChallengeResponse> {
+    const { data } = await axiosInstance.post<CheckChallengeResponse>(
+      `/api/Challenge/check/${challengeId}`
+    );
+    return data;
+  },
 };

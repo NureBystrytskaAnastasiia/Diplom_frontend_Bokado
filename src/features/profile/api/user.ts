@@ -1,53 +1,40 @@
-import axios from 'axios';
+import axiosInstance from '../../../shared/api/axiosInstance';
 import type { UserProfile, UserDetailInfo, UpdateProfileRequest, Interest } from '../types/user';
 
-const API_URL = `${import.meta.env.VITE_API_URL ?? 'https://bokadoserver-production.up.railway.app'}/api/users`;
-
-axios.interceptors.request.use(config => {
-  const token = localStorage.getItem('token');
-  if (token) {
-    config.headers.Authorization = `Bearer ${token}`;
-  }
-  return config;
-});
-
 export const getUserProfile = async (userId: number): Promise<UserProfile> => {
-  const response = await axios.get(`${API_URL}/${userId}`);
-  return response.data;
+  const { data } = await axiosInstance.get<UserProfile>(`/api/users/${userId}`);
+  return data;
 };
 
 export const getDetailedUserInfo = async (userId: number): Promise<UserDetailInfo> => {
-  const response = await axios.get(`${API_URL}/GetDetail/${userId}`);
-  return response.data;
+  const { data } = await axiosInstance.get<UserDetailInfo>(`/api/users/GetDetail/${userId}`);
+  return data;
 };
 
 export const updateUserProfile = async (
   userId: number,
-  data: UpdateProfileRequest
+  profileData: UpdateProfileRequest
 ): Promise<void> => {
   const formData = new FormData();
 
-  if (data.userIcon) formData.append('userIcon', data.userIcon);
-  formData.append('username',  data.username);
-  formData.append('birthDate', data.birthDate);
+  if (profileData.userIcon)  formData.append('userIcon',  profileData.userIcon);
+  formData.append('username',  profileData.username);
+  formData.append('birthDate', profileData.birthDate);
+  if (profileData.bio)      formData.append('bio',      profileData.bio);
+  if (profileData.status)   formData.append('status',   profileData.status);
+  if (profileData.password) formData.append('password', profileData.password);
+  if (profileData.city)     formData.append('city',     profileData.city);
 
-  if (data.bio)      formData.append('bio',      data.bio);
-  if (data.status)   formData.append('status',   data.status);
-  if (data.password) formData.append('password', data.password);
-  if (data.city)     formData.append('city',     data.city);
+  profileData.userInterests?.forEach((name, index) => {
+    formData.append(`userInterests[${index}]`, name);
+  });
 
-  if (data.userInterests && data.userInterests.length > 0) {
-    data.userInterests.forEach((name, index) => {
-      formData.append(`userInterests[${index}]`, name);
-    });
-  }
-
-  await axios.put(`${API_URL}/${userId}`, formData, {
+  await axiosInstance.put(`/api/users/${userId}`, formData, {
     headers: { 'Content-Type': 'multipart/form-data' },
   });
 };
 
 export const getAvailableInterests = async (): Promise<Interest[]> => {
-  const response = await axios.get(`${import.meta.env.VITE_API_URL ?? 'https://bokadoserver-production.up.railway.app'}/api/Interest`);
-  return response.data;
+  const { data } = await axiosInstance.get<Interest[]>('/api/Interest');
+  return data;
 };
