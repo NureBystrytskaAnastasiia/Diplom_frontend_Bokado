@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import './WeatherWidget.css';
+import '../WeatherWidget/Weatherwidget.css';
 
 interface WeatherData {
   temp: number;

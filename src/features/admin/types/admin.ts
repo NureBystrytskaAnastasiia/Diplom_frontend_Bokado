@@ -6,6 +6,8 @@ export interface UserDetailInfoDto {
   createdAt:        string;
   isPremium:        boolean;
   isBanned:         boolean;
+  isAdmin:          boolean;
+  avatarUrl:        string | null;
   userInterests:    unknown[];
   friends:          unknown[];
   swipes:           unknown[];

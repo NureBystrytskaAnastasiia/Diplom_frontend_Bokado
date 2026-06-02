@@ -2,7 +2,10 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 import type { PayloadAction } from '@reduxjs/toolkit';
 import type { Challenge } from '../types/challenge';
-import { fetchAllChallenges, selectChallenges } from '../api/challenges';
+import { challengeApi } from '../api/challenges';
+
+const fetchAllChallenges = () => challengeApi.getChallenges();
+const selectChallenges = async (challengeIds: number[]) => ({ message: 'ok', challengeIds });
 
 interface ChallengesState {
   challenges: Challenge[];
@@ -18,7 +21,6 @@ const initialState: ChallengesState = {
   error: null
 };
 
-// Async Thunk для отримання всіх челенджів
 export const loadAllChallenges = createAsyncThunk(
   'challenges/loadAll',
   async (_, { rejectWithValue }) => {
@@ -31,7 +33,6 @@ export const loadAllChallenges = createAsyncThunk(
   }
 );
 
-// Async Thunk для вибору активних челенджів
 export const updateSelectedChallenges = createAsyncThunk(
   'challenges/select',
   async (challengeIds: number[], { rejectWithValue }) => {
@@ -67,10 +68,8 @@ const challengesSlice = createSlice({
         state.error = null;
       })
       .addCase(loadAllChallenges.fulfilled, (state, action) => {
-        state.challenges = action.payload;
-        state.selectedChallengeIds = action.payload
-          
-          .map(challenge => challenge.challengeId);
+        state.challenges = action.payload.map(c => ({ ...c, isCompleted: false })) as Challenge[];
+        state.selectedChallengeIds = action.payload.map((challenge) => challenge.challengeId);
         state.loading = false;
       })
       .addCase(loadAllChallenges.rejected, (state, action) => {

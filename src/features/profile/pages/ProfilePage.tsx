@@ -115,9 +115,8 @@ const ProfilePage: React.FC = () => {
     : (detailedInfo?.friends?.length ?? 0);
 
   const friendsList = isOwn
-    ? myFriends
-    : (detailedInfo?.friends ?? []);
-
+  ? myFriends
+  : (detailedInfo?.friends ?? []) as import('../../friends/types/friends').FriendDto[];
   return (
     <AppLayout>
       <div className="prof">

@@ -19,7 +19,7 @@ import EventDetailsModal from '../components/EventDetailsModal';
 import EditEventModal from '../components/EditEventModal';
 import type { Event, User } from '../types/event';
 import '../styles/Events.css';
-import type { User } from '../../auth/types/auth';
+
 
 type FilterKey = 'all' | 'mine' | 'joined' | 'available';
 
@@ -226,7 +226,7 @@ const EventsPage: React.FC = () => {
                 <EventCard
                   key={ev.eventId}
                   ev={ev}
-                  user={user}
+                  user={user!}
                   joined={userParticipation[ev.eventId] || false}
                   busy={!!processing[ev.eventId]}
                   menuOpen={menuOpenId === ev.eventId}
@@ -254,7 +254,7 @@ const EventsPage: React.FC = () => {
                 <EventCard
                   key={ev.eventId}
                   ev={ev}
-                  user={user}
+                  user={user!}
                   joined={userParticipation[ev.eventId] || false}
                   busy={false}
                   menuOpen={false}
