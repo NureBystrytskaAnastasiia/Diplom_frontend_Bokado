@@ -1,32 +1,28 @@
-  import axios from 'axios';
-  import { store } from '../../store';
-  import { logout } from '../../features/auth/store/authSlice';
+import axios from 'axios';
+import { store } from '../../store';
+import { logout } from '../../features/auth/store/authSlice';
 
-  export const BASE_URL = import.meta.env.VITE_API_URL ?? 'https://bokadoserver-production.up.railway.app';
+export const BASE_URL = import.meta.env.VITE_API_URL ?? 'https://bokadoserver-production.up.railway.app';
 
-  const axiosInstance = axios.create({
-    baseURL: BASE_URL,
-  });
+const axiosInstance = axios.create({
+  baseURL: BASE_URL,
+});
 
-  // Додаємо токен до кожного запиту автоматично
-  axiosInstance.interceptors.request.use((config) => {
-    const token = store.getState().auth.token;
-    if (token) {
-      config.headers.Authorization = `Bearer ${token}`;
+axiosInstance.interceptors.request.use((config) => {
+  const token = store.getState().auth.token;
+  if (token) config.headers.Authorization = `Bearer ${token}`;
+  return config;
+});
+
+axiosInstance.interceptors.response.use(
+  (response) => response,
+  (error) => {
+    if (error.response?.status === 401) {
+      store.dispatch(logout());
+      window.location.href = '/login';
     }
-    return config;
-  });
+    return Promise.reject(error);
+  }
+);
 
-  // Якщо 401 — розлогінюємо і редіректимо на /login
-  axiosInstance.interceptors.response.use(
-    (response) => response,
-    (error) => {
-      if (error.response?.status === 401) {
-        store.dispatch(logout());
-        window.location.href = '/login';
-      }
-      return Promise.reject(error);
-    }
-  );
-
-  export default axiosInstance;
+export default axiosInstance;

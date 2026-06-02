@@ -1,21 +1,19 @@
-// src/shared/components/AppLayout/AppLayout.tsx
 import React, { useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import { useDispatch } from 'react-redux';
 import {
   FiHome, FiCompass, FiCalendar, FiMessageSquare,
   FiTarget, FiStar, FiUser, FiLogOut,
   FiChevronsLeft, FiChevronsRight, FiBell, FiMenu,
 } from 'react-icons/fi';
-import { useAppSelector } from '../../hooks/useAuth';
+import { useAppDispatch, useAppSelector } from '../../hooks/useAuth';
 import { logout } from '../../../features/auth/store/authSlice';
 import NotificationBell from '../../../features/notifications/components/NotificationBell/NotificationBell';
 import './AppLayout.css';
 
 interface NavItem {
-  to: string;
-  icon: React.ReactNode;
-  label: string;
+  to:     string;
+  icon:   React.ReactNode;
+  label:  string;
   badge?: number;
 }
 
@@ -24,11 +22,11 @@ interface AppLayoutProps {
 }
 
 const AppLayout: React.FC<AppLayoutProps> = ({ children }) => {
-  const { user } = useAppSelector((state) => state.auth);
-  const [collapsed, setCollapsed] = useState(false);
+  const dispatch    = useAppDispatch();
+  const { user }    = useAppSelector(s => s.auth);
+  const [collapsed,   setCollapsed]  = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
   const location = useLocation();
-  const dispatch = useDispatch();
 
   const navItems: NavItem[] = [
     { to: '/dashboard',               icon: <FiHome />,          label: 'Головна' },
@@ -48,13 +46,12 @@ const AppLayout: React.FC<AppLayoutProps> = ({ children }) => {
 
   const sidebarClass = [
     'app-sidebar',
-    collapsed   ? 'app-sidebar--collapsed'    : '',
-    mobileOpen  ? 'app-sidebar--mobile-open'  : '',
+    collapsed  ? 'app-sidebar--collapsed'   : '',
+    mobileOpen ? 'app-sidebar--mobile-open' : '',
   ].filter(Boolean).join(' ');
 
   return (
     <div className="app-layout">
-      {/* Mobile overlay */}
       {mobileOpen && (
         <div
           className="app-layout__overlay"
@@ -63,13 +60,11 @@ const AppLayout: React.FC<AppLayoutProps> = ({ children }) => {
       )}
 
       <aside className={sidebarClass}>
-        {/* Logo */}
         <Link to="/dashboard" className="app-sidebar__logo">
           <div className="app-sidebar__logo-mark">B</div>
           <span className="app-sidebar__logo-text">Bokado</span>
         </Link>
 
-        {/* Nav */}
         <nav className="app-sidebar__nav">
           {navItems.map((item) => {
             const isActive =
@@ -92,9 +87,7 @@ const AppLayout: React.FC<AppLayoutProps> = ({ children }) => {
           })}
         </nav>
 
-        {/* Footer */}
         <div className="app-sidebar__footer">
-          {/* 🔔 Сповіщення в сайдбарі */}
           <div className="app-sidebar__notification-row">
             <NotificationBell />
             {!collapsed && <span className="app-sidebar__notification-label">Сповіщення</span>}
@@ -116,9 +109,7 @@ const AppLayout: React.FC<AppLayoutProps> = ({ children }) => {
         </div>
       </aside>
 
-      {/* Main content */}
       <main className="app-layout__main">
-        {/* Mobile header */}
         <div className="app-mobile-header">
           <button
             className="app-mobile-header__menu"
@@ -127,10 +118,7 @@ const AppLayout: React.FC<AppLayoutProps> = ({ children }) => {
           >
             <FiMenu size={22} />
           </button>
-
           <span className="app-mobile-header__title">Bokado</span>
-
-          {/* 🔔 Дзвоник сповіщень */}
           <NotificationBell />
         </div>
 
