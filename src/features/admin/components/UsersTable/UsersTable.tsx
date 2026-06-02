@@ -7,6 +7,8 @@ import {
 } from '../../store/adminSlice';
 import type { UserDetailInfoDto } from '../../types/admin';
 import './UsersTable.css';
+import { buildMediaUrl } from '../../../../shared';
+
 
 interface UsersTableProps {
   users: UserDetailInfoDto[];
@@ -100,7 +102,7 @@ const UsersTable: React.FC<UsersTableProps> = ({ users }) => {
                       <div className="users-table__avatar">
                         {user.avatarUrl ? (
                           <img
-                            src={`https://bokadoserver-production.up.railway.app${user.avatarUrl}`}
+                            src={buildMediaUrl(user.avatarUrl)}
                             alt={user.username}
                             onError={(e) => {
                               e.currentTarget.style.display = 'none';

@@ -3,8 +3,9 @@ import { useNavigate } from 'react-router-dom';
 import { FiUser, FiUserPlus, FiCheck, FiArrowRight } from 'react-icons/fi';
 import type { FriendDto, FriendStatus } from '../../../friends/types/friends';
 import './UserSearchCard.css';
+import { buildMediaUrl } from '../../../../shared';
 
-const API_BASE = import.meta.env.VITE_API_URL ?? 'https://bokadoserver-production.up.railway.app';
+
 
 interface UserSearchCardProps {
   user: FriendDto;
@@ -34,7 +35,7 @@ const UserSearchCard: React.FC<UserSearchCardProps> = ({
       {/* Avatar */}
       {user.avatarUrl ? (
         <img
-          src={`${API_BASE}${user.avatarUrl}`}
+          src={buildMediaUrl(user.avatarUrl)}
           alt={user.username}
           className="user-search-card__avatar"
           onError={(e) => {

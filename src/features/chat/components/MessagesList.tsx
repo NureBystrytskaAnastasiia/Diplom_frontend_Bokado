@@ -2,8 +2,8 @@
 import React, { useEffect, useRef, useState, useCallback } from 'react';
 import { FiChevronDown } from 'react-icons/fi';
 import type { Message } from '../types/chat';
+import { BASE_URL } from '../../../shared/api/axiosInstance';
 
-const BASE_URL = import.meta.env.VITE_API_URL ?? 'https://bokadoserver-production.up.railway.app';
 
 interface MessagesListProps {
   messages:        Message[];

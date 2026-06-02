@@ -2,8 +2,9 @@ import React from 'react';
 import { FiUser, FiCheck, FiX } from 'react-icons/fi';
 import type { FriendRequestDto } from '../../../friends/types/friends';
 import './FriendRequestCard.css';
+import { buildMediaUrl } from '../../../../shared';
 
-const API_BASE = import.meta.env.VITE_API_URL ?? 'https://bokadoserver-production.up.railway.app';
+
 
 interface FriendRequestCardProps {
   request: FriendRequestDto;
@@ -26,7 +27,7 @@ const FriendRequestCard: React.FC<FriendRequestCardProps> = ({
   <div className="friend-request-card">
     {request.avatarUrl ? (
       <img
-        src={`${API_BASE}${request.avatarUrl}`}
+        src={buildMediaUrl(request.avatarUrl)}
         alt={request.username}
         className="friend-request-card__avatar"
         onError={(e) => { (e.target as HTMLImageElement).style.display = 'none'; }}

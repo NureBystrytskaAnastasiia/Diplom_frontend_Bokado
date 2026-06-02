@@ -1,5 +1,6 @@
-// src/features/chat/api/chat.ts
-import axiosInstance, { BASE_URL } from '../../../shared/api/axiosInstance';
+import axiosInstance from '../../../shared/api/axiosInstance';
+import { API_BASE_URL, buildMediaUrl } from '../../../shared';
+import { store } from '../../../store';
 import type { Chat, Message, BackendMessage, TypingStatus } from '../types/chat';
 
 /* ── WebSocket ─────────────────────────────────────────────── */
@@ -13,9 +14,9 @@ export const initializeWebSocket = (
   onTyping:      (t: TypingStatus) => void,
   onNewMessage:  (m: Message) => void
 ) => {
-  const token = localStorage.getItem('token');
+  const token = store.getState().auth.token;
   if (!token) return;
-  const wsUrl = BASE_URL.replace('https://', 'wss://').replace('http://', 'ws://');
+  const wsUrl = API_BASE_URL.replace('https://', 'wss://').replace('http://', 'ws://');
   socket = new WebSocket(`${wsUrl}/ws?token=${token}`);
   onlineUsersCallback = onOnlineUsers;
   typingCallback      = onTyping;
@@ -44,10 +45,8 @@ export const sendTypingStatus = (chatId: number, isTyping: boolean) => {
 };
 
 /* ── Helpers ────────────────────────────────────────────────── */
-export const resolveUrl = (path: string | null | undefined): string | null => {
-  if (!path) return null;
-  return path.startsWith('http') ? path : `${BASE_URL}${path}`;
-};
+const resolveUrl = (path: string | null | undefined): string | null =>
+  buildMediaUrl(path) || null;
 
 const convertMsg = (m: BackendMessage): Message => ({
   messageId:       m.messageId,
@@ -63,14 +62,8 @@ const convertMsg = (m: BackendMessage): Message => ({
 });
 
 /* ── REST ───────────────────────────────────────────────────── */
-
-/**
- * Бек тепер сам повертає особисті + групові чати,
- * avatarUrl, lastMessage, unreadCount — нічого не підвантажуємо окремо.
- */
 export const getChats = async (): Promise<Chat[]> => {
   const { data } = await axiosInstance.get<Chat[]>('/api/Chat/chats');
-  // Виправляємо avatarUrl якщо прийшов без хоста
   return data.map(chat => ({
     ...chat,
     secondMember: chat.secondMember
@@ -104,7 +97,6 @@ export const sendMessage = async (chatId: number, text: string, attachedFile?: F
   });
 };
 
-// ← ВИПРАВЛЕНО: тепер реально викликає бек PUT /{chatId}/read
 export const markChatAsRead = async (chatId: number): Promise<void> => {
   try { await axiosInstance.put(`/api/Chat/${chatId}/read`, {}); } catch {}
 };
@@ -125,8 +117,7 @@ export const sendVoiceMessage = async (chatId: number, voiceFile: File) => {
   });
 };
 
-// Зворотна сумісність з chatSlice
-export const getUsers    = async () => [];
+export const getUsers = async () => [];
 export const getOnlineUsers = async (): Promise<number[]> => {
   try { const { data } = await axiosInstance.get('/api/User/online'); return data; } catch { return []; }
 };

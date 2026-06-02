@@ -4,6 +4,7 @@ import {
   FiHeart, FiCamera, FiCheck, FiSave,
 } from 'react-icons/fi';
 import type { Interest, UserProfile } from '../types/user';
+import { buildMediaUrl } from '../../../shared';
 
 interface Props {
   profile: UserProfile;
@@ -38,9 +39,7 @@ const EditProfileModal: React.FC<Props> = ({
   // ── Аватарка
   const [avatarFile, setAvatarFile] = useState<File | null>(null);
   const [avatarPreview, setAvatarPreview] = useState<string | null>(
-    profile.avatarUrl
-      ? (profile.avatarUrl.startsWith('http') ? profile.avatarUrl : `https://bokadoserver-production.up.railway.app${profile.avatarUrl}`)
-      : null
+  profile.avatarUrl ? buildMediaUrl(profile.avatarUrl) : null
   );
   const fileInputRef = useRef<HTMLInputElement>(null);
 

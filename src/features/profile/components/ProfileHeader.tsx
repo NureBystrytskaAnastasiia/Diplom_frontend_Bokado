@@ -13,6 +13,7 @@ import {
 import type { UserProfile, UserDetailInfo } from '../types/user';
 import type { FriendDto } from '../../friends/types/friends';
 import FriendsModal from './FriendsModal';
+import { buildMediaUrl } from '../../../shared';
 
 interface Props {
   profile:     UserProfile;
@@ -33,11 +34,7 @@ const ProfileHeader: React.FC<Props> = ({
 }) => {
   const [friendsOpen, setFriendsOpen] = useState(false);
 
-  const avatarUrl = profile.avatarUrl
-    ? (profile.avatarUrl.startsWith('http')
-        ? profile.avatarUrl
-        : `https://bokadoserver-production.up.railway.app${profile.avatarUrl}`)
-    : null;
+  const avatarUrl = profile.avatarUrl ? buildMediaUrl(profile.avatarUrl) : null;
 
   return (
     <>

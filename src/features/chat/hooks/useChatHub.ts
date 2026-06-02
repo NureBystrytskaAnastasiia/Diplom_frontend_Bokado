@@ -1,9 +1,8 @@
 // src/features/chat/hooks/useChatHub.ts
 import { useEffect, useCallback } from 'react';
 import * as signalR from '@microsoft/signalr';
+import { BASE_URL } from '../../../shared/api/axiosInstance';
 
-const BASE_URL =
-  import.meta.env.VITE_API_URL ?? 'https://bokadoserver-production.up.railway.app';
 
 // Глобальне з'єднання — одне на весь додаток
 let globalConnection: signalR.HubConnection | null = null;

@@ -5,9 +5,8 @@ import { FiArrowLeft, FiUsers, FiUser } from 'react-icons/fi';
 import type { Chat } from '../../types/chat';
 import UserCardDrawer from '../UserCardDrawer/UserCardDrawer';
 import './ChatHeader.css';
+import { buildMediaUrl } from '../../../../shared';
 
-const BASE_URL =
-  import.meta.env.VITE_API_URL ?? 'https://bokadoserver-production.up.railway.app';
 
 interface ChatHeaderProps {
   chat: Chat | null;
@@ -45,7 +44,7 @@ const ChatHeader: React.FC<ChatHeaderProps> = ({
   const name      = isGroup ? (chat.groupName ?? 'Група') : (chat.secondMember?.username ?? '');
   const rawAvatar = !isGroup ? chat.secondMember?.avatarUrl : null;
   const avatarUrl = rawAvatar
-    ? (rawAvatar.startsWith('http') ? rawAvatar : `${BASE_URL}${rawAvatar}`)
+    ? buildMediaUrl(rawAvatar)
     : null;
 
   let subtitle: React.ReactNode;

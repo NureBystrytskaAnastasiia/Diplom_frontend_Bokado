@@ -1,10 +1,9 @@
-// src/features/chat/components/ChatItem/ChatItem.tsx
 import React from 'react';
 import { FiUsers, FiTrash2, FiCheck } from 'react-icons/fi';
 import type { Chat } from '../../types/chat';
 import './ChatItem.css';
+import { buildMediaUrl } from '../../../../shared';
 
-const BASE_URL = import.meta.env.VITE_API_URL ?? import.meta.env.VITE_API_URL ?? 'https://bokadoserver-production.up.railway.app';
 
 interface ChatItemProps {
   chat:      Chat;
@@ -33,7 +32,7 @@ const ChatItem: React.FC<ChatItemProps> = ({ chat, isActive, onClick, onDelete, 
 
   const rawAvatar = !isGroup ? chat.secondMember?.avatarUrl : null;
   const avatarUrl = rawAvatar
-    ? (rawAvatar.startsWith('http') ? rawAvatar : `${BASE_URL}${rawAvatar}`)
+    ? buildMediaUrl(rawAvatar)
     : null;
 
   const lastMsg   = chat.lastMessage;

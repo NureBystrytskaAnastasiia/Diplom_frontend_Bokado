@@ -1,5 +1,6 @@
 import React, { useEffect } from 'react';
 import { useAppDispatch, useAppSelector } from '../../../shared/hooks/useAuth';
+import axiosInstance from '../../../shared/api/axiosInstance';
 import { loadEvents, joinExistingEvent, quitExistingEvent, initializeUserParticipation } from '../../events/store/eventSlice';
 import { fetchChallenges, completeChallenge } from '../../challenges/store/usechallengesSlice';
 import { loadRecommendations, joinGroupById } from '../../groups/store/groupsSlice';
@@ -20,36 +21,25 @@ import '../styles/Dashboard.css';
 const DashboardPage: React.FC = () => {
   const dispatch = useAppDispatch();
   const { user, token } = useAppSelector((s) => s.auth);
-  const { events, userParticipation, loading: eventsLoading }   = useAppSelector((s) => s.events);
-  const { challenges, loading: challsLoading }                   = useAppSelector((s) => s.userChallenges);
+  const { events, userParticipation, loading: eventsLoading }     = useAppSelector((s) => s.events);
+  const { challenges, loading: challsLoading }                    = useAppSelector((s) => s.userChallenges);
   const { recommendations, actionLoading, loading: groupsLoading } = useAppSelector((s) => s.groups);
-  const { cats, loading: catsLoading, refetch: refetchCats }     = useCats(3);
+  const { cats, loading: catsLoading, refetch: refetchCats }      = useCats(3);
 
- useEffect(() => {
+  useEffect(() => {
     dispatch(loadEvents());
-    if (token) dispatch(fetchChallenges(token));
+    dispatch(fetchChallenges());
     dispatch(loadRecommendations());
 
-    // Відправляємо геолокацію на бекенд
     if (token && navigator.geolocation) {
       navigator.geolocation.getCurrentPosition(async (pos) => {
         try {
-          await fetch(
-            `${import.meta.env.VITE_API_URL ?? 'https://bokadoserver-production.up.railway.app'}/api/users/update-location`,
-            {
-              method: 'PUT',
-              headers: {
-                'Content-Type': 'application/json',
-                Authorization: `Bearer ${token}`,
-              },
-              body: JSON.stringify({
-                latitude: pos.coords.latitude,
-                longitude: pos.coords.longitude,
-              }),
-            }
-          );
-        } catch (e) {
-          console.error('Не вдалося оновити геолокацію', e);
+          await axiosInstance.put('/api/users/update-location', {
+            latitude:  pos.coords.latitude,
+            longitude: pos.coords.longitude,
+          });
+        } catch {
+          // геолокація необов'язкова — мовчазний фейл
         }
       });
     }
@@ -79,7 +69,7 @@ const DashboardPage: React.FC = () => {
 
   const handleCompleteChallenge = (e: React.MouseEvent, challengeId: number) => {
     e.stopPropagation();
-    if (token) dispatch(completeChallenge({ challengeId, token }));
+    dispatch(completeChallenge(challengeId));
   };
 
   const handleJoinGroup = (e: React.MouseEvent, groupId: number) => {
@@ -121,13 +111,16 @@ const DashboardPage: React.FC = () => {
             onJoin={handleJoinGroup}
           />
         </div>
+
         <WeatherWidget />
+
         <CatsCard
           cats={cats}
           loading={catsLoading}
           onRefetch={refetchCats}
         />
-<NearbyUsersMap />
+
+        <NearbyUsersMap />
 
       </div>
     </AppLayout>

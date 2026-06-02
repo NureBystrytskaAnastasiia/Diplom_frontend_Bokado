@@ -17,9 +17,9 @@ import {
   clearCurrentGroup,
 } from '../store/groupsSlice';
 import AppLayout from '../../../shared/components/AppLayout/AppLayout';
+import { buildMediaUrl } from '../../../shared';
 import '../styles/GroupPage.css';
 
-const API_BASE = import.meta.env.VITE_API_URL ?? 'https://bokadoserver-production.up.railway.app';
 
 const roleLabel: Record<string, string> = {
   Owner: 'Власник',
@@ -229,7 +229,7 @@ const GroupPage: React.FC = () => {
                 <div key={member.userId} className="group-page__member">
                   {member.avatarUrl ? (
                     <img
-                      src={`${API_BASE}${member.avatarUrl}`}
+                      src={buildMediaUrl(member.avatarUrl)}
                       alt={member.username}
                       className="group-page__member-avatar"
                       onError={(e) => { (e.target as HTMLImageElement).style.display = 'none'; }}

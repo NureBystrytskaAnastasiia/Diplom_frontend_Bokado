@@ -4,3 +4,4 @@ export { getErrorMessage } from './utils/errorUtils';
 export { default as ScrollToTop }    from './components/ScrollToTop';
 export { default as AppLayout }      from './components/AppLayout/AppLayout';
 export { default as AuthPromptModal } from './components/AuthPromptModal/AuthPromptModal';
+export { API_BASE_URL, buildMediaUrl } from './config/env';
