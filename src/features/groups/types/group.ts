@@ -25,7 +25,7 @@ export interface GetGroupDto {
   name: string;
   description: string | null;
   city: string;
-  status: GroupStatus;
+  status: 'Open' | 'Closed' | number;
   creatorId: number;
   chatId: number;
   maxMembers: number;

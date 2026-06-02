@@ -30,8 +30,7 @@ const roleLabel: Record<string, string> = {
   '2': 'Власник',
 };
 
-// Бек може повертати role як число (0=Member, 1=Admin, 2=Owner) або рядок
-const normalizeRole = (role: any): 'Member' | 'Admin' | 'Owner' => {
+const normalizeRole = (role: unknown): 'Member' | 'Admin' | 'Owner' => {
   if (role === 0 || role === 'Member') return 'Member';
   if (role === 1 || role === 'Admin')  return 'Admin';
   if (role === 2 || role === 'Owner')  return 'Owner';

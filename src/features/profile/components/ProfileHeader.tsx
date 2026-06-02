@@ -143,7 +143,7 @@ const ProfileHeader: React.FC<Props> = ({
               {/* Челенджі */}
               <div className="ph__stat">
                 <span className="ph__stat-val">
-                  {detailedInfo?.userChallenges?.filter((c: any) => c.isCompleted).length ?? 0}
+                  {detailedInfo?.userChallenges?.filter((c: unknown) => (c as { isCompleted?: boolean }).isCompleted).length ?? 0}
                 </span>
                 <span className="ph__stat-lbl">Челенджів</span>
               </div>

@@ -17,8 +17,9 @@ import {
 import AppLayout from '../../../shared/components/AppLayout/AppLayout';
 import EventDetailsModal from '../components/EventDetailsModal';
 import EditEventModal from '../components/EditEventModal';
-import type { Event } from '../types/event';
+import type { Event, User } from '../types/event';
 import '../styles/Events.css';
+import type { User } from '../../auth/types/auth';
 
 type FilterKey = 'all' | 'mine' | 'joined' | 'available';
 
@@ -310,13 +311,9 @@ const EventsPage: React.FC = () => {
     </AppLayout>
   );
 };
-
-/* =========================================================
-   EventCard
-   ========================================================= */
 interface EventCardProps {
   ev: Event;
-  user: any;
+  user: User;
   joined: boolean;
   busy: boolean;
   isPast?: boolean;

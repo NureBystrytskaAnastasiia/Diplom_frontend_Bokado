@@ -1,4 +1,3 @@
-// src/features/posts/components/PostCreate.tsx
 import React, { useRef, useState } from 'react';
 import { FiImage, FiSend, FiX } from 'react-icons/fi';
 import { useAppDispatch, useAppSelector } from '../../../shared/hooks/useAuth';
@@ -8,7 +7,7 @@ import type { CreatePostData } from '../types/post';
 const PostCreate: React.FC = () => {
   const dispatch = useAppDispatch();
   const { isCreating, createError } = useAppSelector(s => s.posts);
-  const isPremium = useAppSelector(s => s.auth.user as any)?.isPremium ?? false;
+  const isPremium = useAppSelector(s => s.auth.user)?.isPremium ?? false;
 
   const [text, setText]               = useState('');
   const [imageFile, setImageFile]     = useState<File | null>(null);

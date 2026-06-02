@@ -18,7 +18,6 @@ const EditEventModal: React.FC<Props> = ({ event, onClose, onSuccess }) => {
 
   const [title,       setTitle] = useState(event.title);
   const [description, setDesc]  = useState(event.description ?? '');
-  // datetime-local очікує формат YYYY-MM-DDTHH:mm
   const [date, setDate] = useState(
     new Date(event.date).toISOString().slice(0, 16)
   );
@@ -32,8 +31,7 @@ const EditEventModal: React.FC<Props> = ({ event, onClose, onSuccess }) => {
     setLoading(true);
     setError(null);
 
-    // відправляємо тільки змінені поля
-    const data: any = {};
+    const data: Partial<Event> = {};
     if (title.trim() !== event.title) data.title = title.trim();
     if (description !== (event.description ?? '')) data.description = description;
     const isoDate = new Date(date).toISOString();
@@ -110,7 +108,7 @@ const EditEventModal: React.FC<Props> = ({ event, onClose, onSuccess }) => {
           </div>
 
           <p className="ev__hint ev__hint--info">
-            ℹ️ Максимальну кількість учасників змінити неможливо
+             Максимальну кількість учасників змінити неможливо
           </p>
 
           <div className="ev__form-actions">

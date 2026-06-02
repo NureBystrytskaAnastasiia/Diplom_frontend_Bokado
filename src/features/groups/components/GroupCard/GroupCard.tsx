@@ -27,7 +27,7 @@ const GroupCard: React.FC<GroupCardProps> = ({
     ? group.members.some(m => m.userId === currentUserId)
     : false;
   const isOwner      = currentUserId === group.creatorId;
-  const isClosed     = group.status === 'Closed' || (group.status as any) === 1;
+ const isClosed = group.status === 'Closed' || group.status === 1;
   const fillPercent  = Math.min((memberCount / group.maxMembers) * 100, 100);
   const firstInterest = group.interests[0]?.name;
 

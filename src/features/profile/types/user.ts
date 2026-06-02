@@ -31,13 +31,13 @@ export interface UserDetailInfo {
   createdAt: string;
   lastActive: string;
   userInterests: Interest[];
-  friends: any[];
-  swipes: any[];
-  chatParticipants: any[];
-  eventParticipants: any[];
-  userChallenges: any[];
-  messages: any[];
-  createdEvents: any[];
+  friends: unknown[];
+  swipes: unknown[];
+  chatParticipants: unknown[];
+  eventParticipants: unknown[];
+  userChallenges: unknown[];
+  messages: unknown[];
+  createdEvents: unknown[];
 }
 
 export interface UpdateProfileRequest {

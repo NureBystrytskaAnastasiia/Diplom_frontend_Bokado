@@ -3,6 +3,9 @@ export interface User {
   username: string;
   email: string;
   isAdmin: boolean;
+  isPremium: boolean;
+  avatarUrl?: string;
+  birthDate?: string;
   city?: string;
 }
 

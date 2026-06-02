@@ -1,6 +1,7 @@
 import { useEffect, useRef } from 'react';
 import { useAppDispatch, useAppSelector } from '../../../shared/hooks/useAuth';
 import { fetchNotifications } from '../store/notificationsSlice';
+import type { Notification } from '../store/notificationsSlice';
 
 const playSound = () => {
   try {
@@ -17,9 +18,9 @@ const showPush = (message: string) => {
 };
 
 export const useNotificationHub = () => {
-  const dispatch = useAppDispatch();
-  const token = useAppSelector(s => s.auth.token);
-  const prevUnreadRef = useRef<number | null>(null); // null = ще не ініціалізовано
+  const dispatch        = useAppDispatch();
+  const token           = useAppSelector(s => s.auth.token);
+  const prevUnreadRef   = useRef<number | null>(null);
 
   useEffect(() => {
     if ('Notification' in window && Notification.permission === 'default') {
@@ -34,26 +35,25 @@ export const useNotificationHub = () => {
       const result = await dispatch(fetchNotifications());
       if (!fetchNotifications.fulfilled.match(result)) return;
 
-      const unread = result.payload.filter((n: any) => !n.isRead).length;
+      const notifications = result.payload as Notification[];
+      const unread = notifications.filter(n => !n.isRead).length;
 
       if (prevUnreadRef.current === null) {
-        // Перший запит — просто запам'ятовуємо, без звуку
         prevUnreadRef.current = unread;
         return;
       }
 
       if (unread > prevUnreadRef.current) {
-        // З'явились нові — граємо звук і показуємо push
         playSound();
-        const newest = result.payload.find((n: any) => !n.isRead);
+        const newest = notifications.find(n => !n.isRead);
         if (newest) showPush(newest.message);
       }
 
       prevUnreadRef.current = unread;
     };
 
-    poll(); // одразу при вході
-    const interval = setInterval(poll, 15000); // кожні 15 секунд
+    poll();
+    const interval = setInterval(poll, 15000);
     return () => clearInterval(interval);
   }, [token, dispatch]);
 };

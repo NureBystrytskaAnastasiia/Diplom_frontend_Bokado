@@ -1,26 +1,19 @@
 export interface UserDetailInfoDto {
-  userId: number;
-  username: string;
-  email: string;
-  birthDate: string;
-  avatarUrl?: string;
-  bio?: string;
-  status?: string;
-  level: number;
-  city?: string;
-  isPremium: boolean;
-  isBanned: boolean;
-  isAdmin: boolean;
-  createdAt: string;
-  lastActive: string;
-  userInterests: any[];
-  friends: any[];
-  swipes: any[];
-  chatParticipants: any[];
-  eventParticipants: any[];
-  userChallenges: any[];
-  messages: any[];
-  createdEvents: any[];
+  userId:           number;
+  username:         string;
+  email:            string;
+  birthDate:        string;
+  createdAt:        string;
+  isPremium:        boolean;
+  isBanned:         boolean;
+  userInterests:    unknown[];
+  friends:          unknown[];
+  swipes:           unknown[];
+  chatParticipants: unknown[];
+  eventParticipants:unknown[];
+  userChallenges:   unknown[];
+  messages:         unknown[];
+  createdEvents:    unknown[];
 }
 
 export interface Challenge {
@@ -40,14 +33,12 @@ export interface User {
   isAdmin: boolean;
   isBanned: boolean;
   isPremium: boolean;
-  // інші поля...
 }
 
 export interface Stats {
-  [key: string]: number;  // Наприклад, {'2024-06': 10, '2024-07': 20}
+  [key: string]: number;
 }
 
-// Добавляем типы для userStats
 export interface UserInfo {
   userId: number;
   username: string;
@@ -62,5 +53,4 @@ export interface UserStat {
   [date: string]: UserInfo[];
 }
 
-// Тип для массива статистики пользователей
 export type UserStatsArray = UserStat[];
