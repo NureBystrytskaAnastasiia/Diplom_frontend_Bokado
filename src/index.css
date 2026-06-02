@@ -39,6 +39,23 @@
   --clr-border:        #E4DCF5;
   --clr-border-strong: #C9BAE8;
 
+  /* ── Семантичні — успіх ── */
+  --clr-success:        #10B981;
+  --clr-success-soft:   rgba(16, 185, 129, 0.1);
+  --clr-success-muted:  #D1FAE5;
+
+  /* ── Семантичні — помилка ── */
+  --clr-error:          #EF4444;
+  --clr-error-hover:    #DC2626;
+  --clr-error-soft:     rgba(239, 68, 68, 0.12);
+  --clr-error-muted:    #FEF2F2;
+  --clr-error-border:   #FECACA;
+
+  /* ── Семантичні — попередження ── */
+  --clr-warning:        #D97706;
+  --clr-warning-soft:   rgba(245, 158, 11, 0.1);
+  --clr-warning-muted:  rgba(245, 158, 11, 0.08);
+
   /* ── Типографіка ── */
   --font-display:      'Playfair Display', Georgia, serif;
   --font-body:         'DM Sans', system-ui, sans-serif;
@@ -82,12 +99,12 @@
   --shadow-xl:  0 24px 80px rgba(124, 77, 255, 0.18);
 
   /* ── Анімації ── */
-  --ease-out:   cubic-bezier(0.16, 1, 0.3, 1);
-  --ease-in:    cubic-bezier(0.7, 0, 0.84, 0);
-  --ease-spring:cubic-bezier(0.34, 1.56, 0.64, 1);
-  --dur-fast:   150ms;
-  --dur-base:   250ms;
-  --dur-slow:   400ms;
+  --ease-out:    cubic-bezier(0.16, 1, 0.3, 1);
+  --ease-in:     cubic-bezier(0.7, 0, 0.84, 0);
+  --ease-spring: cubic-bezier(0.34, 1.56, 0.64, 1);
+  --dur-fast:    150ms;
+  --dur-base:    250ms;
+  --dur-slow:    400ms;
 
   /* ── Layout ── */
   --container:  1140px;
