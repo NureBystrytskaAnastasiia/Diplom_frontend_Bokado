@@ -83,7 +83,7 @@
   letter-spacing: 0.05em;
 }
 
-/* Декоративні кільця */
+/* Декоративні кільця — анімація "рябь на воді" */
 .auth-layout__rings {
   position: absolute;
   bottom: 2rem;
@@ -93,10 +93,39 @@
   position: absolute;
   border-radius: 50%;
   border: 1px solid rgba(179, 157, 219, 0.2);
+  opacity: 0;
+  transform: scale(0.3);
+  animation: ripple-wave 3s ease-out forwards;
 }
-.auth-layout__ring--1 { width: 120px; height: 120px; bottom: 0; right: 0; }
-.auth-layout__ring--2 { width: 200px; height: 200px; bottom: -40px; right: -40px; }
-.auth-layout__ring--3 { width: 300px; height: 300px; bottom: -90px; right: -90px; }
+.auth-layout__ring--1 {
+  width: 120px; height: 120px;
+  bottom: 0; right: 0;
+  animation-delay: 0.2s;
+}
+.auth-layout__ring--2 {
+  width: 200px; height: 200px;
+  bottom: -40px; right: -40px;
+  animation-delay: 0.7s;
+}
+.auth-layout__ring--3 {
+  width: 300px; height: 300px;
+  bottom: -90px; right: -90px;
+  animation-delay: 1.2s;
+}
+
+@keyframes ripple-wave {
+  0% {
+    opacity: 0;
+    transform: scale(0.3);
+  }
+  30% {
+    opacity: 0.6;
+  }
+  100% {
+    opacity: 0.15;
+    transform: scale(1);
+  }
+}
 
 /* ── Права частина ── */
 .auth-layout__right {
