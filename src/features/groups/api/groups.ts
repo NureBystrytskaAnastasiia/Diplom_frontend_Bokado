@@ -16,6 +16,13 @@ export const getRecommendations = async (): Promise<GetGroupDto[]> => {
   return data;
 };
 
+export const startGroupCall = async (groupId: number): Promise<string> => {
+  const { data } = await axiosInstance.post<{ meetLink: string }>(
+    `/api/Group/${groupId}/call`
+  );
+  return data.meetLink;
+};
+
 export const createGroup = async (dto: CreateGroupDto): Promise<GetGroupDto> => {
   const { data } = await axiosInstance.post<GetGroupDto>('/api/Group', dto);
   return data;
@@ -49,9 +56,3 @@ export const closeGroup = async (groupId: number): Promise<void> => {
   await axiosInstance.post(`/api/Group/${groupId}/close`);
 };
 
-export const startGroupCall = async (groupId: number): Promise<string> => {
-  const { data } = await axiosInstance.post<{ meetLink: string }>(
-    `/api/Group/${groupId}/call`
-  );
-  return data.meetLink;
-};

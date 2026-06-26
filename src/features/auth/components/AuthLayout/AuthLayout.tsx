@@ -34,8 +34,9 @@ const AuthLayout: React.FC<AuthLayoutProps> = ({ children, mode }) => (
           <span className="auth-layout__quote-author">— {quote.author}</span>
         </div>
 
-        {/* Декоративні кільця */}
+        {/* Декоративні кільця — крапля падає на воду */}
         <div className="auth-layout__rings" aria-hidden="true">
+          <span className="auth-layout__drop" />
           <div className="auth-layout__ring auth-layout__ring--1" />
           <div className="auth-layout__ring auth-layout__ring--2" />
           <div className="auth-layout__ring auth-layout__ring--3" />

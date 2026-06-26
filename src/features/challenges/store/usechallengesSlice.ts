@@ -1,7 +1,6 @@
 import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
 import type { PayloadAction } from '@reduxjs/toolkit';
 import type { ChallengeDto, Challenge } from '../types/challenge';
-import { fetchAllChallenges } from '../api/usechallenges';
 import { challengeApi }       from '../api/challenges';
 
 interface UserChallengesState {
@@ -20,7 +19,7 @@ export const fetchChallenges = createAsyncThunk(
   'userChallenges/fetchChallenges',
   async (_, { rejectWithValue }) => {
     try {
-      const data = await fetchAllChallenges();
+      const data = await challengeApi.getChallenges();
       return data.map((c: ChallengeDto) => ({
         ...c,
         isCompleted: !!c.completedAt,

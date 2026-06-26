@@ -7,6 +7,10 @@ export const searchByUsername = async (query: string): Promise<FriendDto[]> => {
   });
   return data;
 };
+export const sendFriendRequest = async (targetUserId: number): Promise<void> => {
+  await axiosInstance.post(`/api/Friends/request/${targetUserId}`);
+};
+
 
 export const getFriendStatus = async (targetUserId: number): Promise<FriendStatusDto> => {
   const { data } = await axiosInstance.get<FriendStatusDto>(
@@ -15,9 +19,7 @@ export const getFriendStatus = async (targetUserId: number): Promise<FriendStatu
   return data;
 };
 
-export const sendFriendRequest = async (targetUserId: number): Promise<void> => {
-  await axiosInstance.post(`/api/Friends/request/${targetUserId}`);
-};
+
 
 export const acceptFriendRequest = async (requesterId: number): Promise<void> => {
   await axiosInstance.post(`/api/Friends/request/accept/${requesterId}`);

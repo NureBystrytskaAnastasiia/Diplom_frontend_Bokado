@@ -83,48 +83,68 @@
   letter-spacing: 0.05em;
 }
 
-/* Декоративні кільця — анімація "рябь на воді" */
+/* Декоративні кільця — крапля падає на воду й розходиться колами */
+/* .auth-layout__rings — це точка удару краплі (нульовий розмір) */
 .auth-layout__rings {
   position: absolute;
-  bottom: 2rem;
-  right: 2rem;
-}
-.auth-layout__ring {
-  position: absolute;
-  border-radius: 50%;
-  border: 1px solid rgba(179, 157, 219, 0.2);
-  opacity: 0;
-  transform: scale(0.3);
-  animation: ripple-wave 3s ease-out forwards;
-}
-.auth-layout__ring--1 {
-  width: 120px; height: 120px;
-  bottom: 0; right: 0;
-  animation-delay: 0.2s;
-}
-.auth-layout__ring--2 {
-  width: 200px; height: 200px;
-  bottom: -40px; right: -40px;
-  animation-delay: 0.7s;
-}
-.auth-layout__ring--3 {
-  width: 300px; height: 300px;
-  bottom: -90px; right: -90px;
-  animation-delay: 1.2s;
+  bottom: 30%;
+  right: 24%;
+  width: 0;
+  height: 0;
 }
 
+/* Крапля, що падає згори в точку удару */
+.auth-layout__drop {
+  position: absolute;
+  left: 0;
+  bottom: 0;
+  width: 9px;
+  height: 9px;
+  margin-left: -4.5px;
+  border-radius: 50% 50% 50% 50% / 62% 62% 38% 38%;
+  background: rgba(255, 255, 255, 0.9);
+  box-shadow: 0 0 10px rgba(255, 255, 255, 0.55);
+  transform-origin: center bottom;
+  animation: drop-fall 4s ease-in infinite;
+}
+
+@keyframes drop-fall {
+  0%   { opacity: 0;   transform: translateY(-170px) scaleX(0.7) scaleY(1.5); }
+  10%  { opacity: 1; }
+  17%  { opacity: 1;   transform: translateY(0)      scaleX(1.3) scaleY(0.5); } /* удар — сплющується */
+  21%  { opacity: 0;   transform: translateY(0)      scaleX(1.6) scaleY(0.35); }
+  100% { opacity: 0;   transform: translateY(0); }
+}
+
+/* Кільця ряби — усі з однієї точки, нескінченно */
+.auth-layout__ring {
+  position: absolute;
+  left: 0;
+  bottom: 0;
+  width: 44px;
+  height: 44px;
+  margin-left: -22px;
+  margin-bottom: -22px;
+  border-radius: 50%;
+  border: 2px solid rgba(255, 255, 255, 0.5);
+  opacity: 0;
+  transform: scale(0.2);
+  animation: ripple-wave 4s ease-out infinite;
+}
+.auth-layout__ring--1 { animation-delay: 0.75s; }
+.auth-layout__ring--2 { animation-delay: 1.05s; }
+.auth-layout__ring--3 { animation-delay: 1.35s; }
+
 @keyframes ripple-wave {
-  0% {
-    opacity: 0;
-    transform: scale(0.3);
-  }
-  30% {
-    opacity: 0.6;
-  }
-  100% {
-    opacity: 0.15;
-    transform: scale(1);
-  }
+  0%   { opacity: 0;    transform: scale(0.2); border-width: 2.5px; }
+  12%  { opacity: 0.6; }                                    /* з'являється одразу після удару */
+  100% { opacity: 0;    transform: scale(7);   border-width: 0.5px; }
+}
+
+/* Поважаємо налаштування "зменшити рух" */
+@media (prefers-reduced-motion: reduce) {
+  .auth-layout__drop,
+  .auth-layout__ring { animation: none; opacity: 0.18; }
 }
 
 /* ── Права частина ── */

@@ -16,10 +16,10 @@ export const fetchAllChallenges = async (): Promise<Challenge[]> =>
   (await axiosInstance.get(`${BASE}/allChallenges`)).data;
 
 export const fetchUserStats   = async (): Promise<Stats> =>
-  (await axiosInstance.get(`${BASE}/stats/Users`)).data;
+  (await axiosInstance.get(`/api/stats/users`)).data;
 
 export const fetchChallengeStats = async (): Promise<Stats> =>
-  (await axiosInstance.get(`${BASE}/stats/Challenges`)).data;
+  (await axiosInstance.get(`/api/stats/challenges`)).data;
 
 export const selectChallenges = async (challengeIds: number[]) =>
   axiosInstance.post(`${BASE}/select-challenges`, challengeIds);
@@ -29,3 +29,4 @@ export const subscribe        = async (userId: number) =>
 
 export const unsubscribe      = async (userId: number) =>
   axiosInstance.delete(`${BASE}/subscribe`, { params: { userId } });
+

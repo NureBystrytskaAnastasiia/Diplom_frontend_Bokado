@@ -17,12 +17,12 @@ export const apiCreatePost = async (data: CreatePostData): Promise<Post> => {
   return res.data;
 };
 
-export const apiDeletePost = async (postId: number): Promise<void> => {
-  await axiosInstance.delete(`/api/Post/${postId}`);
-};
-
 export const apiLikePost = async (postId: number): Promise<void> => {
   await axiosInstance.post(`/api/Post/${postId}/like`);
+};
+
+export const apiDeletePost = async (postId: number): Promise<void> => {
+  await axiosInstance.delete(`/api/Post/${postId}`);
 };
 
 export const apiUnlikePost = async (postId: number): Promise<void> => {

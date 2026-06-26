@@ -1,10 +1,8 @@
-// src/features/chat/hooks/useChatHub.ts
 import { useEffect, useCallback } from 'react';
 import * as signalR from '@microsoft/signalr';
 import { BASE_URL } from '../../../shared/api/axiosInstance';
 
 
-// Глобальне з'єднання — одне на весь додаток
 let globalConnection: signalR.HubConnection | null = null;
 const typingListeners:      Set<(chatId: number, userId: number, isTyping: boolean) => void> = new Set();
 const onlineStatusListeners: Set<(userId: number, isOnline: boolean) => void> = new Set();
