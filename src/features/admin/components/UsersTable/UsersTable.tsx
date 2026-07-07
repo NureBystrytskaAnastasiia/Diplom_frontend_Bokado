@@ -21,6 +21,27 @@ const UsersTable: React.FC<UsersTableProps> = ({ users }) => {
   const [search, setSearch]   = useState('');
   const [filter, setFilter]   = useState<Filter>('all');
 
+  const handleBan = (user: UsersTableProps['users'][number]) => {
+    if (window.confirm(`Заблокувати користувача "${user.username}"?`)) {
+      dispatch(banUserById(user.userId));
+    }
+  };
+  const handleUnban = (user: UsersTableProps['users'][number]) => {
+    if (window.confirm(`Розблокувати користувача "${user.username}"?`)) {
+      dispatch(unbanUserById(user.userId));
+    }
+  };
+  const handleSubscribe = (user: UsersTableProps['users'][number]) => {
+    if (window.confirm(`Надати Premium користувачу "${user.username}"?`)) {
+      dispatch(subscribeUser(user.userId));
+    }
+  };
+  const handleUnsubscribe = (user: UsersTableProps['users'][number]) => {
+    if (window.confirm(`Зняти Premium з користувача "${user.username}"?`)) {
+      dispatch(unsubscribeUser(user.userId));
+    }
+  };
+
   const filtered = users.filter((u) => {
     const matchSearch =
       u.username.toLowerCase().includes(search.toLowerCase()) ||
@@ -133,7 +154,7 @@ const UsersTable: React.FC<UsersTableProps> = ({ users }) => {
                       {user.isBanned ? (
                         <button
                           className="adm-btn adm-btn--green"
-                          onClick={() => dispatch(unbanUserById(user.userId))}
+                          onClick={() => handleUnban(user)}
                           title="Розблокувати"
                         >
                           <FiCheckCircle size={13} /> Розблокувати
@@ -141,7 +162,7 @@ const UsersTable: React.FC<UsersTableProps> = ({ users }) => {
                       ) : (
                         <button
                           className="adm-btn adm-btn--red"
-                          onClick={() => dispatch(banUserById(user.userId))}
+                          onClick={() => handleBan(user)}
                           title="Заблокувати"
                         >
                           <FiXCircle size={13} /> Заблокувати
@@ -150,7 +171,7 @@ const UsersTable: React.FC<UsersTableProps> = ({ users }) => {
                       {user.isPremium ? (
                         <button
                           className="adm-btn adm-btn--gray"
-                          onClick={() => dispatch(unsubscribeUser(user.userId))}
+                          onClick={() => handleUnsubscribe(user)}
                           title="Зняти Premium"
                         >
                           <FiSlash size={13} /> Зняти Premium
@@ -158,7 +179,7 @@ const UsersTable: React.FC<UsersTableProps> = ({ users }) => {
                       ) : (
                         <button
                           className="adm-btn adm-btn--gold"
-                          onClick={() => dispatch(subscribeUser(user.userId))}
+                          onClick={() => handleSubscribe(user)}
                           title="Надати Premium"
                         >
                           <FiStar size={13} /> Premium

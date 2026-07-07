@@ -2,10 +2,13 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 import type { PayloadAction } from '@reduxjs/toolkit';
 import type { Challenge } from '../types/challenge';
-import { challengeApi } from '../api/challenges';
-
-const fetchAllChallenges = () => challengeApi.getChallenges();
-const selectChallenges = async (challengeIds: number[]) => ({ message: 'ok', challengeIds });
+// Використовуємо адмін-API, а не заглушки:
+//  - fetchAllChallenges → /api/Admin/allChallenges (повертає всі челенджі з isActive)
+//  - selectChallenges   → POST /api/Admin/select-challenges (реально зберігає вибір)
+import {
+  fetchAllChallenges as fetchAllChallengesAdmin,
+  selectChallenges   as selectChallengesAdmin,
+} from '../../admin/api/admin';
 
 interface ChallengesState {
   challenges: Challenge[];
@@ -25,7 +28,7 @@ export const loadAllChallenges = createAsyncThunk(
   'challenges/loadAll',
   async (_, { rejectWithValue }) => {
     try {
-      const data = await fetchAllChallenges();
+      const data = await fetchAllChallengesAdmin();
       return data;
     } catch (err: any) {
       return rejectWithValue(err.message);
@@ -37,8 +40,8 @@ export const updateSelectedChallenges = createAsyncThunk(
   'challenges/select',
   async (challengeIds: number[], { rejectWithValue }) => {
     try {
-      const response = await selectChallenges(challengeIds);
-      return { challengeIds, message: response.message };
+      await selectChallengesAdmin(challengeIds);
+      return { challengeIds, message: 'ok' };
     } catch (err: any) {
       return rejectWithValue(err.message);
     }
@@ -69,7 +72,11 @@ const challengesSlice = createSlice({
       })
       .addCase(loadAllChallenges.fulfilled, (state, action) => {
         state.challenges = action.payload.map(c => ({ ...c, isCompleted: false })) as Challenge[];
-        state.selectedChallengeIds = action.payload.map((challenge) => challenge.challengeId);
+        // Обираємо тільки ті челенджі, які реально активні на беку.
+        // Якщо поле isActive відсутнє (сумісність з старим форматом) — вважаємо активним.
+        state.selectedChallengeIds = action.payload
+          .filter((c: any) => c.isActive !== false)
+          .map((c) => c.challengeId);
         state.loading = false;
       })
       .addCase(loadAllChallenges.rejected, (state, action) => {

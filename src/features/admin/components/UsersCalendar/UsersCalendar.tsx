@@ -20,10 +20,14 @@ const UsersCalendar: React.FC = () => {
     );
   }
 
-  // Агрегуємо по місяцях
+  // Агрегуємо по місяцях. Кожен елемент `stat` — це об'єкт виду
+  // { "YYYY-MM-DD": UserInfo[] }, але бек може прислати порожній об'єкт
+  // або ключ без відповідного значення — треба захиститись, інакше .slice
+  // впаде з TypeError.
   const monthCounts: Record<string, number> = {};
   userStats.forEach((stat) => {
     const date = Object.keys(stat)[0];
+    if (!date || date.length < 7) return;
     const count = stat[date]?.length ?? 0;
     const month = date.slice(0, 7);
     monthCounts[month] = (monthCounts[month] || 0) + count;

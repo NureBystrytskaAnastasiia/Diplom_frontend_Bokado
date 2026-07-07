@@ -1,10 +1,11 @@
 import React, { useEffect, useState, useRef, useCallback } from 'react';
 import { useParams } from 'react-router-dom';
-import { useAppSelector } from '../../../shared/hooks/useAuth';
+import { useAppDispatch, useAppSelector } from '../../../shared/hooks/useAuth';
 import {
   getChatMessages, sendMessage, deleteMessage,
   sendVoiceMessage, markChatAsRead as markChatAsReadApi,
 } from '../api/chat';
+import { fetchChats } from '../store/chatSlice';
 import type { Message } from '../types/chat';
 import ChatHeader from '../components/ChatHeader/ChatHeader';
 import MessagesList from '../components/MessagesList';
@@ -16,11 +17,27 @@ const TYPING_STOP_DELAY = 2500;
 
 const ChatRoomPage: React.FC = () => {
   const { chatId } = useParams<{ chatId: string }>();
+  const dispatch   = useAppDispatch();
   const { user }   = useAppSelector((s) => s.auth);
   const { chats }  = useAppSelector((s) => s.chat);
 
   const currentChat = chats.find(c => c.chatId === Number(chatId)) ?? null;
   const otherUserId = currentChat?.secondMember?.userId;
+
+  // Якщо потрапили сюди напряму (наприклад, адмін відкрив support-чат зі свого
+  // SupportPanel і одразу перейшов на /chat/:id) — список чатів у сторі порожній
+  // або не містить цей чат, тому шапка застрягне в скелетоні. Підвантажуємо.
+  // Прапор — щоб не спамити fetch у циклі. Скидаємо його при зміні chatId,
+  // щоб для нового чату спроба була ще раз.
+  const triedFetchRef = useRef(false);
+  useEffect(() => { triedFetchRef.current = false; }, [chatId]);
+  useEffect(() => {
+    if (!chatId) return;
+    if (!currentChat && !triedFetchRef.current) {
+      triedFetchRef.current = true;
+      dispatch(fetchChats());
+    }
+  }, [chatId, currentChat, dispatch]);
 
   const [messages, setMessages]       = useState<Message[]>([]);
   const [newMessage, setNewMessage]   = useState('');

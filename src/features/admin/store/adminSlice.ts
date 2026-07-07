@@ -65,7 +65,11 @@ export const unsubscribeUser = createAsyncThunk('admin/unsubscribeUser', unsubsc
 const adminSlice = createSlice({
   name: 'admin',
   initialState,
-  reducers: {},
+  reducers: {
+    clearAdminError(state) {
+      state.error = null;
+    },
+  },
   extraReducers: (builder) => {
     builder
       .addCase(getAllUsers.pending, (state) => { state.loading = true; state.error = null; })
@@ -113,4 +117,5 @@ const adminSlice = createSlice({
 });
 
 
+export const { clearAdminError } = adminSlice.actions;
 export default adminSlice.reducer;

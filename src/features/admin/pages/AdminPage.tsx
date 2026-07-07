@@ -2,10 +2,10 @@
 import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { motion, AnimatePresence } from 'framer-motion';
-import { FiAlertTriangle, FiRefreshCw } from 'react-icons/fi';
+import { FiAlertTriangle, FiRefreshCw, FiX } from 'react-icons/fi';
 
 import type { RootState, AppDispatch } from '../../../store';
-import { getAllUsers, getUserStats, getChallengeStats } from '../store/adminSlice';
+import { getAllUsers, getUserStats, getChallengeStats, clearAdminError } from '../store/adminSlice';
 
 import AdminHeader       from '../components/AdminHeader/AdminHeader';
 import AdminTabs, { type AdminTab } from '../components/AdminTabs/AdminTabs';
@@ -26,6 +26,10 @@ const AdminPage: React.FC = () => {
   const dispatch = useDispatch<AppDispatch>();
   const { users, challengeStats, loading, error } = useSelector((s: RootState) => s.admin);
   const [tab, setTab] = useState<AdminTab>('users');
+  // Прапор — чи вже завершилось хоч одне первинне завантаження. Після цього
+  // будь-який `loading`/`error` — це наслідок дій (бан, premium, зберегти
+  // челенджі тощо), і фулскрін показувати вже не треба.
+  const [initialLoaded, setInitialLoaded] = useState(false);
 
   useEffect(() => {
     dispatch(getAllUsers());
@@ -33,14 +37,31 @@ const AdminPage: React.FC = () => {
     dispatch(getChallengeStats());
   }, [dispatch]);
 
-  if (loading) return (
+  useEffect(() => {
+    if (!initialLoaded && !loading && (users.length > 0 || error)) {
+      setInitialLoaded(true);
+    }
+  }, [initialLoaded, loading, users.length, error]);
+
+  // Автоматично ховаємо action-toast через 5 секунд.
+  useEffect(() => {
+    if (initialLoaded && error) {
+      const t = setTimeout(() => dispatch(clearAdminError()), 5000);
+      return () => clearTimeout(t);
+    }
+  }, [initialLoaded, error, dispatch]);
+
+  // Фулскрін-лоадер — тільки для первинного завантаження.
+  if (!initialLoaded && loading) return (
     <div className="adm-loading-page">
       <div className="adm-spinner-lg" />
       <p>Завантажуємо панель...</p>
     </div>
   );
 
-  if (error) return (
+  // Фулскрін-помилка — тільки якщо первинне завантаження провалилось
+  // і даних немає взагалі.
+  if (!initialLoaded && error && users.length === 0) return (
     <div className="adm-error-page">
       <FiAlertTriangle size={40} color="#EF4444" />
       <p>{error}</p>
@@ -57,6 +78,22 @@ const AdminPage: React.FC = () => {
       <AdminHeader users={users} challengeCount={challengeCount} />
       <AdminTabs active={tab} onChange={setTab} />
 
+      {/* Toast з помилкою від дій (бан, premium, збереження челенджів тощо).
+          Не блокує UI — можна одразу пробувати ще раз. */}
+      {initialLoaded && error && (
+        <div className="adm-toast adm-toast--error" role="alert">
+          <FiAlertTriangle size={15} />
+          <span>{error}</span>
+          <button
+            className="adm-toast__close"
+            onClick={() => dispatch(clearAdminError())}
+            aria-label="Закрити"
+          >
+            <FiX size={14} />
+          </button>
+        </div>
+      )}
+
       <div style={{ padding: 'clamp(1.5rem, 3vw, 2rem) clamp(1.5rem, 3vw, 2.5rem)', flex: 1 }}>
         <AnimatePresence mode="wait">
 
@@ -71,7 +108,7 @@ const AdminPage: React.FC = () => {
 
           {tab === 'stats' && (
             <motion.div key="stats" variants={tabVariants} initial="initial" animate="animate" exit="exit">
-              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1.25rem' }}>
+              <div className="adm-stats-grid">
                 <div className="adm-section">
                   <h2 className="adm-section__title">Реєстрації по місяцях</h2>
                   <UsersCalendar />

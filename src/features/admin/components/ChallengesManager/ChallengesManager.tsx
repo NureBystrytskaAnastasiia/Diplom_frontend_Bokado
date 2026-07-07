@@ -1,5 +1,5 @@
-import React, { useEffect } from 'react';
-import { FiSave, FiCheckSquare, FiSquare, FiZap } from 'react-icons/fi';
+import React, { useEffect, useState } from 'react';
+import { FiSave, FiCheckSquare, FiSquare, FiZap, FiCheckCircle, FiX } from 'react-icons/fi';
 import { useAppDispatch, useAppSelector } from '../../../../shared/hooks/useAuth';
 import {
   loadAllChallenges,
@@ -13,20 +13,54 @@ const ChallengesManager: React.FC = () => {
   const { challenges, selectedChallengeIds, loading, error } =
     useAppSelector((s) => s.challenges);
 
+  // Локальні стани — щоб дії Save не блокували весь UI (як робив глобальний
+  // `loading`) і давали користувачу зрозумілий фідбек.
+  const [saving, setSaving]           = useState(false);
+  const [feedback, setFeedback]       = useState<{ type: 'success' | 'error'; text: string } | null>(null);
+  const [initialLoaded, setInitialLoaded] = useState(false);
+
   useEffect(() => {
     dispatch(loadAllChallenges());
   }, [dispatch]);
 
-  const handleSave = () => dispatch(updateSelectedChallenges(selectedChallengeIds));
+  useEffect(() => {
+    if (!initialLoaded && !loading && (challenges.length > 0 || error)) {
+      setInitialLoaded(true);
+    }
+  }, [initialLoaded, loading, challenges.length, error]);
 
-  if (loading) return (
+  // Автосховування toast'а
+  useEffect(() => {
+    if (!feedback) return;
+    const t = setTimeout(() => setFeedback(null), 3500);
+    return () => clearTimeout(t);
+  }, [feedback]);
+
+  const handleSave = async () => {
+    if (saving) return;
+    setSaving(true);
+    setFeedback(null);
+    try {
+      const res = await dispatch(updateSelectedChallenges(selectedChallengeIds));
+      if (updateSelectedChallenges.fulfilled.match(res)) {
+        setFeedback({ type: 'success', text: 'Зміни збережено' });
+      } else {
+        setFeedback({ type: 'error', text: (res.payload as string) || 'Не вдалось зберегти' });
+      }
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  // Фулскрін-стан — тільки для первинного завантаження.
+  if (!initialLoaded && loading) return (
     <div className="chmgr__state">
       <div className="chmgr__spinner" />
       <p>Завантаження челенджів...</p>
     </div>
   );
 
-  if (error) return (
+  if (!initialLoaded && error && challenges.length === 0) return (
     <div className="chmgr__state chmgr__state--error">
       <p>⚠️ {error}</p>
     </div>
@@ -34,12 +68,26 @@ const ChallengesManager: React.FC = () => {
 
   return (
     <div className="chmgr">
+      {feedback && (
+        <div className={`chmgr__toast chmgr__toast--${feedback.type}`}>
+          {feedback.type === 'success'
+            ? <FiCheckCircle size={14} />
+            : <FiX size={14} />}
+          <span>{feedback.text}</span>
+        </div>
+      )}
+
       <div className="chmgr__toolbar">
         <p className="chmgr__hint">
           Обрано: <strong>{selectedChallengeIds.length}</strong> з {challenges.length}
         </p>
-        <button className="adm-btn adm-btn--purple chmgr__save" onClick={handleSave}>
-          <FiSave size={13} /> Зберегти вибір
+        <button
+          className="adm-btn adm-btn--purple chmgr__save"
+          onClick={handleSave}
+          disabled={saving}
+        >
+          {saving ? <span className="chmgr__spinner chmgr__spinner--sm" /> : <FiSave size={13} />}
+          {saving ? 'Збереження...' : 'Зберегти вибір'}
         </button>
       </div>
 

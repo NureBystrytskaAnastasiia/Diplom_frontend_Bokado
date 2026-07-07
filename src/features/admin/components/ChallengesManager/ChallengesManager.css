@@ -18,6 +18,40 @@
   border-radius: 50%;
   animation: adm-spin 0.9s linear infinite;
 }
+.chmgr__spinner--sm {
+  width: 14px; height: 14px;
+  border-width: 2px;
+  border-color: rgba(255,255,255,0.35);
+  border-top-color: #fff;
+}
+
+/* Inline-toast біля тулбара — без блокування UI */
+.chmgr__toast {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.55rem 0.9rem;
+  border-radius: 10px;
+  font-size: 0.82rem;
+  font-weight: 500;
+  animation: adm-toast-in 0.2s ease-out;
+}
+.chmgr__toast--success {
+  background: #DCFCE7;
+  color: #15803D;
+  border: 1px solid #86EFAC;
+}
+.chmgr__toast--error {
+  background: #FEE2E2;
+  color: #B91C1C;
+  border: 1px solid #FCA5A5;
+}
+
+.chmgr__save:disabled {
+  opacity: 0.7;
+  cursor: not-allowed;
+  transform: none;
+}
 
 .chmgr__toolbar {
   display: flex;
